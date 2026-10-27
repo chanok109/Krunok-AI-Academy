@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { UNITS, KEYS } from '../data/courseData.js';
 import { storage } from '../services/storageService.js';
-import { auth, api } from '../services/apiService.js';
+import { auth, api, googleAuth } from '../services/apiService.js';
 import {
   emptyProgress,
   normalizeProgress,
@@ -120,11 +120,17 @@ export function AppProvider({ children }) {
     [commit]
   );
 
-  const login = useCallback(async ({ displayName, classroom }) => {
-    const u = await auth.signIn({ displayName, classroom });
+  const login = useCallback(async ({ displayName, classroom, role = 'STUDENT' }) => {
+    const u = await auth.signIn({ displayName, classroom, role });
     const fresh = emptyProgress();
     await api.saveProgress(fresh);
     setProgress(fresh);
+    setUser(u);
+    return u;
+  }, []);
+
+  const loginGoogle = useCallback(async ({ idToken, classroom, displayName }) => {
+    const u = await googleAuth.signInWithToken({ idToken, classroom, displayName });
     setUser(u);
     return u;
   }, []);

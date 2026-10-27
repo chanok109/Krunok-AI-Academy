@@ -19,8 +19,10 @@ const thaiDate = iso => {
 function validateLogin(f) {
   const er = {};
   const name = f.displayName.trim();
-  if (!name) er.displayName = "กรอกชื่อที่ใช้แสดงในบทเรียน";else if (name.length < 2) er.displayName = "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร";else if (name.length > 30) er.displayName = "ชื่อยาวได้ไม่เกิน 30 ตัวอักษร";
-  if (!COURSE.classrooms.includes(f.classroom)) er.classroom = "เลือกห้องเรียนของเธอ";
+  if (!name) er.displayName = "กรอกชื่อที่ใช้แสดงในบทเรียน";
+  else if (name.length < 2) er.displayName = "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร";
+  else if (name.length > 30) er.displayName = "ชื่อยาวได้ไม่เกิน 30 ตัวอักษร";
+  if (f.role === 'STUDENT' && !COURSE.classrooms.includes(f.classroom)) er.classroom = "เลือกห้องเรียนของเธอ";
   if (!f.consent) er.consent = "ติ๊กยอมรับก่อน เพื่อให้ระบบบันทึกความก้าวหน้าในเบราว์เซอร์นี้ได้";
   return er;
 }
@@ -39,6 +41,7 @@ function LoginPage() {
   const [form, setForm] = useState({
     displayName: "",
     classroom: "",
+    role: "STUDENT",
     consent: false
   });
   const [errors, setErrors] = useState({});
@@ -79,7 +82,7 @@ function LoginPage() {
       title: back ? `ยินดีต้อนรับกลับมา ${name}!` : `ยินดีต้อนรับ ${name}!`,
       message: back ? "AIra เก็บความก้าวหน้าเดิมไว้ให้แล้ว ไปเรียนต่อกันเลย" : "AIra พร้อมพาเธอสำรวจโลกปัญญาประดิษฐ์แล้ว"
     });
-    timer.current = setTimeout(() => navigate("home"), 1500);
+    timer.current = setTimeout(() => navigate(form.role === 'TEACHER' ? "teacher" : "home"), 1500);
   };
   const submit = async e => {
     e.preventDefault();
@@ -95,7 +98,8 @@ function LoginPage() {
     try {
       const u = await login({
         displayName: form.displayName,
-        classroom: form.classroom
+        classroom: form.role === 'TEACHER' ? (form.classroom || 'ม.5/1') : form.classroom,
+        role: form.role
       });
       finish(u.displayName, false);
     } catch (err) {
@@ -230,10 +234,27 @@ function LoginPage() {
       name: "alert",
       size: 18
     }), errors.form), React.createElement("div", {
+      className: "field",
+      style: { marginBottom: 14 }
+    }, React.createElement("label", {
+      style: { display: "block", marginBottom: 6, fontSize: 13, fontWeight: 600 }
+    }, "บทบาทผู้ใช้งาน (Role)"), React.createElement("div", {
+      style: { display: "flex", gap: 10 }
+    }, React.createElement("button", {
+      type: "button",
+      className: `btn ${form.role === 'STUDENT' ? 'btn-primary' : 'btn-ghost'}`,
+      style: { flex: 1, padding: "8px 12px", fontSize: 13 },
+      onClick: () => setForm(f => ({ ...f, role: 'STUDENT' }))
+    }, "👨‍🎓 นักเรียน (ม.5)"), React.createElement("button", {
+      type: "button",
+      className: `btn ${form.role === 'TEACHER' ? 'btn-primary' : 'btn-ghost'}`,
+      style: { flex: 1, padding: "8px 12px", fontSize: 13 },
+      onClick: () => setForm(f => ({ ...f, role: 'TEACHER' }))
+    }, "👩‍🏫 ครูผู้สอน (Teacher)"))), React.createElement("div", {
       className: "field"
     }, React.createElement("label", {
       htmlFor: "f-display"
-    }, "\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48\u0E43\u0E0A\u0E49\u0E41\u0E2A\u0E14\u0E07\u0E43\u0E19\u0E1A\u0E17\u0E40\u0E23\u0E35\u0E22\u0E19"), React.createElement("input", {
+    }, form.role === 'TEACHER' ? "ชื่อครูผู้สอน" : "ชื่อที่ใช้แสดงในบทเรียน"), React.createElement("input", {
       id: "f-display",
       ref: refs.displayName,
       className: "input",

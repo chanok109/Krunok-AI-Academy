@@ -430,3 +430,880 @@ function actorForEditor_() {
   const email = Session.getActiveUser().getEmail();
   return email ? 'EDITOR:' + email.toLowerCase() : 'EDITOR:unknown';
 }
+
+
+/* =====================================================================
+   7) OFFICIAL SERVER-SIDE QUIZ KEYS & GRADING ENGINE (Phase C)
+   ===================================================================== */
+
+/**
+ * เฉลยทางการและคำอธิบายข้อสอบ ย้ายมาฝั่งเซิร์ฟเวอร์เพื่อความปลอดภัย
+ * ผู้เรียนไม่สามารถอ่านเฉลยจากโค้ดฝั่ง Client ได้ก่อนทำข้อสอบ
+ */
+const OFFICIAL_QUIZ = {
+  "unit1": [
+    {
+      "id": "q1",
+      "lesson": "u1-l1",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "a",
+      "explain": "McCarthy นิยาม AI ว่า \"the science and engineering of making intelligent machines, especially intelligent computer programs\" AI ไม่จำเป็นต้องมีรูปร่างเป็นหุ่นยนต์ และการคำนวณเร็วอย่างเดียวไม่ใช่ความฉลาด"
+    },
+    {
+      "id": "q2",
+      "lesson": "u1-l1",
+      "level": "การประยุกต์ใช้",
+      "answer": "d",
+      "explain": "แอปไม่ได้พยายามคิดหรือทำตัวเหมือนคน แต่เลือกการกระทำที่ให้ผลดีที่สุดตามเป้าหมาย (ถึงเร็วที่สุด) ซึ่งคือแนวคิด Rational Agent ของ Acting Rationally"
+    },
+    {
+      "id": "q3",
+      "lesson": "u1-l2",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "John McCarthy และคณะใช้คำว่า Artificial Intelligence ในข้อเสนอการประชุมที่ Dartmouth จึงถือเป็นจุดกำเนิดของสาขา AI ส่วน Deep Blue ชนะหมากรุกในปี ค.ศ. 1997"
+    },
+    {
+      "id": "q4",
+      "lesson": "u1-l2",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "ช่วง AI Winter เกิดจากคำสัญญาเกินจริง ขณะที่คอมพิวเตอร์ยังช้าและข้อมูลยังน้อย ผลงานไม่เป็นไปตามคาด ผู้ให้ทุนจึงลดการสนับสนุน"
+    },
+    {
+      "id": "q5",
+      "lesson": "u1-l2",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "ความสำเร็จของ AlexNet ในปี ค.ศ. 2012 มาจากข้อมูลภาพจำนวนมหาศาล (ImageNet) พลังของ GPU และเทคนิคการฝึกโครงข่ายประสาทที่ดีขึ้น"
+    },
+    {
+      "id": "q6",
+      "lesson": "u1-l3",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "ระบบที่ใช้อยู่จริงทำงานได้ดีในขอบเขตที่ฝึกมา จึงเป็น ANI ส่วน AGI ยังไม่มีระบบใดที่ได้รับการยอมรับอย่างกว้างขวาง และ ASI เป็นแนวคิดเชิงสมมติฐาน"
+    },
+    {
+      "id": "q7",
+      "lesson": "u1-l3",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "AI เป็นวงกว้างที่สุด ML อยู่ใน AI และ DL อยู่ใน ML ส่วน GenAI แบ่งตามเป้าหมายคือการสร้างเนื้อหาใหม่ ระบบ GenAI สมัยใหม่ส่วนใหญ่ใช้ Deep Learning"
+    },
+    {
+      "id": "q8",
+      "lesson": "u1-l3",
+      "level": "การประยุกต์ใช้",
+      "answer": "d",
+      "explain": "การสร้างภาพใหม่จากข้อความ (Text-to-Image) เป็นงานของ Generative AI ส่วนตัวเลือกอื่นใช้ทำนาย จำแนก หรือตัดสินใจตามกฎ ไม่ได้สร้างเนื้อหาใหม่"
+    },
+    {
+      "id": "q9",
+      "lesson": "u1-l4",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "ข้อมูลฝึกไม่สมดุล (Data Bias) ทำให้โมเดลแม่นยำกับบางกลุ่มน้อยกว่า ส่งผลให้เกิดความไม่เป็นธรรม (Fairness) ต่อคนกลุ่มนั้น เช่นที่งานวิจัย Gender Shades พบ"
+    },
+    {
+      "id": "q10",
+      "lesson": "u1-l4",
+      "level": "การประยุกต์ใช้",
+      "answer": "c",
+      "explain": "Generative AI อาจสร้างข้อมูลที่ฟังดูน่าเชื่อแต่ไม่จริง (Hallucination) การถามซ้ำไม่ช่วยยืนยัน ต้องตรวจกับแหล่งต้นทาง เช่น ราชกิจจานุเบกษา หรือเว็บไซต์หน่วยงานรัฐ"
+    },
+    {
+      "id": "q11",
+      "lesson": "u1-l5",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "ตามข้อมูลที่ตรวจสอบได้ ร่างนี้ผ่านการรับฟังความคิดเห็นแล้ว และอยู่ระหว่างขั้นตอนเสนอต่อคณะกรรมการกฤษฎีกา คณะรัฐมนตรี และรัฐสภา จึงยังไม่ใช่กฎหมายที่มีผลบังคับ ส่วน EU AI Act ใช้ในสหภาพยุโรป ไม่ใช่กฎหมายไทย"
+    },
+    {
+      "id": "q12",
+      "lesson": "u1-l5",
+      "level": "การวิเคราะห์",
+      "answer": "d",
+      "explain": "PDPA มีฐานทางกฎหมายหลายฐาน ความยินยอมเป็นเพียงหนึ่งในนั้น การจัดทำระเบียนการศึกษาอาจอาศัยฐานหน้าที่ตามกฎหมายหรือภารกิจสาธารณะได้ แต่ยังต้องแจ้งวัตถุประสงค์ ใช้ตามที่แจ้ง และรักษาความปลอดภัยของข้อมูล"
+    },
+    {
+      "id": "q13",
+      "lesson": "u1-l5",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "AI ที่ตัดสินการเข้าถึงการศึกษาอยู่ในรายการความเสี่ยงสูงตาม Annex III ต้องมีการบริหารความเสี่ยง คุณภาพข้อมูล เอกสาร และการกำกับโดยมนุษย์ ซึ่งหลัง Digital Omnibus กำหนดให้ใช้ตั้งแต่ 2 ธ.ค. 2570"
+    },
+    {
+      "id": "q14",
+      "lesson": "u1-l6",
+      "level": "การประยุกต์ใช้",
+      "answer": "c",
+      "explain": "AI โคลนเสียงจากคลิปสั้น ๆ ได้ และรูปบัตรก็ปลอมหรือขโมยมาได้ วิธีที่ดีที่สุดคือยืนยันผ่านช่องทางที่เรารู้จักอยู่แล้ว ถ้าสงสัยว่าถูกหลอก แจ้งสายด่วน 1441"
+    },
+    {
+      "id": "q15",
+      "lesson": "u1-l6",
+      "level": "การวิเคราะห์",
+      "answer": "b",
+      "explain": "การติดป้ายว่าใช้ AI ช่วยเรื่องความโปร่งใส แต่ไม่ได้ทำให้การใช้ภาพคนอื่นโดยไม่ยินยอมถูกต้อง ภาพปลอมทำร้ายจิตใจและชื่อเสียงได้จริง และกลุ่มปิดก็ถูกส่งต่อได้"
+    }
+  ],
+  "unit2": [
+    {
+      "id": "q1",
+      "lesson": "u2-l1",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "c",
+      "explain": "Computer Vision มุ่งให้คอมพิวเตอร์ 'เข้าใจ' ภาพ เช่น บอกว่ามีอะไรอยู่ตรงไหน ไม่ใช่แค่แสดงหรือแต่งภาพ"
+    },
+    {
+      "id": "q2",
+      "lesson": "u2-l1",
+      "level": "การประยุกต์ใช้",
+      "answer": "a",
+      "explain": "การบอกทั้งประเภทและตำแหน่งของวัตถุหลายชิ้นด้วย Bounding Box คือ Object Detection ส่วน Classification ให้ป้ายกำกับกับทั้งภาพ"
+    },
+    {
+      "id": "q3",
+      "lesson": "u2-l2",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "d",
+      "explain": "1920 × 1080 = 2,073,600 พิกเซล ส่วน 6,220,800 คือจำนวนค่าตัวเลขเมื่อคูณ 3 ช่องสี"
+    },
+    {
+      "id": "q4",
+      "lesson": "u2-l2",
+      "level": "การประยุกต์ใช้",
+      "answer": "b",
+      "explain": "แดงเต็ม + น้ำเงินเต็ม ไม่มีเขียว ผสมแสงได้สีม่วงแดง (Magenta) ส่วนเหลือง = แดง + เขียว"
+    },
+    {
+      "id": "q5",
+      "lesson": "u2-l2",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "0.299×200 + 0.587×100 + 0.114×50 = 59.8 + 58.7 + 5.7 = 124.2 ≈ 124 OpenCV ให้น้ำหนักสีเขียวมากที่สุด จึงไม่ใช่ค่าเฉลี่ยธรรมดา"
+    },
+    {
+      "id": "q6",
+      "lesson": "u2-l3",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "shape เรียงเป็น (สูง, กว้าง, ช่องสี) จึงเป็น (480, 640, 3)"
+    },
+    {
+      "id": "q7",
+      "lesson": "u2-l3",
+      "level": "การวิเคราะห์",
+      "answer": "b",
+      "explain": "ขนาดใน cv2.resize เขียนเป็น (กว้าง, สูง) = กว้าง 320 สูง 240 แต่ shape แสดง (สูง, กว้าง, ช่องสี) = (240, 320, 3)"
+    },
+    {
+      "id": "q8",
+      "lesson": "u2-l3",
+      "level": "การวิเคราะห์",
+      "answer": "d",
+      "explain": "ภาพระดับเทามีค่าเดียวต่อพิกเซล OpenCV จึงคืนอาร์เรย์ 2 มิติ (480, 640)"
+    },
+    {
+      "id": "q9",
+      "lesson": "u2-l3",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "OpenCV เก็บสีเรียงเป็น B G R สีแดงล้วนจึงเป็น [0 0 255]"
+    },
+    {
+      "id": "q10",
+      "lesson": "u2-l3",
+      "level": "การประยุกต์ใช้",
+      "answer": "a",
+      "explain": "Colab ไม่มีหน้าต่างแสดงผลแบบ GUI จึงต้องใช้ cv2_imshow() หรือ matplotlib ส่วน imwrite ใช้บันทึกไฟล์ ไม่ได้แสดงภาพ"
+    },
+    {
+      "id": "q11",
+      "lesson": "u2-l4",
+      "level": "การประยุกต์ใช้",
+      "answer": "b",
+      "explain": "cv2.flip รหัส 0 กลับรอบแกนนอน (บน-ล่าง) รหัส 1 กลับซ้าย-ขวา และ -1 กลับทั้งสองแกน"
+    },
+    {
+      "id": "q12",
+      "lesson": "u2-l4",
+      "level": "การวิเคราะห์",
+      "answer": "d",
+      "explain": "ตำแหน่งแรกคือแถว (y) 100 ถึง 199 ตำแหน่งที่สองคือคอลัมน์ (x) 50 ถึง 149 ค่าปลายไม่รวม ได้ 100 × 100 พิกเซล"
+    },
+    {
+      "id": "q13",
+      "lesson": "u2-l5",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "a",
+      "explain": "การตรวจจับบอกตำแหน่ง ไม่รู้ตัวตน การจดจำต้องเปรียบเทียบกับฐานข้อมูลใบหน้า จึงใช้ข้อมูลชีวภาพและมีความเสี่ยงด้านความเป็นส่วนตัวสูงกว่า"
+    },
+    {
+      "id": "q14",
+      "lesson": "u2-l5",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "Threshold เป็นเกณฑ์ตัดผล ยิ่งสูงยิ่งเหลือเฉพาะผลที่มั่นใจมาก ลดผลผิด (False Positive) แต่เพิ่มโอกาสพลาด (False Negative)"
+    },
+    {
+      "id": "q15",
+      "lesson": "u2-l5",
+      "level": "การวิเคราะห์",
+      "answer": "b",
+      "explain": "COCO มีประเภท sports ball แต่ไม่แยกชนิดลูกบอล ความสามารถของโมเดลขึ้นกับข้อมูลที่ใช้ฝึก งานเฉพาะทางจึงต้องเก็บข้อมูลและฝึกเพิ่ม (Fine-tuning)"
+    }
+  ],
+  "unit3": [
+    {
+      "id": "q1",
+      "lesson": "u3-l1",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "ML เรียนรู้รูปแบบจากข้อมูลแทนการเขียนกฎทุกข้อเอง แล้วนำไปใช้กับข้อมูลที่ไม่เคยเห็น"
+    },
+    {
+      "id": "q2",
+      "lesson": "u3-l1",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "c",
+      "explain": "Supervised Learning เรียนจากตัวอย่างที่มี Label (สแปม/ไม่ใช่สแปม) ส่วนการจัดกลุ่มโดยไม่มีป้ายเป็น Unsupervised"
+    },
+    {
+      "id": "q3",
+      "lesson": "u3-a1",
+      "level": "การประยุกต์ใช้",
+      "answer": "a",
+      "explain": "Label คือค่าที่ต้องการทำนาย (ราคาขาย) ส่วน Feature คือข้อมูลที่ใช้ทำนาย"
+    },
+    {
+      "id": "q4",
+      "lesson": "u3-a2",
+      "level": "การวิเคราะห์",
+      "answer": "d",
+      "explain": "การทดสอบกับข้อมูลฝึกเหมือนสอบด้วยข้อสอบที่เห็นเฉลยแล้ว ต้องแยกข้อมูลทดสอบเพื่อวัดความสามารถกับข้อมูลใหม่"
+    },
+    {
+      "id": "q5",
+      "lesson": "u3-a2",
+      "level": "การวิเคราะห์",
+      "answer": "b",
+      "explain": "ตอบแมวทุกครั้งถูก 950 จาก 1000 = 95% ตัวเลขดูดีแต่หลอกตา ต้องดู Confusion Matrix และทำข้อมูลให้สมดุล"
+    },
+    {
+      "id": "q6",
+      "lesson": "u3-l1",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "Overfitting คือโมเดลจำข้อมูลฝึกละเอียดเกินไป รวมถึงความบังเอิญในข้อมูล จึงใช้กับข้อมูลใหม่ได้ไม่ดี"
+    },
+    {
+      "id": "q7",
+      "lesson": "u3-l1",
+      "level": "การประยุกต์ใช้",
+      "answer": "a",
+      "explain": "kNN โหวตเสียงข้างมาก ส้มได้ 2 จาก 3 เสียง จึงทายส้ม ความมั่นใจ 2/3 ≈ 67%"
+    },
+    {
+      "id": "q8",
+      "lesson": "u3-l2",
+      "level": "การประยุกต์ใช้",
+      "answer": "d",
+      "explain": "โมเดลเรียนรู้พื้นหลังสีขาวร่วมด้วย (Data Bias) การเพิ่มความหลากหลายของข้อมูลฝึกช่วยให้เรียนรู้ลักษณะของขวดจริง"
+    },
+    {
+      "id": "q9",
+      "lesson": "u3-l2",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "Transfer Learning นำความรู้จากโมเดลที่ฝึกกับภาพนับล้านมาใช้สกัดคุณลักษณะ แล้วฝึกเฉพาะส่วนจำแนกด้วยภาพของเรา"
+    },
+    {
+      "id": "q10",
+      "lesson": "u3-l3",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "c",
+      "explain": "Detection ให้ผลละเอียดกว่า คือทั้งชนิดและตำแหน่งของวัตถุแต่ละชิ้น"
+    },
+    {
+      "id": "q11",
+      "lesson": "u3-l3",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "Precision = 3 ÷ (3 + 0) = 100% เพราะทุกกรอบถูก Recall = 3 ÷ (3 + 1) = 75% เพราะพลาดแมว 1 ตัว (FN)"
+    },
+    {
+      "id": "q12",
+      "lesson": "u3-l3",
+      "level": "การประยุกต์ใช้",
+      "answer": "b",
+      "explain": "IoU = 40 ÷ 100 = 0.4 ต่ำกว่า 0.5 ตำแหน่งจึงยังไม่แม่นพอ นับเป็น FP และวัตถุจริงนั้นกลายเป็น FN"
+    },
+    {
+      "id": "q13",
+      "lesson": "u3-l4",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "d",
+      "explain": "Pose Estimation หาจุดสำคัญ เช่น ไหล่ ศอก ข้อมือ แล้วตัวจำแนกใช้พิกัดเหล่านั้นตัดสินท่าทาง"
+    },
+    {
+      "id": "q14",
+      "lesson": "u3-l5",
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "มือซ้ายเป็นภาพสะท้อนของมือขวา ตำแหน่งจุดจึงต่างกัน ถ้าข้อมูลฝึกไม่ครอบคลุม โมเดลก็ใช้ไม่ได้ดี"
+    },
+    {
+      "id": "q15",
+      "lesson": "u3-l4",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "ต้องคำนึงทั้งความเป็นส่วนตัว (PDPA) ความหลากหลายของข้อมูล และการกำกับดูแลโดยมนุษย์ ตามที่เรียนในหน่วยที่ 1"
+    }
+  ]
+};
+
+/**
+ * ตรวจข้อสอบฝั่งเซิร์ฟเวอร์ คำนวณคะแนน เกณฑ์ผ่าน 70% และบันทึกประวัติการสอบ
+ * ป้องกันการส่งคำตอบซ้ำด้วย attemptId
+ */
+function gradeQuizOnServer_(unitId, answers, durationSeconds, attemptId, userId) {
+  const qList = OFFICIAL_QUIZ[unitId];
+  if (!qList) throw new Error('ไม่พบข้อสอบสำหรับหน่วย ' + unitId);
+  if (!attemptId) throw new Error('ต้องระบุ attemptId เพื่อป้องกันการบันทึกซ้ำ');
+  if (!userId) throw new Error('ต้องระบุ userId');
+
+  // ตรวจสอบว่า attemptId นี้เคยบันทึกไปแล้วหรือไม่ (Idempotency)
+  const existing = findRowById_('QuizAttempts', attemptId);
+  if (existing) {
+    return {
+      duplicate: true,
+      attemptId: attemptId,
+      score: existing.record.score,
+      maxScore: existing.record.maxScore,
+      percentage: existing.record.percentage,
+      passed: Boolean(existing.record.passed),
+      submittedAt: existing.record.submittedAt,
+      message: 'ข้อสอบชุดนี้ได้รับการตรวจและบันทึกคะแนนไปแล้ว'
+    };
+  }
+
+  let score = 0;
+  const breakdown = {};
+
+  qList.forEach(function (q) {
+    const studentAns = answers && answers[q.id];
+    const isCorrect = studentAns === q.answer;
+    if (isCorrect) score++;
+
+    breakdown[q.id] = {
+      correct: isCorrect,
+      studentAnswer: studentAns || null,
+      officialAnswer: q.answer,
+      explain: q.explain,
+      lesson: q.lesson,
+      level: q.level
+    };
+  });
+
+  const maxScore = qList.length;
+  const percentage = Math.round((score / maxScore) * 100);
+  const passed = percentage >= (APP.passPercent || 70);
+  const now = nowIso_();
+
+  // บันทึกลง QuizAttempts
+  appendRecord_('QuizAttempts', {
+    attemptId: attemptId,
+    userId: userId,
+    unitId: unitId,
+    submittedAt: now,
+    score: score,
+    maxScore: maxScore,
+    percentage: percentage,
+    passed: passed,
+    durationSeconds: Number(durationSeconds) || 0
+  });
+
+  // บันทึกลง AuditLogs
+  writeAuditLog(userId, 'QUIZ_SUBMIT', unitId + ':' + attemptId + ':' + score + '/' + maxScore, 'SUCCESS');
+
+  return {
+    duplicate: false,
+    attemptId: attemptId,
+    score: score,
+    maxScore: maxScore,
+    percentage: percentage,
+    passed: passed,
+    submittedAt: now,
+    durationSeconds: durationSeconds,
+    breakdown: breakdown
+  };
+}
+
+/* =====================================================================
+   8) AUTHENTICATION & ACCESS CONTROL (RBAC) (Phase B)
+   ===================================================================== */
+
+/**
+ * ยืนยันตัวตนผ่าน Google ID Token (Google Identity Services)
+ * ตรวจสอบความถูกต้องของ Token ผ่าน Google OAuth2 Tokeninfo Endpoint
+ */
+function verifyGoogleIdToken_(idToken) {
+  if (!idToken) throw new Error('MISSING_TOKEN');
+
+  // สำหรับการทดสอบจำลอง (Mock / Demo Token ในเครื่อง)
+  if (idToken.startsWith('DEMO_MOCK_TOKEN:')) {
+    const parts = idToken.split(':');
+    return {
+      sub: parts[1] || 'demo-sub',
+      email: (parts[2] || 'demo@pcccr.ac.th').toLowerCase(),
+      name: parts[3] || 'Demo Student',
+      isDemo: true
+    };
+  }
+
+  const url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken);
+  let resp;
+  try {
+    resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  } catch (e) {
+    throw new Error('ไม่สามารถติดต่อ Google Auth Server: ' + e.message);
+  }
+
+  if (resp.getResponseCode() !== 200) {
+    throw new Error('Google ID Token ไม่ถูกต้องหรือหมดอายุ');
+  }
+
+  const info = JSON.parse(resp.getContentText());
+  if (info.email_verified !== 'true' && info.email_verified !== true) {
+    throw new Error('อีเมล Google นี้ยังไม่ได้รับการยืนยัน');
+  }
+
+  // ตรวจสอบ Google OAuth Client ID ถ้ามีการตั้งค่าใน Script Properties
+  const expectedClientId = PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID');
+  if (expectedClientId && info.aud !== expectedClientId) {
+    throw new Error('Token Client ID mismatch');
+  }
+
+  return {
+    sub: info.sub,
+    email: String(info.email).toLowerCase(),
+    name: info.name || info.email.split('@')[0],
+    isDemo: false
+  };
+}
+
+/**
+ * ค้นหาหรือลงทะเบียนผู้ใช้ในระบบ และคืนค่าโปรไฟล์พร้อม Role ที่แท้จริงจากฐานข้อมูล
+ */
+function authenticateAndResolveUser_(authPayload) {
+  if (!authPayload || !authPayload.idToken) {
+    throw new Error('ต้องส่ง idToken เพื่อยืนยันตัวตน');
+  }
+
+  const verified = verifyGoogleIdToken_(authPayload.idToken);
+  const email = verified.email;
+  const sub = verified.sub;
+
+  const users = readAll_('Users');
+  let user = null;
+
+  // ค้นหาตาม googleSub หรือ email
+  for (let i = 0; i < users.length; i++) {
+    const u = users[i];
+    if ((u.googleSub && String(u.googleSub) === sub) || (u.email && String(u.email).toLowerCase() === email)) {
+      user = u;
+      break;
+    }
+  }
+
+  const now = nowIso_();
+
+  if (!user) {
+    // ผู้ใช้ใหม่: ลงทะเบียนอัตโนมัติ
+    // ตรวจสอบว่าอีเมลตรงกับรายการครูผู้สอนหรือไม่
+    const teacherEmails = (PropertiesService.getScriptProperties().getProperty('TEACHER_EMAILS') || '')
+      .toLowerCase().split(',').map(function (s) { return s.trim(); });
+
+    let role = 'STUDENT';
+    if (teacherEmails.indexOf(email) >= 0) {
+      role = 'TEACHER';
+    }
+
+    const userId = 'USR-' + Utilities.getUuid().slice(0, 8);
+    const classroom = authPayload.classroom && isClassroom_(authPayload.classroom) ? authPayload.classroom : '';
+
+    const newRecord = {
+      userId: userId,
+      googleSub: sub,
+      email: email,
+      displayName: cleanText_(authPayload.displayName || verified.name, 100),
+      classroom: classroom,
+      role: role,
+      status: 'ACTIVE',
+      createdAt: now,
+      updatedAt: now
+    };
+
+    appendRecord_('Users', newRecord);
+    writeAuditLog(userId, 'USER_REGISTER', email, 'SUCCESS');
+    user = newRecord;
+  } else {
+    // อัปเดต googleSub หรือ displayName ถ้ายังไม่มี
+    const patch = {};
+    if (!user.googleSub && sub) patch.googleSub = sub;
+    if (authPayload.classroom && isClassroom_(authPayload.classroom) && !user.classroom) {
+      patch.classroom = authPayload.classroom;
+    }
+    if (Object.keys(patch).length > 0) {
+      patch.updatedAt = now;
+      user = updateRecord_('Users', user.userId, patch);
+    }
+  }
+
+  if (user.status === 'SUSPENDED') {
+    writeAuditLog(user.userId, 'AUTH_BLOCKED', 'User is SUSPENDED', 'DENIED');
+    throw new Error('บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อคุณครูผู้ดูแลระบบ');
+  }
+
+  return user;
+}
+
+/**
+ * ตรวจสอบสิทธิ์ (RBAC Guard)
+ */
+function requireRole_(user, allowedRoles) {
+  if (!user || allowedRoles.indexOf(user.role) < 0) {
+    writeAuditLog(user ? user.userId : 'ANON', 'RBAC_VIOLATION', 'Required: ' + allowedRoles.join(','), 'DENIED');
+    throw new Error('FORBIDDEN: สิทธิ์การเข้าถึงไม่เพียงพอ (ต้องการ ' + allowedRoles.join('/') + ')');
+  }
+}
+
+/* =====================================================================
+   9) WEB API ROUTER & CONTROLLER (doGet & doPost) (Phase B, C, D)
+   ===================================================================== */
+
+/**
+ * Handle HTTP GET — ตรวจสอบสถานะการทำงานของ API
+ */
+function doGet(e) {
+  const p = e && e.parameter ? e.parameter : {};
+  const action = p.action || 'ping';
+
+  if (action === 'ping') {
+    return jsonResponse_({
+      status: 'online',
+      app: APP.name,
+      courseCode: APP.courseCode,
+      version: APP.schemaVersion,
+      timestamp: nowIso_()
+    });
+  }
+
+  if (action === 'check') {
+    try {
+      const dbStatus = checkDatabase();
+      return jsonResponse_({ success: true, database: dbStatus });
+    } catch (err) {
+      return jsonResponse_({ success: false, error: err.message });
+    }
+  }
+
+  return jsonResponse_({ success: false, error: 'Unknown GET action: ' + action });
+}
+
+/**
+ * Handle HTTP POST — จัดการคำขอแบบ API สำหรับ Frontend
+ */
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(APP.lockWaitMs);
+  } catch (lockErr) {
+    return jsonResponse_({ success: false, error: 'ระบบกำลังประมวลผลคำขอจำนวนมาก กรุณาลองใหม่อีกครั้ง' });
+  }
+
+  try {
+    let payload = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        payload = JSON.parse(e.postData.contents);
+      } catch (pe) {
+        payload = e.parameter || {};
+      }
+    } else if (e && e.parameter) {
+      payload = e.parameter;
+    }
+
+    const action = payload.action;
+    if (!action) {
+      return jsonResponse_({ success: false, error: 'Missing action parameter' });
+    }
+
+    let responseData = null;
+
+    // 1. Auth: Verify / Register / Get Profile
+    if (action === 'auth/verify') {
+      const user = authenticateAndResolveUser_(payload);
+      responseData = {
+        success: true,
+        user: {
+          userId: user.userId,
+          email: user.email,
+          displayName: user.displayName,
+          classroom: user.classroom,
+          role: user.role,
+          status: user.status
+        }
+      };
+    }
+
+    // 2. Auth: Update Classroom / Display Name
+    else if (action === 'auth/updateProfile') {
+      const user = authenticateAndResolveUser_(payload);
+      const patch = {};
+      if (payload.classroom && isClassroom_(payload.classroom)) patch.classroom = payload.classroom;
+      if (payload.displayName) patch.displayName = cleanText_(payload.displayName, 100);
+      patch.updatedAt = nowIso_();
+      const updated = updateRecord_('Users', user.userId, patch);
+      responseData = { success: true, user: updated };
+    }
+
+    // 3. Quiz: Server-Side Grading & Submit (Phase C)
+    else if (action === 'quiz/submit') {
+      const user = authenticateAndResolveUser_(payload);
+      const result = gradeQuizOnServer_(
+        payload.unitId,
+        payload.answers,
+        payload.durationSeconds,
+        payload.attemptId,
+        user.userId
+      );
+      responseData = { success: true, result: result };
+    }
+
+    // 4. Progress: Get Student Progress (Phase C)
+    else if (action === 'progress/get') {
+      const user = authenticateAndResolveUser_(payload);
+      const targetUserId = (user.role === 'TEACHER' || user.role === 'ADMIN') && payload.targetUserId
+        ? payload.targetUserId
+        : user.userId;
+
+      const progressRows = readAll_('Progress').filter(function (r) {
+        return String(r.userId) === String(targetUserId);
+      });
+      const attempts = readAll_('QuizAttempts').filter(function (r) {
+        return String(r.userId) === String(targetUserId);
+      });
+      const projects = readAll_('Projects').filter(function (r) {
+        return String(r.userId) === String(targetUserId);
+      });
+
+      responseData = {
+        success: true,
+        userId: targetUserId,
+        progress: progressRows,
+        quizAttempts: attempts,
+        projects: projects
+      };
+    }
+
+    // 5. Progress: Save Lesson / Activity Completion (Phase C)
+    else if (action === 'progress/saveLesson') {
+      const user = authenticateAndResolveUser_(payload);
+      const unitId = payload.unitId;
+      const lessonId = payload.lessonId;
+      if (!unitId || !lessonId) throw new Error('Missing unitId or lessonId');
+
+      const existing = readAll_('Progress').find(function (r) {
+        return String(r.userId) === user.userId && String(r.lessonId) === lessonId;
+      });
+
+      const now = nowIso_();
+      if (!existing) {
+        appendRecord_('Progress', {
+          progressId: 'PRG-' + Utilities.getUuid().slice(0, 8),
+          userId: user.userId,
+          unitId: unitId,
+          lessonId: lessonId,
+          activityId: '',
+          completionStatus: 'COMPLETED',
+          updatedAt: now
+        });
+      } else {
+        updateRecord_('Progress', existing.progressId, {
+          completionStatus: 'COMPLETED',
+          updatedAt: now
+        });
+      }
+      responseData = { success: true, lessonId: lessonId, status: 'COMPLETED' };
+    }
+
+    // 6. Project: Submit Capstone Project (Phase C)
+    else if (action === 'project/submit') {
+      const user = authenticateAndResolveUser_(payload);
+      const projectId = payload.projectId || ('PRJ-' + Utilities.getUuid().slice(0, 8));
+      const now = nowIso_();
+
+      const existing = findRowById_('Projects', projectId);
+      if (existing) {
+        if (existing.record.userId !== user.userId && user.role === 'STUDENT') {
+          throw new Error('FORBIDDEN: ไม่อนุญาตให้แก้ไขโครงงานของผู้อื่น');
+        }
+        updateRecord_('Projects', projectId, {
+          projectTitle: cleanText_(payload.projectTitle, 200),
+          description: cleanText_(payload.description, 4000),
+          evidenceLink: cleanText_(payload.evidenceLink, 500),
+          status: 'SUBMITTED',
+          submittedAt: now
+        });
+      } else {
+        appendRecord_('Projects', {
+          projectId: projectId,
+          userId: user.userId,
+          unitId: 'unit4',
+          projectTitle: cleanText_(payload.projectTitle, 200),
+          description: cleanText_(payload.description, 4000),
+          status: 'SUBMITTED',
+          evidenceLink: cleanText_(payload.evidenceLink, 500),
+          submittedAt: now
+        });
+      }
+      writeAuditLog(user.userId, 'PROJECT_SUBMIT', projectId, 'SUCCESS');
+      responseData = { success: true, projectId: projectId, status: 'SUBMITTED' };
+    }
+
+    // 7. Teacher: Get Roster with Scores & Progress (Phase D)
+    else if (action === 'teacher/getRoster') {
+      const user = authenticateAndResolveUser_(payload);
+      requireRole_(user, ['TEACHER', 'ADMIN']);
+
+      const classroom = payload.classroom; // filter by classroom or 'all'
+      const allUsers = readAll_('Users').filter(function (u) {
+        return u.role === 'STUDENT';
+      });
+
+      const allAttempts = readAll_('QuizAttempts');
+      const allProgress = readAll_('Progress');
+      const allProjects = readAll_('Projects');
+      const allAssessments = readAll_('Assessments');
+
+      const roster = allUsers
+        .filter(function (u) {
+          return !classroom || classroom === 'all' || u.classroom === classroom;
+        })
+        .map(function (u) {
+          const userAttempts = allAttempts.filter(function (a) { return a.userId === u.userId; });
+          const userProgress = allProgress.filter(function (p) { return p.userId === u.userId && p.completionStatus === 'COMPLETED'; });
+          const userProject = allProjects.find(function (p) { return p.userId === u.userId; });
+          const userAssess = allAssessments.filter(function (as) { return as.userId === u.userId; });
+
+          // Best quiz scores per unit
+          const bestScores = { unit1: 0, unit2: 0, unit3: 0 };
+          userAttempts.forEach(function (a) {
+            if (bestScores[a.unitId] === undefined || a.percentage > bestScores[a.unitId]) {
+              bestScores[a.unitId] = a.percentage;
+            }
+          });
+
+          return {
+            userId: u.userId,
+            displayName: u.displayName,
+            email: u.email,
+            classroom: u.classroom,
+            status: u.status,
+            completedLessonsCount: userProgress.length,
+            quizScores: bestScores,
+            projectStatus: userProject ? userProject.status : 'NOT_STARTED',
+            projectTitle: userProject ? userProject.projectTitle : '',
+            latestAssessment: userAssess.length ? userAssess[userAssess.length - 1] : null,
+            updatedAt: u.updatedAt
+          };
+        });
+
+      responseData = { success: true, classroom: classroom || 'all', roster: roster };
+    }
+
+    // 8. Teacher: Assess Project & Give Feedback (Phase D)
+    else if (action === 'teacher/assessProject') {
+      const user = authenticateAndResolveUser_(payload);
+      requireRole_(user, ['TEACHER', 'ADMIN']);
+
+      const assessmentId = 'ASM-' + Utilities.getUuid().slice(0, 8);
+      const now = nowIso_();
+
+      appendRecord_('Assessments', {
+        assessmentId: assessmentId,
+        userId: payload.studentUserId,
+        unitId: 'unit4',
+        projectId: payload.projectId || '',
+        rubricScores: JSON.stringify(payload.rubricScores || {}),
+        totalScore: Number(payload.totalScore) || 0,
+        maxScore: Number(payload.maxScore) || 16,
+        feedback: cleanText_(payload.feedback || '', 1000),
+        teacherId: user.userId,
+        updatedAt: now
+      });
+
+      if (payload.projectId) {
+        try {
+          updateRecord_('Projects', payload.projectId, { status: 'ASSESSED' });
+        } catch (e) {
+          // ignore if project row doesn't exist
+        }
+      }
+
+      writeAuditLog(user.userId, 'PROJECT_ASSESS', payload.studentUserId + ':' + assessmentId, 'SUCCESS');
+      responseData = { success: true, assessmentId: assessmentId };
+    }
+
+    // 9. Teacher: Summary Analytics across Classrooms (Phase D)
+    else if (action === 'teacher/getAnalytics') {
+      const user = authenticateAndResolveUser_(payload);
+      requireRole_(user, ['TEACHER', 'ADMIN']);
+
+      const users = readAll_('Users').filter(function (u) { return u.role === 'STUDENT'; });
+      const attempts = readAll_('QuizAttempts');
+      const projects = readAll_('Projects');
+
+      const classStats = {};
+      APP.classrooms.forEach(function (c) {
+        classStats[c] = { total: 0, passedU1: 0, passedU2: 0, passedU3: 0, submittedProjects: 0 };
+      });
+
+      users.forEach(function (u) {
+        if (classStats[u.classroom]) {
+          classStats[u.classroom].total++;
+          const uAttempts = attempts.filter(function (a) { return a.userId === u.userId && a.passed; });
+          if (uAttempts.some(function (a) { return a.unitId === 'unit1'; })) classStats[u.classroom].passedU1++;
+          if (uAttempts.some(function (a) { return a.unitId === 'unit2'; })) classStats[u.classroom].passedU2++;
+          if (uAttempts.some(function (a) { return a.unitId === 'unit3'; })) classStats[u.classroom].passedU3++;
+          if (projects.some(function (p) { return p.userId === u.userId && (p.status === 'SUBMITTED' || p.status === 'ASSESSED'); })) {
+            classStats[u.classroom].submittedProjects++;
+          }
+        }
+      });
+
+      responseData = { success: true, classStats: classStats, totalStudents: users.length };
+    }
+
+    else {
+      return jsonResponse_({ success: false, error: 'Unknown API action: ' + action });
+    }
+
+    return jsonResponse_(responseData);
+  } catch (err) {
+    return jsonResponse_({ success: false, error: err.message });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * ตัวช่วยสร้าง HTTP JSON Response พร้อม CORS Header
+ */
+function jsonResponse_(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}

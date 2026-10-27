@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { QUIZ_PASS_PERCENT } from '../data/courseData.js';
 import { scoreQuiz } from '../services/quizService.js';
+import { api } from '../services/apiService.js';
 import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar } from './UIPrimitives.jsx';
 import { Celebrate, thaiDateTime, shuffle } from './UIHelpers.jsx';
 
@@ -49,34 +50,48 @@ function QuizRunner({
     toTop();
   };
   const unanswered = order.map((q, k) => ans[q.id] ? -1 : k).filter(k => k >= 0);
-  const submit = () => {
+  const submit = async () => {
     if (unanswered.length) {
       setWarn(true);
       return;
     }
-    const r = scoreQuiz(questions, ans);
     const durationSec = Math.round((Date.now() - startAt) / 1000);
-    recordQuiz(unitId, {
-      ...r,
-      durationSec
-    });
-    setResult({
-      ...r,
-      durationSec,
-      answers: ans
-    });
-    setPhase("result");
-    toTop();
-    notify(r.passed ? {
-      type: "success",
-      bot: "cheer",
-      title: `ผ่านแบบทดสอบ! ${r.correct}/${r.total} คะแนน`,
-      message: "AIra บันทึกคะแนนลงความก้าวหน้าแล้ว"
-    } : {
-      type: "info",
-      title: `ได้ ${r.correct}/${r.total} คะแนน`,
-      message: `ต้องได้อย่างน้อย ${need} ข้อจึงผ่าน ทบทวนแล้วลองใหม่ได้เลย`
-    });
+    const attemptId = 'ATT-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
+    try {
+      const r = await api.submitQuiz(unitId, ans, durationSec, attemptId, questions);
+      const quizRes = {
+        correct: r.score,
+        total: r.maxScore,
+        percent: r.percentage,
+        passed: r.passed,
+        durationSec,
+        attemptId: r.attemptId
+      };
+      recordQuiz(unitId, quizRes);
+      setResult({
+        ...quizRes,
+        answers: ans,
+        breakdown: r.breakdown
+      });
+      setPhase("result");
+      toTop();
+      notify(r.passed ? {
+        type: "success",
+        bot: "cheer",
+        title: `ผ่านแบบทดสอบ! ${r.score}/${r.maxScore} คะแนน`,
+        message: "AIra บันทึกคะแนนลงความก้าวหน้าแล้ว"
+      } : {
+        type: "info",
+        title: `ได้ ${r.score}/${r.maxScore} คะแนน`,
+        message: `ต้องได้อย่างน้อย ${need} ข้อจึงผ่าน ทบทวนแล้วลองใหม่ได้เลย`
+      });
+    } catch (err) {
+      notify({
+        type: "error",
+        title: "เกิดข้อผิดพลาดในการส่งข้อสอบ",
+        message: err.message || "กรุณาลองใหม่อีกครั้ง"
+      });
+    }
   };
   if (phase === "intro") return React.createElement("div", {
     className: "act",

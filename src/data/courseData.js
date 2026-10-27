@@ -133,9 +133,10 @@ export const ROUTES = {
 export const NAV_ORDER = ["home", "unit1", "unit2", "unit3", "unit4"];
 
 export const API_CONFIG = {
-  authProvider: "demo",
-  dataMode: "demo",
-  gasEndpoint: ""
+  authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "demo",
+  dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "demo",
+  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "",
+  googleClientId: typeof window !== 'undefined' && localStorage.getItem('krunok_google_client_id') ? localStorage.getItem('krunok_google_client_id') : ""
 };
 
 export const KEYS = {
