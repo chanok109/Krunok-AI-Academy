@@ -1062,6 +1062,18 @@ body.slmode .taskx .tp dl dd{grid-template-columns:minmax(0,1fr)!important;displ
 .game:has(.star-tag) .mopts button,.game.mtg:has(.star-tag) .mopts button{font-size:.86em;font-weight:500;min-height:40px;padding:5px 12px;gap:8px}
 .mopts button .ic{width:1.05em;height:1.05em}
 .mtg .mq{gap:12px}
+/* rulers follow the drawn image width; readout stays under the image */
+.axbox{min-width:0;display:flex;flex-direction:column}
+.ax-cell>canvas:first-child{width:100%!important;max-width:100%!important}
+.axw:has(#pic){max-width:660px}
+.axw:has(#rPic){max-width:760px}
+body.slmode .axw:has(#pic){max-width:none}
+#rLab#rLab{grid-template-columns:minmax(0,760px) minmax(220px,1fr);align-items:start}
+@media (max-width:820px){#rLab#rLab#rLab{grid-template-columns:minmax(0,1fr)}}
+#rLab>div:last-child{background:var(--bg2,#F6F8FB);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+#rLab>div:last-child #rShape{margin:0;line-height:1.6;word-break:break-word}
+#rLab .read{margin-top:0!important}
+body.slmode #rLab#rLab{grid-template-columns:minmax(0,760px) minmax(240px,1fr)}
 .gnote{margin-top:12px;background:#FFF6E0;border:1.5px solid #F6CF73;border-left:6px solid #F0A020;border-radius:12px;padding:10px 14px}
 .gnote-h{margin:0 0 8px;display:flex;gap:8px;align-items:center;font-family:var(--f-head);font-weight:700;color:#7A4E00}
 .gnote-h .ic{color:#E08A00}
@@ -4214,12 +4226,12 @@ $$('.thk').forEach(t=>{const tb=t.querySelector('.thk-timer'),clk=t.querySelecto
 (function(){
  function nice(n){const t=n/5,p=Math.pow(10,Math.floor(Math.log10(t))),m=t/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p}
  function axes(cv,gW,gH){if(!cv||cv.dataset.ax)return;cv.dataset.ax='1';
-  const wrap=document.createElement('div');wrap.className='axw';cv.parentNode.insertBefore(wrap,cv);
+  const box=document.createElement('div');box.className='axbox';cv.parentNode.insertBefore(box,cv);const wrap=document.createElement('div');wrap.className='axw';box.appendChild(wrap);
   const corner=document.createElement('div');corner.className='ax-c';corner.innerHTML='<span class="sx">x →</span><span class="sy">y ↓</span>';
   const top=document.createElement('div');top.className='ax-x';const left=document.createElement('div');left.className='ax-y';
   const cell=document.createElement('div');cell.className='ax-cell';const ov=document.createElement('canvas');ov.className='ax-ov';ov.setAttribute('aria-hidden','true');
   wrap.append(corner,top,left,cell);cell.append(cv,ov);
-  const read=document.createElement('p');read.className='ax-read';read.setAttribute('aria-live','polite');wrap.after(read);
+  const read=document.createElement('p');read.className='ax-read';read.setAttribute('aria-live','polite');box.appendChild(read);
   const mx=document.createElement('i'),my=document.createElement('i');mx.className='ax-m';my.className='ax-m';
   let lw=0,lh=0;
   function ticks(){const W=gW(),H=gH();if(!W||!H||(W===lw&&H===lh))return;lw=W;lh=H;
