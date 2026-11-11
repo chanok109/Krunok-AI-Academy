@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
+<title>KruNok หน่วยที่ 2 สัปดาห์นี้</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one column lesson path. Header with progress, then 4 steps in teaching order (setup, concept, activity, processing); each step lists its topics with Read / Slides buttons and a done tick. */
+:root{
+  --bg:#F3F7F6; --surface:#FFFFFF; --ink:#13232A; --muted:#566A70; --line:#D5E2E0;
+  --teal:#0E8C83; --teal-soft:#E0F2EF; --violet:#5B45D6; --violet-soft:#ECE8FF; --amber:#B86A00; --amber-soft:#FFF1D9;
+  --done:#1E7F4F; --onc:#FFFFFF; --code-bg:#EEF4F3;
+  --f-head:'Prompt','Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  --f-body:'Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E181B; --surface:#152226; --ink:#E9F3F1; --muted:#9AB0B3; --line:#284045;
+  --teal:#3CC9BC; --teal-soft:#123A3A; --violet:#A796FF; --violet-soft:#25214A; --amber:#F2B34C; --amber-soft:#3A2B10;
+  --done:#5BD69A; --onc:#0E181B; --code-bg:#1B2C30; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E181B; --surface:#152226; --ink:#E9F3F1; --muted:#9AB0B3; --line:#284045;
+  --teal:#3CC9BC; --teal-soft:#123A3A; --violet:#A796FF; --violet-soft:#25214A; --amber:#F2B34C; --amber-soft:#3A2B10;
+  --done:#5BD69A; --onc:#0E181B; --code-bg:#1B2C30; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);margin:0;line-height:1.3;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:8px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);border-radius:6px;padding:1px 7px;white-space:nowrap}
+
+/* header */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-head);font-size:14.5px;text-decoration:none;color:var(--muted);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.brand{font-family:var(--f-head);font-size:14.5px;color:var(--muted)}
+.home:hover{color:var(--ink);border-color:var(--teal)}
+.home svg{width:17px;height:17px}
+.tag{font-family:var(--f-head);font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--teal);background:var(--teal-soft);padding:3px 12px;border-radius:999px}
+.hero{display:flex;flex-direction:column;gap:10px}
+.hero h1{font-size:clamp(28px,5vw,40px);font-weight:700}
+.hero h1 span{color:var(--teal)}
+.hero .lead{color:var(--muted);max-width:60ch}
+.prog{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+.prog b{font-family:var(--f-head);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{flex:1;min-width:140px;height:10px;border-radius:10px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--done);border-radius:10px;transition:width .3s}
+.prog .reset{font-family:var(--f-head);font-size:13.5px;border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px}
+
+/* steps */
+.path{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;position:relative}
+.step{display:grid;grid-template-columns:48px minmax(0,1fr);gap:16px;position:relative;padding-bottom:22px}
+.step:not(:last-child)::before{content:"";position:absolute;left:23px;top:50px;bottom:0;width:2px;background:var(--line)}
+.dot{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-head);font-weight:700;font-size:19px;background:var(--surface);border:2px solid var(--c);color:var(--c);position:relative;z-index:1}
+.step.all .dot{background:var(--done);border-color:var(--done);color:var(--onc)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;min-width:0}
+.ch{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:16px 20px 12px}
+.ch .k{font-family:var(--f-head);font-size:13px;font-weight:600;color:var(--c);letter-spacing:.04em}
+.ch h2{font-size:clamp(19px,2.6vw,22px);font-weight:600}
+.ch p{color:var(--muted);font-size:15.5px;margin-top:2px}
+.ch>div{min-width:0;flex:1 1 300px}
+.items{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.it{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line)}
+.it:last-child{border-bottom:0}
+.it .t{min-width:0;display:flex;flex-direction:column;gap:3px}
+.it .t b{font-family:var(--f-head);font-weight:500;font-size:16.5px}
+.it .t span{font-size:14px;color:var(--muted)}
+.it.done .t b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.chk{appearance:none;-webkit-appearance:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;margin:0;flex:none}
+.chk:checked{background:var(--done);border-color:var(--done)}
+.chk:checked::after{content:"";width:7px;height:13px;border:solid var(--onc);border-width:0 3px 3px 0;transform:translateY(-2px) rotate(45deg)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-head);font-size:14.5px;font-weight:500;text-decoration:none;padding:7px 14px;border-radius:10px;border:1.5px solid var(--c);color:var(--c);background:transparent;white-space:nowrap;min-height:40px}
+.btn.pri{background:var(--c);color:var(--onc)}
+.btn:hover{filter:brightness(1.08)}
+.btn svg{width:16px;height:16px;flex:none}
+.s1{--c:var(--violet)}.s2{--c:var(--teal)}.s3{--c:var(--amber)}.s4{--c:var(--teal)}
+.note{font-size:14.5px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px}
+@media (max-width:620px){
+  .step{grid-template-columns:36px minmax(0,1fr);gap:10px}
+  .dot{width:36px;height:36px;font-size:16px}
+  .step:not(:last-child)::before{left:17px;top:38px}
+  .it{grid-template-columns:auto minmax(0,1fr);padding:12px 14px}
+  .it .acts{grid-column:2;justify-content:flex-start}
+  .ch{padding:14px 14px 10px}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+ <div class="top">
+  <span class="brand">KruNok AI Academy · ม.5</span>
+  <span class="tag">UNIT 02 · ว32281</span>
+ </div>
+
+ <header class="hero">
+  <h1>หน่วยที่ 2 พื้นฐาน<span>คอมพิวเตอร์วิทัศน์</span></h1>
+  <p class="lead">บทเรียนสัปดาห์นี้ เรียนตามลำดับ 1 ถึง 5 กด <b>อ่าน</b> เพื่อเปิดใบความรู้ตรงหัวข้อนั้น หรือกด <b>สไลด์</b> เพื่อเรียนแบบเต็มจอ เรียนจบแล้วติ๊กช่องหน้าหัวข้อ</p>
+ </header>
+
+ <div class="prog" aria-live="polite">
+  <b id="pN">เรียนแล้ว 0 / 10</b>
+  <div class="bar" aria-hidden="true"><i id="pBar"></i></div>
+  <button type="button" class="reset" id="pReset">ล้างเครื่องหมาย</button>
+ </div>
+
+ <ol class="path">
+  <li class="step s1" data-step>
+   <span class="dot">1</span>
+   <div class="card">
+    <div class="ch"><div><span class="k">เตรียมเครื่อง</span><h2>ติดตั้ง VS Code, Python และ OpenCV 4</h2><p>ทำครั้งเดียวก่อนเริ่มเขียนโค้ด ทดสอบว่า <code>import cv2</code> ทำงานได้</p></div></div>
+    <ul class="items">
+     <li class="it"><input type="checkbox" class="chk" id="c-setup" aria-label="ติดตั้งเสร็จแล้ว"><div class="t"><b>ขั้นตอนการติดตั้ง</b><span><code>pip install "opencv-python&lt;5"</code></span></div>
+      <div class="acts"><a class="btn pri" href="unit2/setup.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>เปิดคู่มือ</a></div></li>
+    </ul>
+   </div>
+  </li>
+
+  <li class="step s2" data-step>
+   <span class="dot">2</span>
+   <div class="card">
+    <div class="ch"><div><span class="k">ใบความรู้ 2.1</span><h2>แนวคิดคอมพิวเตอร์วิทัศน์</h2><p>คอมพิวเตอร์ "มองเห็น" ภาพเป็นตารางตัวเลข แต่ละพิกเซลเก็บค่าสี B G R</p></div></div>
+    <ul class="items">
+     <li class="it"><input type="checkbox" class="chk" id="c-21" aria-label="เรียนแนวคิดคอมพิวเตอร์วิทัศน์แล้ว"><div class="t"><b>แนวคิดคอมพิวเตอร์วิทัศน์</b><span>งานหลัก 4 แบบ · ภาพคือตารางตัวเลข · ผสมสี B G R</span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#t21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a21-t21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+     <li class="it"><input type="checkbox" class="chk" id="c-22" aria-label="เรียนการอ่าน แสดงผล และบันทึกภาพแล้ว"><div class="t"><b>การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV</b><span><code>cv2.imread()</code> <code>cv2.imshow()</code> <code>cv2.imwrite()</code></span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#t22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a21-t22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+    </ul>
+   </div>
+  </li>
+
+  <li class="step s3" data-step>
+   <span class="dot">3</span>
+   <div class="card">
+    <div class="ch"><div><span class="k">ลงมือทำ</span><h2>กิจกรรมที่ 2.1 นักสำรวจภาพ</h2><p>ค้นหาคอมพิวเตอร์วิทัศน์ในชีวิตจริง แล้วเขียนโปรแกรมสำรวจตัวเลขในภาพที่ถ่ายเอง ใช้ความรู้จากขั้นที่ 2</p></div></div>
+    <ul class="items">
+     <li class="it"><input type="checkbox" class="chk" id="c-act" aria-label="ทำกิจกรรมที่ 2.1 แล้ว"><div class="t"><b>ใบงานกิจกรรมที่ 2.1</b><span>งานเดี่ยว · 50 นาที · 3 ตอน · 20 คะแนน</span></div>
+      <div class="acts"><a class="btn pri" href="unit2/activity-2-1.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>เปิดกิจกรรม</a></div></li>
+    </ul>
+   </div>
+  </li>
+
+  <li class="step s4" data-step>
+   <span class="dot">4</span>
+   <div class="card">
+    <div class="ch"><div><span class="k">ใบความรู้ 2.2</span><h2>พื้นฐานการประมวลผลภาพ</h2><p>แก้ไขตารางตัวเลขของภาพด้วยโค้ด Python ไม่กี่บรรทัด</p></div></div>
+    <ul class="items">
+     <li class="it"><input type="checkbox" class="chk" id="c-proc" aria-label="เรียนพื้นฐานการประมวลผลภาพแล้ว"><div class="t"><b>พื้นฐานการประมวลผลภาพ</b><span>การประมวลผลภาพคืออะไร</span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#w-proc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a22-w-proc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+     <li class="it"><input type="checkbox" class="chk" id="c-pixel" aria-label="เรียนการเข้าถึงและแก้ไขพิกเซลแล้ว"><div class="t"><b>การเข้าถึงและแก้ไขพิกเซล</b><span><code>img[y, x]</code> อ่านและเปลี่ยนค่าสีทีละจุด</span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#w-pixel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a22-w-pixel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+     <li class="it"><input type="checkbox" class="chk" id="c-crop" aria-label="เรียนการตัดภาพแล้ว"><div class="t"><b>การตัดภาพ</b><span><code>img[y1:y2, x1:x2]</code></span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#w-crop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a22-w-crop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+     <li class="it"><input type="checkbox" class="chk" id="c-resize" aria-label="เรียนการปรับขนาดภาพแล้ว"><div class="t"><b>การปรับขนาดภาพ</b><span><code>cv2.resize()</code></span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#w-resize"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a22-w-resize"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+     <li class="it"><input type="checkbox" class="chk" id="c-flip" aria-label="เรียนการพลิกภาพแล้ว"><div class="t"><b>การพลิกภาพ</b><span><code>cv2.flip()</code> พลิกแนวนอน แนวตั้ง หรือทั้งสองแนว</span></div>
+      <div class="acts"><a class="btn" href="unit2/index.html#w-flip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>อ่าน</a><a class="btn pri" href="unit2/index.html#go-a22-w-flip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4M8 21h8M10 8l5 2-5 2z"/></svg>สไลด์</a></div></li>
+    </ul>
+   </div>
+  </li>
+  <li class="step s3" data-step>
+   <span class="dot">5</span>
+   <div class="card">
+    <div class="ch"><div><span class="k">ลงมือทำ</span><h2>กิจกรรมที่ 2.2 นักแต่งภาพ</h2><p>ทำนายผลก่อนรัน แล้วเขียนโปรแกรมใส่กรอบ ตัด ปรับขนาด และพลิกภาพของตนเอง</p></div></div>
+    <ul class="items">
+     <li class="it"><input type="checkbox" class="chk" id="c-act2" aria-label="ทำกิจกรรมที่ 2.2 แล้ว"><div class="t"><b>ใบงานกิจกรรมที่ 2.2</b><span>งานเดี่ยว · 50 นาที · 3 ตอน · 20 คะแนน</span></div>
+      <div class="acts"><a class="btn pri" href="unit2/activity-2-2.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>เปิดกิจกรรม</a></div></li>
+    </ul>
+   </div>
+  </li>
+ </ol>
+
+ <p class="note">เครื่องหมายที่ติ๊กเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น ไม่ส่งถึงครู ส่วนดาวที่ได้จากเกมทบทวนดูได้ในใบความรู้หน่วยที่ 2</p>
+</div>
+
+<script>
+(function(){
+ const KEY='krunok-unit2-week1';
+ const boxes=[...document.querySelectorAll('.chk')];
+ let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){st={}}
+ function paint(){let n=0;boxes.forEach(b=>{b.checked=!!st[b.id];b.closest('.it').classList.toggle('done',b.checked);if(b.checked)n++});
+  document.getElementById('pN').textContent='เรียนแล้ว '+n+' / '+boxes.length;
+  document.getElementById('pBar').style.width=(n/boxes.length*100)+'%';
+  document.querySelectorAll('[data-step]').forEach(s=>{const c=[...s.querySelectorAll('.chk')];s.classList.toggle('all',c.every(x=>x.checked))})}
+ boxes.forEach(b=>b.addEventListener('change',()=>{st[b.id]=b.checked;try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}paint()}));
+ const r=document.getElementById('pReset');
+ r.addEventListener('click',()=>{if(!r.dataset.c){r.dataset.c='1';r.textContent='กดอีกครั้งเพื่อยืนยัน';setTimeout(()=>{delete r.dataset.c;r.textContent='ล้างเครื่องหมาย'},3000);return}
+  st={};try{localStorage.removeItem(KEY)}catch(e){}delete r.dataset.c;r.textContent='ล้างเครื่องหมาย';paint()});
+ paint();
+})();
+</script>
+
+</body>
+</html>

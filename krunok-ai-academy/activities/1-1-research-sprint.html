@@ -1,0 +1,883 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AI Research & Infographic Sprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Layout: sticky mission bar (timer) → 5-step stepper → glass workspace + AIra/rubric side column. Single dark world by design. */
+:root{
+  --navy:#0B1026; --plum:#161336; --lav:#9B87F5; --cyan:#57CCF2; --neon:#00E5FF; --gold:#FFD66D;
+  --ink:#F8FAFC; --body:#E2E8F0; --muted:#A3ACC6; --line:rgba(155,135,245,.24); --line2:rgba(87,204,242,.28);
+  --glass:rgba(22,19,54,.66); --glass-2:rgba(255,255,255,.035); --field:rgba(11,16,38,.72);
+  --ok:#5BE3A8; --bad:#FF8C9E;
+  --f-head:'Prompt','Sarabun','Noto Sans Thai',system-ui,sans-serif;
+  --f-body:'Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  --r:18px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--navy)}
+body{background:var(--navy);color:var(--body);font-family:var(--f-body);font-size:17.5px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px;min-height:100%;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+.glow-bg{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:radial-gradient(900px 520px at 85% -10%,rgba(155,135,245,.20),transparent 60%),radial-gradient(800px 500px at -10% 30%,rgba(0,229,255,.09),transparent 60%),linear-gradient(180deg,var(--navy),#0E0D2C 70%,var(--navy))}
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+h1,h2,h3,h4,.head{font-family:var(--f-head);color:var(--ink);text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:clamp(28px,4.4vw,34px);font-weight:700}
+h2{font-size:clamp(21px,2.6vw,24px);font-weight:600}
+h3{font-size:18.5px;font-weight:600}
+p{margin:0}
+a{color:var(--cyan)}
+.wrap{max-width:1160px;margin:0 auto}
+:focus-visible{outline:2px solid var(--neon);outline-offset:2px;border-radius:8px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
+  padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:rgba(11,16,38,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;text-decoration:none}
+.brand svg{flex:none}
+.brand b{font-family:var(--f-head);font-weight:600;color:var(--ink);font-size:15.5px;display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:13px;line-height:1.2;display:block}
+.spacer{flex:1}
+.timer{display:flex;align-items:center;gap:10px;font-family:var(--f-head);font-size:13.5px;padding:6px 12px;border:1px solid var(--line);border-radius:12px;background:var(--glass-2);min-width:0}
+.timer .t{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);font-size:16px;white-space:nowrap}
+.timer .ph{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timer .bar{width:120px;height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;display:flex;gap:2px}
+.timer .bar i{display:block;height:100%;background:rgba(255,255,255,.10);position:relative;overflow:hidden}
+.timer .bar i b{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--cyan),var(--lav))}
+.timer.over{border-color:rgba(255,214,109,.5)}
+.timer.over .t{color:var(--gold)}
+.saved{font-size:12.5px;color:var(--muted);font-family:var(--f-head);white-space:nowrap}
+@media (max-width:640px){.timer .bar,.saved{display:none}.timer{flex:1}.brand small{display:none}}
+
+/* hero (home) */
+.home-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:center;padding:38px 0 18px}
+@media (max-width:860px){.home-hero{grid-template-columns:minmax(0,1fr);padding-top:24px}}
+.eyebrow{font-family:var(--f-head);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan)}
+.home-hero h1{font-size:clamp(32px,5.6vw,52px);line-height:1.12;margin:8px 0 12px;letter-spacing:-.01em}
+.home-hero h1 span{background:linear-gradient(90deg,var(--lav),var(--neon));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{font-size:19px;color:var(--body);max-width:40ch}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--glass-2)}
+.stat b{display:block;font-family:var(--f-head);font-size:30px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15}
+.stat span{font-size:14px;color:var(--muted);font-family:var(--f-head)}
+.btn-start{font-size:20px!important;padding:16px 34px!important;border-radius:16px!important}
+.stage-art{position:relative;display:grid;place-items:center;min-height:300px}
+.stage-art .brain{width:min(340px,100%);height:auto}
+.stage-art .aira-big{position:absolute;right:4%;bottom:0;width:110px;height:124px}
+@media (max-width:860px){.stage-art{min-height:220px}.stage-art .brain{width:260px}}
+.privacy{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+/* stepper */
+.stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:22px 0 22px;padding:0;list-style:none}
+.stepper li{position:relative}
+.stepper li:not(:last-child)::after{content:"";position:absolute;top:24px;left:calc(50% + 24px);right:calc(-50% + 24px);height:1.5px;background:var(--line)}
+.stepper li.done:not(:last-child)::after{background:rgba(91,227,168,.45)}
+.stepper a{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:6px 2px;border-radius:12px;text-decoration:none}
+.stepper .dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-head);font-weight:600;font-size:15px;border:1.5px solid var(--line);color:var(--muted);background:var(--field)}
+.stepper .lbl{font-family:var(--f-head);font-size:13.5px;line-height:1.3;color:var(--muted)}
+.stepper .min{font-family:var(--f-head);font-size:11.5px;color:#6F789A}
+.stepper .done .dot{border-color:var(--ok);color:var(--ok)}
+.stepper .cur .dot{border-color:var(--neon);color:var(--navy);background:var(--neon);box-shadow:0 0 18px rgba(0,229,255,.55)}
+.stepper .cur .lbl{color:var(--ink)}
+.stepper .locked a{opacity:.42;cursor:not-allowed}
+@media (max-width:700px){.stepper .lbl,.stepper .min{display:none}.stepper .dot{width:34px;height:34px}.stepper li:not(:last-child)::after{top:23px;left:calc(50% + 20px);right:calc(-50% + 20px)}}
+.steptitle{display:none;font-family:var(--f-head);color:var(--ink);font-size:15px;margin:-12px 0 16px;text-align:center}
+@media (max-width:700px){.steptitle{display:block}}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px;align-items:start}
+@media (max-width:1000px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);padding:24px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-width:0}
+@media (max-width:520px){.card{padding:18px}}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cols3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+@media (max-width:700px){.cols2,.cols3{grid-template-columns:minmax(0,1fr)}}
+.muted{color:var(--muted)}
+.small{font-size:15px;line-height:1.65}
+.note{border:1px dashed rgba(255,214,109,.45);background:rgba(255,214,109,.06);color:var(--body);border-radius:14px;padding:12px 14px;font-size:15.5px;line-height:1.65}
+.note b{color:var(--gold);font-family:var(--f-head);font-weight:600}
+.note.cy{border-color:var(--line2);background:rgba(0,229,255,.05)}
+.note.cy b{color:var(--neon)}
+
+/* fields */
+label.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+label.f > span,.flabel{font-family:var(--f-head);font-size:15px;color:var(--ink);font-weight:500}
+label.f > span em,.flabel em{font-style:normal;color:var(--muted);font-weight:400;font-size:13.5px}
+input[type=text],input[type=url],input[type=number],select,textarea{font:inherit;font-size:16.5px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:10px 13px;width:100%;line-height:1.65}
+textarea{resize:vertical;min-height:92px}
+input::placeholder,textarea::placeholder{color:#6F789A}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(0,229,255,.15)}
+.counter{font-family:var(--f-head);font-size:12.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+
+/* buttons */
+.btn{font-family:var(--f-head);font-size:15.5px;font-weight:500;border-radius:12px;padding:10px 18px;border:1px solid var(--line);background:var(--glass-2);color:var(--ink);cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1.3;text-decoration:none}
+.btn:hover{border-color:var(--cyan);box-shadow:0 0 16px rgba(87,204,242,.25)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,var(--lav),var(--cyan));color:#0B1026;border-color:transparent;font-weight:600}
+.btn.primary:hover{box-shadow:0 0 24px rgba(0,229,255,.45)}
+.btn.gold{background:var(--gold);color:#1a1530;border-color:transparent;font-weight:600}
+.btn.ghost{background:transparent}
+.btn.danger{border-color:rgba(255,140,158,.45);color:var(--bad);background:transparent}
+.btn.sm{font-size:14px;padding:6px 12px;border-radius:10px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn svg{width:18px;height:18px;flex:none}
+.foot-actions{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px}
+
+/* AIra + side */
+.side{position:sticky;top:92px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:1000px){.side{position:static}}
+.aira-card{display:flex;gap:12px;align-items:flex-start}
+.aira-card svg{flex:none;width:70px;height:80px}
+.bubble{background:rgba(155,135,245,.12);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:15.5px;line-height:1.7;color:var(--body);min-width:0}
+.bubble b{color:var(--ink);font-family:var(--f-head);font-weight:600}
+ul.clean{list-style:none;margin:0;padding:0}
+.plan li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed rgba(155,135,245,.15);font-size:15px}
+.plan li span:last-child{font-variant-numeric:tabular-nums;color:var(--muted);font-family:var(--f-head);font-size:13.5px;white-space:nowrap}
+.plan li.now span:first-child{color:var(--neon);font-weight:600}
+
+/* rubric */
+.rub-group{display:flex;flex-direction:column;gap:2px}
+.rub-group h4{font-size:15.5px;display:flex;justify-content:space-between;color:var(--ink);padding-bottom:4px;border-bottom:1px solid var(--line)}
+.rub-group h4 span{color:var(--neon);font-variant-numeric:tabular-nums}
+.rub-row{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;line-height:1.55;padding:5px 0}
+.rub-row b{font-family:var(--f-head);color:var(--body);font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rub-row small{display:block;color:var(--muted);font-size:13px}
+.fab{background:var(--plum)!important;border-color:var(--line2)!important;position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;box-shadow:0 8px 26px rgba(0,0,0,.4)}
+.drawer-bg{position:fixed;inset:0;background:rgba(5,8,20,.6);z-index:45;opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);z-index:46;background:var(--plum);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s;overflow-y:auto;
+  padding:calc(20px + env(safe-area-inset-top,0px)) calc(20px + env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) 20px}
+.drawer.on{transform:none}.drawer-bg.on{opacity:1;pointer-events:auto}
+
+/* topic */
+.topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.topics{grid-template-columns:minmax(0,1fr)}}
+.tcard{position:relative;border-radius:16px;padding:16px 18px;border:1.5px solid var(--line);background:var(--glass-2);overflow:hidden;min-width:0;transition:opacity .3s,border-color .3s,box-shadow .3s}
+.tcard::before{content:"";position:absolute;right:-50px;bottom:-70px;width:170px;height:170px;border-radius:50%;background:var(--tc);opacity:.12;filter:blur(8px)}
+.tcard .code{font-family:var(--f-head);font-size:12.5px;letter-spacing:.08em;color:var(--tc)}
+.tcard h3{font-size:18px;margin:2px 0 6px}
+.tcard ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.6}
+.tcard.win{border-color:var(--tc);box-shadow:0 0 30px color-mix(in srgb,var(--tc) 45%,transparent)}
+.tcard.dim{opacity:.38}
+.deck{display:flex;justify-content:center;gap:16px;padding:18px 0 6px;perspective:900px;min-height:170px}
+.mini{width:104px;height:146px;position:relative;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.3,1)}
+.mini .face,.mini .backf{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:8px}
+.mini .backf{background:linear-gradient(145deg,#1d1946,#0f1433);border:1.5px solid var(--line);background-image:radial-gradient(circle at 50% 50%,rgba(0,229,255,.18) 0 18px,transparent 19px),repeating-linear-gradient(45deg,rgba(155,135,245,.12) 0 6px,transparent 6px 12px)}
+.mini .backf span{font-family:var(--f-head);font-weight:700;font-size:26px;color:var(--neon)}
+.mini .face{transform:rotateY(180deg);background:var(--plum);border:1.5px solid var(--tc,var(--line))}
+.mini .face b{font-family:var(--f-head);font-size:13px;color:var(--tc);letter-spacing:.06em}
+.mini .face i{font-style:normal;font-family:var(--f-head);font-size:14px;color:var(--ink);line-height:1.3}
+.mini.open{transform:rotateY(180deg)}
+.mini.win .face{box-shadow:0 0 30px color-mix(in srgb,var(--tc) 60%,transparent)}
+.mini.lose{opacity:.35}
+.deck.shuffle .mini:nth-child(1){animation:shA 1.5s ease-in-out}
+.deck.shuffle .mini:nth-child(2){animation:shB 1.5s ease-in-out}
+.deck.shuffle .mini:nth-child(3){animation:shC 1.5s ease-in-out}
+@keyframes shA{0%,100%{transform:none}20%{transform:translate(120px,-14px) rotate(6deg)}45%{transform:translate(240px,0) rotate(-4deg)}70%{transform:translate(120px,12px) rotate(3deg)}}
+@keyframes shB{0%,100%{transform:none}20%{transform:translate(-120px,12px) rotate(-6deg)}45%{transform:translate(0,-18px) rotate(5deg)}70%{transform:translate(120px,0) rotate(-3deg)}}
+@keyframes shC{0%,100%{transform:none}20%{transform:translate(0,16px) rotate(4deg)}45%{transform:translate(-240px,0) rotate(-5deg)}70%{transform:translate(-120px,-12px) rotate(4deg)}}
+@media (max-width:420px){.mini{width:88px;height:126px}.deck{gap:10px}}
+.congrats{text-align:center}
+.congrats h2{font-size:clamp(22px,3vw,27px)}
+.congrats h2 span{color:var(--neon)}
+
+/* research */
+.point{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--glass-2)}
+.point-h{display:flex;gap:10px;align-items:flex-start}
+.point-h .n{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-family:var(--f-head);font-size:13px;background:rgba(155,135,245,.18);color:var(--ink)}
+.point-h .n.ok{background:rgba(91,227,168,.2);color:var(--ok)}
+.point-h h4{font-size:16.5px;font-weight:600}
+.point-h p{font-size:14.5px;color:var(--muted);line-height:1.6}
+.point textarea{margin-top:10px;min-height:84px}
+.qlist{margin:0;padding-left:20px;font-size:16px}
+.src{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--glass-2)}
+.checks{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:15px}
+.checks.col{flex-direction:column;gap:10px}
+.checks label{display:flex;gap:9px;align-items:flex-start;cursor:pointer;line-height:1.55}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--neon);flex:none;margin-top:3px}
+.badge{font-family:var(--f-head);font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.badge.ok{border-color:rgba(91,227,168,.5);color:var(--ok)}
+.badge.warn{border-color:rgba(255,214,109,.5);color:var(--gold)}
+.badge.bad{border-color:rgba(255,140,158,.5);color:var(--bad)}
+.links{display:flex;flex-direction:column;gap:8px;font-size:15px}
+.links a{text-decoration:none;display:block;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--glass-2)}
+.links a:hover{border-color:var(--cyan)}
+.links a small{display:block;color:var(--muted);font-size:13px}
+.kw{display:flex;flex-wrap:wrap;gap:6px}
+.kw code{font-family:var(--f-body);font-size:14px;background:rgba(87,204,242,.1);border:1px solid var(--line2);color:var(--cyan);border-radius:8px;padding:1px 8px}
+
+/* report + A4 */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:22px;align-items:start}
+@media (max-width:1020px){.split{grid-template-columns:minmax(0,1fr)}}
+.a4-side{position:sticky;top:92px}
+@media (max-width:1020px){.a4-side{position:static}}
+.a4-frame{position:relative;width:100%;overflow:hidden;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.45);background:#fff}
+.a4{position:absolute;left:0;top:0;width:794px;height:1123px;background:#fff;color:#1d1f2b;transform-origin:0 0;overflow:hidden}
+.a4-flow{padding:68px 76px 60px;font-family:'Sarabun','Loma',serif;font-size:16px;line-height:1.6;color:#1d1f2b}
+.a4-flow .meta{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;color:#4b4f63;border-bottom:1px solid #d9dbe6;padding-bottom:6px;margin-bottom:10px}
+.a4-flow h1{font-family:'Sarabun','Loma',serif;color:#111;text-align:center;font-size:22px;font-weight:700;margin:0 0 4px;line-height:1.35;text-wrap:wrap}
+.a4-flow .by{text-align:center;font-size:14.5px;color:#3a3e52;margin-bottom:8px}
+.a4-flow h2{font-family:'Sarabun','Loma',serif;color:#1b1650;font-size:16.5px;font-weight:700;margin:9px 0 1px;line-height:1.4;text-wrap:wrap}
+.a4-flow h3{font-family:'Sarabun','Loma',serif;color:#222;font-size:16px;font-weight:600;margin:4px 0 0;line-height:1.45;text-wrap:wrap}
+.a4-flow p{margin:0 0 3px;text-indent:2em}
+.a4-flow .refs p{text-indent:-2em;padding-left:2em;font-size:14.5px}
+.a4-flow .ph{color:#a2a6b8}
+.a4-cut{position:absolute;left:0;right:0;bottom:0;height:26px;background:repeating-linear-gradient(135deg,#ff8c9e 0 8px,#ffd0d7 8px 16px);display:none;align-items:center;justify-content:center;font:600 13px var(--f-head);color:#5a0b18}
+.a4-frame.over .a4-cut{display:flex}
+.meter{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lav));transition:width .3s}
+.meter.over i{background:var(--bad)}
+.full-preview{max-width:720px;margin:0 auto}
+#pdfstage{position:absolute;left:-12000px;top:0;width:794px;height:1123px;overflow:hidden;background:#fff}
+
+/* poster */
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{font-family:var(--f-head);font-size:14px;border:1px solid var(--line);background:var(--glass-2);color:var(--body);border-radius:999px;padding:6px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.seg button[aria-pressed="true"]{border-color:var(--neon);color:var(--navy);background:var(--neon)}
+.sw{display:inline-flex;gap:2px}.sw i{width:11px;height:11px;border-radius:3px;display:block}
+.drop{border:1.5px dashed var(--line2);border-radius:16px;padding:22px;text-align:center;background:rgba(0,229,255,.03);cursor:pointer;transition:border-color .2s,background .2s}
+.drop.on,.drop:hover{border-color:var(--neon);background:rgba(0,229,255,.07)}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.poster-frame{width:100%;aspect-ratio:210/297;max-width:100%;border-radius:6px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,transparent 10px 20px),var(--field);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;position:relative}
+.poster-frame img,.poster-frame canvas{width:100%;height:100%;object-fit:contain;display:block}
+.poster-empty{color:var(--muted);text-align:center;padding:20px;font-size:15px}
+.filecard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--glass-2);font-size:14.5px;min-width:0}
+.filecard b{font-family:var(--f-head);font-weight:500;color:var(--ink);overflow-wrap:anywhere}
+pre.prompt{white-space:pre-wrap;word-break:break-word}
+.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tools a{display:flex;flex-direction:column;padding:10px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);font-family:var(--f-head);font-size:14.5px;background:var(--glass-2)}
+.tools a small{color:var(--muted);font-family:var(--f-body);font-size:13px}
+.tools a:hover{border-color:var(--cyan)}
+
+/* review */
+.works{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (max-width:700px){.works{grid-template-columns:minmax(0,1fr)}}
+.work{display:flex;flex-direction:column;gap:12px;min-width:0}
+.work .thumb{max-width:300px;width:100%;margin:0 auto}
+.reqs li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed rgba(155,135,245,.15);font-size:15.5px;line-height:1.55}
+.reqs label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;flex:1}
+.reqs .hint{font-size:13px;font-family:var(--f-head);white-space:nowrap}
+.ready{text-align:center;padding:6px 0}
+
+/* toast + confetti */
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--plum);border:1px solid var(--line2);color:var(--ink);font-family:var(--f-head);font-size:15px;padding:10px 18px;border-radius:12px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#confetti{position:fixed;inset:0;z-index:40;pointer-events:none}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.brain .nd{animation:pulse 2.6s ease-in-out infinite}
+.blink{animation:pulse 3.2s ease-in-out infinite}
+.aira-big{animation:floaty 4s ease-in-out infinite}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:rot .8s linear infinite;display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="glow-bg"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#home">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9B87F5"/><stop offset="1" stop-color="#00E5FF"/></linearGradient></defs><rect x="1" y="1" width="32" height="32" rx="10" fill="#161336" stroke="url(#lg)" stroke-width="1.5"/><path d="M10 23V11l7 6 7-6v12" fill="none" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><b>KruNok AI Academy</b><small>ว32281 · หน่วยที่ 1</small></div>
+    </a>
+    <span class="spacer"></span>
+    <div class="timer" id="timer" title="เวลากิจกรรม 100 นาที">
+      <span class="t" id="timer-t">100:00</span><span class="ph" id="timer-ph">ยังไม่เริ่ม</span><span class="bar" id="timer-bar"></span>
+    </div>
+    <span class="saved" id="saved" aria-live="polite"></span>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div id="pdfstage" aria-hidden="true"></div>
+<button class="btn fab" id="fab" type="button" aria-controls="drawer">เกณฑ์คะแนน 20</button>
+<div class="drawer-bg" id="drawer-bg"></div>
+<aside class="drawer" id="drawer" aria-label="เกณฑ์การให้คะแนน" aria-hidden="true">
+  <div class="row between" style="margin-bottom:14px"><h2>เกณฑ์การให้คะแนน</h2><button class="btn sm ghost" id="drawer-x" type="button">ปิด</button></div>
+  <div id="drawer-body"></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+/* ================= CONTENT ================= */
+const TOPICS={
+ T1:{code:'หัวข้อ 1',en:'AI Foundations',th:'ความหมายและแนวคิดเกี่ยวกับ AI',color:'#9B87F5',
+  points:[
+   {t:'ความหมายของ AI',h:'อ่านนิยามจากอย่างน้อย 2 แหล่ง แล้วเขียนนิยามด้วยภาษาของตนเอง'},
+   {t:'นิยามของ John McCarthy',h:'McCarthy นิยาม AI ไว้ว่าอย่างไร และเกี่ยวข้องกับการประชุมที่ Dartmouth ปี ค.ศ. ใด'},
+   {t:'แนวคิด AI 4 แนวทาง',h:'Thinking Humanly, Thinking Rationally, Acting Humanly, Acting Rationally อธิบายสั้น ๆ แนวทางละ 1–2 ประโยค'},
+   {t:'ตัวอย่าง AI ในชีวิตประจำวัน',h:'อย่างน้อย 2 ตัวอย่าง บอกว่า AI รับข้อมูลอะไร และให้ผลลัพธ์อะไร'}],
+  qs:['AI แตกต่างจากโปรแกรมคอมพิวเตอร์ทั่วไปอย่างไร?','ทำไมนิยามของ AI จึงมีหลายแบบ?'],
+  kw:['definition of artificial intelligence','John McCarthy AI definition','four approaches to AI Russell Norvig','ตัวอย่าง AI ในชีวิตประจำวัน'],
+  layout:'grid',
+  aira:'หัวข้อนี้คือรากฐานของ AI ทั้งหมด เริ่มจากนิยาม แล้วต่อด้วยแนวคิด 4 แนวทาง ลองวาดตาราง 2×2 แกนหนึ่งคือ "คิด/กระทำ" อีกแกนคือ "แบบมนุษย์/แบบมีเหตุผล" จะเข้าใจง่ายขึ้นมาก'},
+ T2:{code:'หัวข้อ 2',en:'AI History',th:'ประวัติและพัฒนาการของ AI',color:'#57CCF2',
+  points:[
+   {t:'เหตุการณ์สำคัญอย่างน้อย 5 เหตุการณ์',h:'ตั้งแต่ ค.ศ. 1950 ถึงปัจจุบัน ระบุปี ชื่อเหตุการณ์ และความสำคัญ 1 ประโยค'},
+   {t:'Dartmouth Conference 1956',h:'ใครเป็นผู้จัด มีเป้าหมายอะไร และทำไมจึงนับเป็นจุดกำเนิดของสาขา AI'},
+   {t:'AI Winter',h:'เกิดขึ้นช่วงใด สาเหตุคืออะไร และส่งผลต่อการวิจัย AI อย่างไร'},
+   {t:'การเติบโตของ AI ยุคใหม่',h:'เช่น Deep Learning, ImageNet 2012, Generative AI และแชตบอตที่ใช้ในปัจจุบัน'},
+   {t:'ปัจจัยที่ทำให้ AI พัฒนาก้าวกระโดด',h:'Big Data, Computing Power และ Advanced Algorithms แต่ละปัจจัยช่วยอย่างไร'}],
+  qs:['เหตุใด AI จึงเคยเข้าสู่ช่วงซบเซา?','เหตุใดเทคโนโลยี AI จึงพัฒนาอย่างรวดเร็วในช่วงหลัง?'],
+  kw:['history of artificial intelligence timeline','Turing test 1950','Dartmouth conference 1956','AI winter causes','ImageNet 2012 deep learning'],
+  layout:'timeline',
+  aira:'หัวข้อนี้เล่าเป็นเรื่องราวได้ดีมาก เลือกเหตุการณ์ที่เปลี่ยนเกมจริง ๆ แล้วเรียงตามเวลา ตรวจปี ค.ศ. กับอย่างน้อย 2 แหล่งเสมอ เพราะบางเว็บไซต์ระบุปีไม่ตรงกัน'},
+ T3:{code:'หัวข้อ 3',en:'AI Ethics',th:'จริยธรรมและการใช้ AI อย่างรับผิดชอบ',color:'#FFD66D',
+  points:[
+   {t:'หลักจริยธรรม AI',h:'อย่างน้อย 3 ประการ เช่น ความโปร่งใส ความเป็นธรรม ความรับผิดชอบ และระบุว่ามาจากแนวทางของหน่วยงานใด'},
+   {t:'Data Bias',h:'คืออะไร เกิดจากอะไร ยกตัวอย่างผลกระทบที่เกิดขึ้นจริง'},
+   {t:'Hallucination',h:'คืออะไร ทำไม AI จึงตอบผิดได้อย่างมั่นใจ และจะสังเกตได้อย่างไร'},
+   {t:'Deepfake',h:'คืออะไร มีความเสี่ยงอะไร และมีวิธีสังเกตหรือรับมืออย่างไร'},
+   {t:'การคุ้มครองข้อมูลส่วนบุคคล',h:'ข้อมูลแบบใดไม่ควรใส่ลงใน AI และเชื่อมโยงกับ พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA) อย่างไร'},
+   {t:'การใช้ AI อย่างรับผิดชอบ',h:'แนวปฏิบัติสำหรับนักเรียนเมื่อใช้ AI ทำงาน เช่น การตรวจสอบ การอ้างอิง การระบุว่าใช้ AI'}],
+  qs:['นักเรียนควรตรวจสอบอะไรบ้างก่อนเชื่อหรือแชร์ผลลัพธ์จาก AI?','ข้อมูลแบบใดที่ไม่ควรใส่ลงในแชตบอต AI?'],
+  kw:['UNESCO ethics of AI','data bias examples','AI hallucination','deepfake detection','PDPA ข้อมูลส่วนบุคคล'],
+  layout:'compare',
+  aira:'หัวข้อนี้ใกล้ตัวที่สุด เพราะเราใช้ AI ทุกวัน ลองหากรณีจริงประกอบ Data Bias หรือ Deepfake สัก 1 กรณี และปิดท้ายด้วยเช็กลิสต์ที่นักเรียนนำไปใช้ได้จริง'}
+};
+const SOURCES=[
+ {t:'Encyclopaedia Britannica — Artificial intelligence',u:'https://www.britannica.com/technology/artificial-intelligence',d:'สารานุกรม มีชื่อผู้เขียนและวันที่ปรับปรุง',for:['T1','T2']},
+ {t:'Stanford Encyclopedia of Philosophy — Artificial Intelligence',u:'https://plato.stanford.edu/entries/artificial-intelligence/',d:'บทความวิชาการเรื่องนิยามและแนวคิด AI',for:['T1']},
+ {t:'Stanford HAI — AI Index Report',u:'https://hai.stanford.edu/ai-index',d:'รายงานสถิติพัฒนาการ AI รายปี',for:['T2']},
+ {t:'UNESCO — Recommendation on the Ethics of AI',u:'https://www.unesco.org/en/artificial-intelligence/recommendation-ethics',d:'หลักจริยธรรม AI ระดับสากล',for:['T3']},
+ {t:'สำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (PDPC)',u:'https://www.pdpc.or.th/',d:'ข้อมูล PDPA จากหน่วยงานรัฐของไทย',for:['T3']},
+ {t:'สำนักงานพัฒนาธุรกรรมทางอิเล็กทรอนิกส์ (ETDA)',u:'https://www.etda.or.th/',d:'บทความ AI และธรรมาภิบาลดิจิทัลภาษาไทย',for:['T1','T2','T3']}
+];
+const PHASES=[
+ {v:'topic',th:'สุ่มหัวข้อและวางแผน',m:10},
+ {v:'research',th:'ค้นคว้าข้อมูล',m:25},
+ {v:'report',th:'เขียนรายงาน',m:25},
+ {v:'poster',th:'สร้างอินโฟกราฟิก',m:30},
+ {v:'review',th:'ตรวจสอบและส่งงาน',m:10}
+];
+const TOTAL=100;
+const RUBRIC=[
+ {g:'ชิ้นงานที่ 1 · รายงาน',max:10,items:[['ความถูกต้องและครบถ้วน',4,'ครบทุกประเด็นของหัวข้อ ข้อเท็จจริงถูกต้อง'],['การอธิบายและยกตัวอย่าง',3,'อธิบายด้วยภาษาของตนเอง มีตัวอย่างชัดเจน'],['แหล่งอ้างอิง',2,'อย่างน้อย 2 แหล่งที่น่าเชื่อถือ เขียนถูกรูปแบบ'],['ความเป็นระเบียบ',1,'จัดหัวข้อเป็นระบบ ไม่เกิน 1 หน้า A4']]},
+ {g:'ชิ้นงานที่ 2 · อินโฟกราฟิก',max:10,items:[['เนื้อหาถูกต้องและสอดคล้องกับรายงาน',4,'ประเด็นบนโปสเตอร์ตรงกับรายงาน ไม่มีข้อมูลผิด'],['การออกแบบและสื่อสารด้วยภาพ',3,'ลำดับข้อมูลชัด ภาพและไอคอนช่วยสื่อความ'],['ความอ่านง่ายและภาษาไทย',2,'ตัวอักษรอ่านง่าย สะกดถูกต้อง'],['การใช้ AI อย่างรับผิดชอบ',1,'ตรวจแก้ผลจาก AI และระบุเครื่องมือที่ใช้']]}
+];
+const RESEARCH_CHECKS=[
+ ['two','ข้อมูลสำคัญตรงกันอย่างน้อย 2 แหล่ง'],
+ ['facts','ตรวจชื่อบุคคล ปี ค.ศ. และตัวเลขแล้ว'],
+ ['own','จดโน้ตด้วยภาษาของตนเอง ไม่คัดลอกทั้งย่อหน้า'],
+ ['ai','ถ้าใช้ AI ช่วยอธิบาย ได้ตรวจกับแหล่งข้อมูลจริงแล้ว'],
+ ['cite','บันทึกชื่อเรื่อง ผู้เขียนหรือหน่วยงาน และ URL ครบ']
+];
+const REVIEW_CHECKS=[
+ {k:'onepage',t:'รายงานครบ 1 หน้า A4',auto:()=>reportFill().fits&&reportFill().pct>=55,hint:()=>{const f=reportFill();return !f.fits?'เกิน 1 หน้า':f.pct<55?'ยังสั้นเกินไป':'ผ่าน'}},
+ {k:'correct',t:'เนื้อหาถูกต้อง ตรวจกับแหล่งข้อมูลแล้ว'},
+ {k:'refs',t:'มีแหล่งอ้างอิงอย่างน้อย 2 แหล่ง',auto:()=>refCount()>=2,hint:()=>`พบ ${refCount()} แหล่ง`},
+ {k:'match',t:'โปสเตอร์สอดคล้องกับรายงาน'},
+ {k:'thai',t:'ภาษาไทยถูกต้อง ทั้งรายงานและโปสเตอร์'},
+ {k:'tool',t:'ระบุเครื่องมือ AI ที่ใช้',auto:()=>!!toolName(),hint:()=>toolName()||'ยังไม่ระบุ'}
+];
+const LAYOUTS=[
+ {v:'grid',th:'ตาราง 2×2 / กริด',en:'a clean 2x2 grid of content blocks'},
+ {v:'timeline',th:'เส้นเวลา',en:'a vertical timeline from top to bottom'},
+ {v:'mindmap',th:'แผนผังความคิด',en:'a central concept with radiating branches (mind map)'},
+ {v:'list',th:'ลำดับขั้น 1-2-3',en:'a numbered top-to-bottom list with large numerals'},
+ {v:'compare',th:'แบ่งส่วนเปรียบเทียบ',en:'stacked horizontal bands comparing ideas side by side'}
+];
+const PALETTES=[
+ {v:'neon',th:'น้ำเงินเข้ม ม่วง ฟ้าเรืองแสง',sw:['#0B1026','#9B87F5','#00E5FF'],en:'deep navy background, lavender and neon cyan accents'},
+ {v:'pastel',th:'พาสเทลสดใส',sw:['#FFD6E0','#C8E7FF','#FFF1B6'],en:'soft pastel pink, sky blue and butter yellow on white'},
+ {v:'nature',th:'เขียว ขาว ธรรมชาติ',sw:['#1F6F50','#A8D5BA','#FFFFFF'],en:'forest green and mint on clean white'},
+ {v:'warm',th:'ส้ม ครีม อบอุ่น',sw:['#E8743B','#FBE3C4','#3B2A20'],en:'warm orange and cream with dark brown text'},
+ {v:'mono',th:'ขาวดำ เน้นเหลือง',sw:['#111111','#FFFFFF','#FFD000'],en:'black and white with a single bright yellow highlight'}
+];
+const STYLES=[
+ {v:'icon',th:'มินิมอล ไอคอนเรียบ',en:'minimal flat vector icons'},
+ {v:'flat',th:'ภาพประกอบ Flat',en:'friendly flat illustrations'},
+ {v:'future',th:'Futuristic เรืองแสง',en:'futuristic glowing tech style'},
+ {v:'cute',th:'การ์ตูน 3D น่ารัก',en:'cute 3D cartoon characters (robots, not real people)'},
+ {v:'iso',th:'Isometric',en:'isometric 3D diagrams'}
+];
+const TOOLS=[
+ {v:'Canva',u:'https://www.canva.com/',d:'Magic Design / Magic Media'},
+ {v:'Google Gemini',u:'https://gemini.google.com/',d:'สร้างภาพและไอเดียเลย์เอาต์'},
+ {v:'Microsoft Designer',u:'https://designer.microsoft.com/',d:'สร้างภาพจาก Prompt'},
+ {v:'ChatGPT',u:'https://chatgpt.com/',d:'สร้างภาพและช่วยจัดข้อความ'}
+];
+
+/* ================= STATE ================= */
+const KEY='krunok_sprint_v2';
+function blank(){return{started:null,topic:null,topicAt:null,
+ research:{notes:{},summary:'',sources:[],checks:{}},
+ report:{title:'',name:'',classroom:'',number:'',intro:'',content:'',example:'',summary:'',refs:''},
+ poster:{title:'',points:'',layout:'',palette:'neon',style:'icon',tool:'',toolOther:'',edits:'',prompt:''},
+ posterMeta:null,review:{checks:{}},dl:{report:null,poster:null}};}
+function merge(b,s){if(!s||typeof s!=='object')return b;const o={};for(const k in b){const bv=b[k],sv=s[k];
+ o[k]=(bv&&typeof bv==='object'&&!Array.isArray(bv))?Object.assign({},bv,sv||{}):(sv===undefined?bv:sv);}return o;}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
+let S=(()=>{try{const r=lsGet(KEY);return r?merge(blank(),JSON.parse(r)):blank()}catch(e){return blank()}})();
+let saveT=null;
+function save(now){clearTimeout(saveT);const run=()=>{const ok=lsSet(KEY,JSON.stringify(S));
+ $('#saved').textContent=ok?'บันทึกร่างแล้ว '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'บันทึกในเบราว์เซอร์นี้ไม่ได้';return ok};
+ if(now)return run();saveT=setTimeout(run,400);return true;}
+
+/* poster file in IndexedDB */
+const IDB={db:null,
+ open(){return new Promise((res)=>{if(this.db)return res(this.db);try{const r=indexedDB.open('krunok_sprint',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');
+  r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>res(null)}catch(e){res(null)}})},
+ async put(k,v){const d=await this.open();if(!d)return false;return new Promise(res=>{try{const tx=d.transaction('files','readwrite');tx.objectStore('files').put(v,k);tx.oncomplete=()=>res(true);tx.onerror=()=>res(false)}catch(e){res(false)}})},
+ async get(k){const d=await this.open();if(!d)return null;return new Promise(res=>{try{const r=d.transaction('files').objectStore('files').get(k);r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null)}catch(e){res(null)}})},
+ async del(k){const d=await this.open();if(!d)return;return new Promise(res=>{try{const tx=d.transaction('files','readwrite');tx.objectStore('files').delete(k);tx.oncomplete=()=>res();tx.onerror=()=>res()}catch(e){res()}})}
+};
+let posterBlob=null,posterURL=null;
+async function loadPoster(){const b=await IDB.get('poster');if(b){posterBlob=b;posterURL&&URL.revokeObjectURL(posterURL);posterURL=URL.createObjectURL(b)}}
+
+/* ================= UTIL ================= */
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const len=s=>String(s||'').replace(/\s/g,'').length;
+const isUrl=s=>/^https?:\/\/\S+\.\S+/.test(String(s||'').trim());
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch(e){return null}})();
+function words(s){s=String(s||'');if(!s.trim())return 0;if(!SEG)return s.trim().split(/\s+/).length;let n=0;for(const x of SEG.segment(s))if(x.isWordLike)n++;return n}
+/* insert zero-width spaces at Thai word boundaries so line breaks match between preview and PDF */
+function zw(s){s=String(s||'');if(!SEG||!/[฀-๿]/.test(s))return s;let o='',prevThai=false;for(const x of SEG.segment(s)){const th=/^[฀-๿]/.test(x.segment);if(th&&prevThai)o+='​';o+=x.segment;prevThai=/[฀-๿]$/.test(x.segment)}return o}
+function getP(p){return p.split('.').reduce((o,k)=>o==null?o:o[k],S)}
+function setP(p,v){const ks=p.split('.');let o=S;for(let i=0;i<ks.length-1;i++){if(o[ks[i]]==null)o[ks[i]]={};o=o[ks[i]];}o[ks[ks.length-1]]=v;}
+function rnd(n){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n}catch(e){return Math.floor(Math.random()*n)}}
+let toastT;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms||2400)}
+function copy(text,msg){
+ const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?msg:'คัดลอกอัตโนมัติไม่ได้ ให้เลือกข้อความแล้วกด Ctrl+C');};
+ try{navigator.clipboard.writeText(text).then(()=>toast(msg),fallback)}catch(e){fallback()}
+}
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
+function safeName(s){return String(s||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim()}
+const T=()=>S.topic?TOPICS[S.topic]:null;
+function toolName(){const p=S.poster;return p.tool==='อื่น ๆ'?p.toolOther.trim():p.tool}
+function refCount(){return S.report.refs.split('\n').filter(l=>len(l)>=10).length}
+const ico={
+ dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
+ up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>',
+ ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+ file:'<svg width="34" height="40" viewBox="0 0 34 40" aria-hidden="true"><path d="M3 3h19l9 9v25H3z" fill="#1d1946" stroke="#57CCF2" stroke-width="1.5"/><path d="M22 3v9h9" fill="none" stroke="#57CCF2" stroke-width="1.5"/><text x="17" y="31" text-anchor="middle" font-family="Prompt,sans-serif" font-size="9" font-weight="700" fill="#FFD66D">PDF</text></svg>'
+};
+
+/* ================= DOWNLOADS ================= */
+let dlNS;const dlReady=(async()=>{try{dlNS=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){dlNS=null}return dlNS})();
+async function saveFile(filename,data){const d=dlNS!==undefined?dlNS:await dlReady;
+ if(!d){try{const b=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);toast('ดาวน์โหลดแล้ว');return true}catch(e){toast('ดาวน์โหลดไม่สำเร็จ ลองใหม่อีกครั้ง',3200);return false}}
+ try{await d.save({filename,data});toast('ดาวน์โหลดแล้ว');return true}
+ catch(e){const c=e&&e.code;toast(c==='declined'?'ยกเลิกการดาวน์โหลด':c==='rate_limited'?'มีหน้าต่างยืนยันค้างอยู่ ลองใหม่อีกครั้ง':c==='rejected_extension'?'ไฟล์ชนิดนี้ดาวน์โหลดไม่ได้':'ดาวน์โหลดไม่สำเร็จ ลองใหม่อีกครั้ง',3200);return false}}
+
+/* ================= TIMER ================= */
+function elapsed(){return S.started?(Date.now()-S.started)/60000:null}
+function phaseAt(el){let acc=0;for(let i=0;i<PHASES.length;i++){acc+=PHASES[i].m;if(el<acc)return{i,left:acc-el}}return{i:PHASES.length,left:0}}
+(function buildBar(){$('#timer-bar').innerHTML=PHASES.map(p=>`<i style="flex:${p.m}"><b></b></i>`).join('')})();
+function tick(){const el=elapsed();const box=$('#timer');const t=$('#timer-t'),ph=$('#timer-ph');
+ if(el==null){t.textContent='100:00';ph.textContent='ยังไม่เริ่ม';box.classList.remove('over');return}
+ const left=TOTAL-el;
+ if(left<=0){t.textContent='หมดเวลา';ph.textContent='ผลงานยังอยู่ครบ';box.classList.add('over')}
+ else{const mm=Math.floor(left),ss=Math.floor((left-mm)*60);t.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+  const p=phaseAt(el);ph.textContent=`${PHASES[p.i].th} · อีก ${Math.ceil(p.left)} นาที`;box.classList.remove('over')}
+ let acc=0;[...$('#timer-bar').children].forEach((seg,i)=>{const m=PHASES[i].m;const f=Math.max(0,Math.min(1,(el-acc)/m));seg.firstChild.style.width=(f*100)+'%';acc+=m});
+ document.querySelectorAll('.plan li').forEach((li,i)=>li.classList.toggle('now',el<TOTAL&&phaseAt(el).i===i));}
+setInterval(tick,1000);
+
+/* ================= SHARED PIECES ================= */
+const brainSVG=`<svg class="brain" viewBox="0 0 150 110" aria-hidden="true"><defs><radialGradient id="bg1"><stop offset="0" stop-color="#00E5FF" stop-opacity=".35"/><stop offset="1" stop-color="#00E5FF" stop-opacity="0"/></radialGradient></defs>
+<ellipse cx="75" cy="55" rx="70" ry="50" fill="url(#bg1)"/>
+<path d="M75 16c-10-8-30-6-34 8-12 2-18 14-13 24-8 8-4 22 7 25 2 12 16 17 26 11 5 6 10 6 14 3V16z" fill="none" stroke="#9B87F5" stroke-width="2"/>
+<path d="M75 16c10-8 30-6 34 8 12 2 18 14 13 24 8 8 4 22-7 25-2 12-16 17-26 11-5 6-10 6-14 3V16z" fill="none" stroke="#57CCF2" stroke-width="2"/>
+<g fill="none" stroke="#57CCF2" stroke-opacity=".5" stroke-width="1"><path d="M45 40l18 12 12-14 16 10 18-6M40 62l20-6 15 14 18-12 20 8M58 82l17-12 16 14"/></g>
+<g fill="#00E5FF"><circle class="nd" cx="45" cy="40" r="3"/><circle class="nd" style="animation-delay:.4s" cx="63" cy="52" r="3"/><circle class="nd" style="animation-delay:.8s" cx="91" cy="48" r="3"/><circle class="nd" style="animation-delay:1.2s" cx="109" cy="42" r="3"/><circle class="nd" style="animation-delay:.6s" cx="75" cy="70" r="3"/><circle class="nd" style="animation-delay:1.6s" cx="113" cy="66" r="3"/><circle class="nd" style="animation-delay:2s" cx="58" cy="82" r="3"/><circle class="nd" style="animation-delay:1s" cx="91" cy="84" r="3"/></g></svg>`;
+const airaSVG=(cls='')=>`<svg class="${cls}" viewBox="0 0 74 84" aria-hidden="true"><line x1="37" y1="4" x2="37" y2="14" stroke="#9B87F5" stroke-width="2"/><circle class="blink" cx="37" cy="4" r="3.5" fill="#00E5FF"/>
+<rect x="9" y="14" width="56" height="40" rx="16" fill="#1d1946" stroke="#9B87F5" stroke-width="2"/><rect x="16" y="22" width="42" height="24" rx="11" fill="#0B1026"/>
+<ellipse class="blink" cx="29" cy="34" rx="4.5" ry="5.5" fill="#00E5FF"/><ellipse class="blink" cx="45" cy="34" rx="4.5" ry="5.5" fill="#00E5FF"/><path d="M31 41q6 4 12 0" stroke="#57CCF2" stroke-width="2" fill="none" stroke-linecap="round"/>
+<rect x="5" y="28" width="5" height="12" rx="2.5" fill="#9B87F5"/><rect x="64" y="28" width="5" height="12" rx="2.5" fill="#9B87F5"/>
+<rect x="18" y="58" width="38" height="22" rx="10" fill="#1d1946" stroke="#57CCF2" stroke-width="2"/><circle cx="37" cy="69" r="4" fill="#FFD66D"/></svg>`;
+function aira(msg){return `<div class="aira-card">${airaSVG()}<div class="bubble">${msg}</div></div>`}
+function rubricHTML(){return `<div class="stack" style="gap:14px">${RUBRIC.map(g=>`<div class="rub-group"><h4>${g.g}<span>${g.max}</span></h4>${g.items.map(([t,m,d])=>`<div class="rub-row"><div>${t}<small>${d}</small></div><b>${m}</b></div>`).join('')}</div>`).join('')}
+ <div class="row between head" style="font-size:16px;border-top:1px solid var(--line);padding-top:8px"><span>รวม</span><span style="color:var(--neon)">20 คะแนน</span></div></div>`}
+function planHTML(){return `<ul class="clean plan">${PHASES.map(p=>`<li><span>${p.th}</span><span>${p.m} นาที</span></li>`).join('')}</ul>`}
+function side(msg,extra=''){return `<aside class="side"><div class="card">${aira(msg)}</div>${extra}
+ <div class="card stack" style="gap:10px"><h3>เกณฑ์การให้คะแนน</h3>${rubricHTML()}</div></aside>`}
+const VIEWS=['topic','research','report','poster','review'];
+function navBtns(cur,nextLabel,extraLeft=''){const i=VIEWS.indexOf(cur);return `<div class="foot-actions">
+ <span class="row">${i>0?`<a class="btn ghost" href="#${VIEWS[i-1]}">ย้อนกลับ</a>`:''}${extraLeft}</span>
+ ${nextLabel&&i<VIEWS.length-1?`<a class="btn primary" href="#${VIEWS[i+1]}">${nextLabel}</a>`:''}</div>`}
+
+/* ================= PROGRESS ================= */
+function researchState(){const t=T();if(!t)return{done:0,total:0,ok:false,src:0};const done=t.points.filter((p,i)=>len(S.research.notes[i])>=20).length;
+ const src=S.research.sources.filter(s=>s.title&&isUrl(s.url)).length;const chk=RESEARCH_CHECKS.every(c=>S.research.checks[c[0]]);
+ return{done,total:t.points.length,src,chk,sum:len(S.research.summary)>=40,ok:done===t.points.length&&src>=2&&chk&&len(S.research.summary)>=40}}
+function reportState(){const r=S.report;const f=reportFill();return{ok:len(r.title)>=4&&len(r.name)>=4&&r.classroom&&+r.number>0&&len(r.intro)>=40&&len(r.content)>=200&&len(r.example)>=30&&len(r.summary)>=30&&refCount()>=2&&f.fits}}
+function posterState(){return{ok:!!S.posterMeta&&!!toolName()}}
+function reviewState(){return{ok:REVIEW_CHECKS.every(c=>S.review.checks[c.k])}}
+function viewDone(v){return v==='topic'?!!S.topic:v==='research'?researchState().ok:v==='report'?reportState().ok:v==='poster'?posterState().ok:reviewState().ok}
+
+/* ================= ROUTER ================= */
+function curView(){const h=location.hash.slice(1);if(VIEWS.includes(h)){if(h!=='topic'&&!S.topic)return 'topic';return h}return 'home'}
+function render(){const v=curView();const app=$('#app');
+ if(v!=='home'&&!S.started){S.started=Date.now();save(true)}
+ if(v==='home'){app.innerHTML=`<div class="fade">${HOME()}</div>`;tick();return}
+ const steps=VIEWS.map((k,i)=>{const cls=k===v?'cur':(viewDone(k)?'done':(k!=='topic'&&!S.topic?'locked':''));
+  return `<li class="${cls}"><a href="#${k}" ${k===v?'aria-current="step"':''} aria-label="ขั้นที่ ${i+1} ${PHASES[i].th}"><span class="dot">${viewDone(k)&&k!==v?'✓':i+1}</span><span class="lbl">${PHASES[i].th}</span><span class="min">${PHASES[i].m} นาที</span></a></li>`}).join('');
+ app.innerHTML=`<ol class="stepper">${steps}</ol><div class="steptitle">ขั้นที่ ${VIEWS.indexOf(v)+1}: ${PHASES[VIEWS.indexOf(v)].th}</div><div id="stage" class="fade">${VIEW[v]()}</div>`;
+ AFTER[v]&&AFTER[v]();tick();}
+window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
+
+const VIEW={},AFTER={};
+
+/* ---- HOME ---- */
+function HOME(){const has=!!S.topic;return `<section class="home-hero">
+ <div><div class="eyebrow">ว32281 ปัญญาประดิษฐ์เบื้องต้น · ม.5 · หน่วยที่ 1</div>
+  <h1>กิจกรรมที่ 1.1<br>AI Research &amp; <span>Infographic Sprint</span></h1>
+  <p class="tagline">เรียนรู้ AI ด้วยการค้นคว้า สรุปความรู้ และสร้างสรรค์อินโฟกราฟิกด้วย AI</p>
+  <div class="stats"><div class="stat"><b>3</b><span>หัวข้อค้นคว้า</span></div><div class="stat"><b>2</b><span>ชิ้นงาน</span></div><div class="stat"><b>100</b><span>นาที</span></div><div class="stat"><b>20</b><span>คะแนน</span></div></div>
+  <div class="row">
+   <a class="btn primary btn-start" href="#${has?resumeView():'topic'}">${has?'ทำภารกิจต่อ':'เริ่มภารกิจ'}</a>
+   ${has?`<button class="btn danger" type="button" data-act="reset">ล้างข้อมูลและเริ่มใหม่</button>`:''}
+  </div>
+  <div class="privacy"><span class="badge ok">ไม่ต้องสมัครสมาชิก</span><span class="badge ok">ไม่ต้องเข้าสู่ระบบ</span><span class="badge">ฉบับร่างเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น</span></div>
+ </div>
+ <div class="stage-art">${brainSVG}${airaSVG('aira-big')}</div></section>
+ <div class="grid fade" style="margin-top:10px"><div class="card stack">
+  <h2>ภารกิจ 5 ขั้น ใน 100 นาที</h2>
+  <div class="cols2">${PHASES.map((p,i)=>`<div class="row" style="align-items:flex-start;gap:12px;flex-wrap:nowrap"><span class="badge" style="font-size:14px;margin-top:3px">${i+1}</span><div><b class="head" style="font-size:16px">${p.th}</b> <span class="muted small">${p.m} นาที</span><p class="small muted">${['สุ่ม 1 ใน 3 หัวข้อ แล้ววางแผนว่าจะค้นอะไร','จดโน้ตทุกประเด็นและเก็บแหล่งอ้างอิงอย่างน้อย 2 แหล่ง','เขียนรายงาน 1 หน้า A4 ดูตัวอย่างหน้ากระดาษได้ทันที แล้วดาวน์โหลด PDF','สร้าง Prompt ให้ AI ช่วยออกแบบโปสเตอร์ แล้วอัปโหลดผลงาน','ตรวจเช็กลิสต์ ดาวน์โหลดทั้ง 2 ชิ้น แล้วส่งทาง Google Classroom'][i]}</p></div></div>`).join('')}</div>
+  <div class="note cy"><b>ชิ้นงานที่ต้องส่ง</b> (1) รายงาน 1 หน้า A4 เป็นไฟล์ PDF และ (2) โปสเตอร์อินโฟกราฟิก 1 หน้า A4 นำทั้ง 2 ไฟล์ไปส่งใน Google Classroom หรือช่องทางที่ครูกำหนด</div>
+ </div>
+ <aside class="side"><div class="card">${aira('สวัสดี! ฉันชื่อ <b>AIra</b> ผู้ช่วยภารกิจวันนี้ กด <b>เริ่มภารกิจ</b> แล้วไปสุ่มหัวข้อกันเลย ทุกอย่างที่พิมพ์จะบันทึกอัตโนมัติในเครื่องนี้ ปิดหน้าแล้วกลับมาทำต่อได้')}</div>
+  <div class="card stack" style="gap:10px"><h3>เกณฑ์การให้คะแนน</h3>${rubricHTML()}</div></aside></div>`}
+function resumeView(){for(const v of VIEWS)if(!viewDone(v))return v;return 'review'}
+
+/* ---- TOPIC ---- */
+let drawing=false;
+VIEW.topic=()=>{const t=T();
+ const overview=Object.entries(TOPICS).map(([k,v])=>`<article class="tcard ${S.topic?(S.topic===k?'win':'dim'):''}" style="--tc:${v.color}"><div class="code">${v.code}</div><h3>${v.th}</h3><ul>${v.points.map(p=>`<li>${esc(p.t)}</li>`).join('')}</ul></article>`).join('');
+ const order=S.topic?['T1','T2','T3']:['T1','T2','T3'];
+ const deck=[0,1,2].map(i=>{const k=S.topic?(i===1?S.topic:order.filter(x=>x!==S.topic)[i===0?0:1]):null;const v=k?TOPICS[k]:null;
+  return `<div class="mini ${S.topic?'open '+(i===1?'win':'lose'):''}" ${v?`style="--tc:${v.color}"`:''}><div class="backf"><span>AI</span></div><div class="face">${v?`<b>${v.code}</b><i>${v.en}</i>`:''}</div></div>`}).join('');
+ return `<div class="grid"><div class="stack">
+ <div class="card stack">
+  <div><div class="eyebrow">ขั้นที่ 1 · Random Topic</div><h2>สุ่มภารกิจพิชิตความรู้ AI</h2><p class="muted small">กดสุ่มได้ 1 ครั้ง ระบบจะจำหัวข้อไว้ในเครื่องนี้</p></div>
+  <div class="deck" id="deck">${deck}</div>
+  ${t?`<div class="congrats fade"><h2>ยินดีด้วย! ภารกิจของคุณคือ <span>${esc(t.th)}</span></h2><p class="muted small">${t.code} · ${t.en} · ได้รับเมื่อ ${new Date(S.topicAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})}</p></div>`
+   :`<div class="row" style="justify-content:center"><button class="btn primary" type="button" data-act="draw" id="drawbtn" style="font-size:17px;padding:12px 28px">สุ่มหัวข้อ</button></div>`}
+ </div>
+ ${t?`<div class="card stack fade" style="border-color:${t.color}66"><h2>ภารกิจของคุณ</h2>
+  <div class="cols2"><div class="stack" style="gap:8px"><span class="flabel">ประเด็นที่ต้องค้นคว้า</span><ol class="qlist">${t.points.map(p=>`<li>${esc(p.t)}</li>`).join('')}</ol></div>
+  <div class="stack" style="gap:8px"><span class="flabel">คำถามนำ</span><ul class="qlist">${t.qs.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div></div>
+  <div class="foot-actions" style="margin-top:4px"><button class="btn sm ghost" type="button" data-act="redraw" id="redraw">ขอสุ่มใหม่ (เมื่อครูอนุญาต)</button><a class="btn primary" href="#research">เริ่มค้นคว้า</a></div></div>`:''}
+ <div class="card stack"><h3>หัวข้อทั้ง 3</h3><div class="topics">${overview}</div>
+  <p class="small muted">การสุ่มเกิดในเบราว์เซอร์ของนักเรียนแต่ละคน จำนวนผู้ได้แต่ละหัวข้อในห้องจึงอาจไม่เท่ากัน</p></div>
+ </div>
+ ${side(t?`<b>${esc(t.th)}</b><br>${t.aira}`:'กดปุ่มสุ่มแล้วดูว่าภารกิจไหนจะเป็นของคุณ ช่วงนี้มีเวลา <b>10 นาที</b> สำหรับสุ่มหัวข้อและวางแผนการค้นคว้า')}</div>`};
+function draw(){if(drawing||S.topic)return;drawing=true;const b=$('#drawbtn');if(b){b.disabled=true;b.innerHTML='<span class="spin"></span> กำลังสุ่ม…'}
+ const pick=['T1','T2','T3'][rnd(3)];
+ const finish=()=>{S.topic=pick;S.topicAt=Date.now();save(true);drawing=false;render();if(!reduce)confetti(60)};
+ if(reduce){finish();return}
+ const deck=$('#deck');deck.classList.add('shuffle');setTimeout(()=>{deck.classList.remove('shuffle');
+  const minis=[...deck.children];const others=['T1','T2','T3'].filter(x=>x!==pick);
+  minis.forEach((m,i)=>{const k=i===1?pick:others[i===0?0:1];const v=TOPICS[k];m.style.setProperty('--tc',v.color);m.querySelector('.face').innerHTML=`<b>${v.code}</b><i>${v.en}</i>`});
+  minis[1].classList.add('open','win');setTimeout(()=>{minis[0].classList.add('open','lose');minis[2].classList.add('open','lose')},350);setTimeout(finish,1300)},1550);}
+
+/* ---- RESEARCH ---- */
+VIEW.research=()=>{const t=T(),r=S.research,st=researchState();
+ const pts=t.points.map((p,i)=>`<div class="point"><div class="point-h"><span class="n ${len(r.notes[i])>=20?'ok':''}" id="pn-${i}">${len(r.notes[i])>=20?'✓':i+1}</span><div><h4>${esc(p.t)}</h4><p>${esc(p.h)}</p></div></div>
+  <textarea id="note-${i}" data-bind="research.notes.${i}" aria-label="จดบันทึก ${esc(p.t)}" placeholder="จดสาระสำคัญด้วยภาษาของตนเอง">${esc(r.notes[i]||'')}</textarea></div>`).join('');
+ const sug=SOURCES.filter(s=>s.for.includes(S.topic)).map(s=>`<a href="${s.u}" target="_blank" rel="noopener">${esc(s.t)}<small>${esc(s.d)}</small></a>`).join('');
+ return `<div class="grid"><div class="stack">
+ <div class="card stack">
+  <div><div class="eyebrow" style="color:${t.color}">${t.code} · ${t.en}</div><h2>${esc(t.th)}</h2></div>
+  <div class="stack" style="gap:6px"><span class="flabel">คำถามนำ</span><ul class="qlist">${t.qs.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div>
+  <div class="row"><span class="badge ${st.done===st.total?'ok':'warn'}" id="b-points">จดบันทึก ${st.done}/${st.total} ประเด็น</span><span class="badge ${st.sum?'ok':'warn'}" id="b-sum">สรุปประเด็นสำคัญ</span><span class="badge ${st.src>=2?'ok':'warn'}" id="b-src">แหล่งอ้างอิง ${st.src}/2</span><span class="badge ${st.chk?'ok':'warn'}" id="b-chk">เช็กลิสต์</span></div>
+ </div>
+ <div class="card stack"><h2>จดบันทึกข้อมูล</h2>${pts}</div>
+ <div class="card stack"><h2>สรุปประเด็นสำคัญ</h2>
+  <label class="f"><span>สรุปสิ่งที่ค้นพบ และตอบคำถามนำสั้น ๆ <em>(ใช้เป็นแกนของรายงาน)</em></span><textarea id="r-sum" data-bind="research.summary" rows="5" placeholder="สิ่งที่สำคัญที่สุดที่ได้เรียนรู้จากหัวข้อนี้คือ...">${esc(r.summary)}</textarea></label></div>
+ <div class="card stack">
+  <div class="row between"><div><h2>แหล่งอ้างอิง</h2><p class="muted small">อย่างน้อย 2 แหล่ง พร้อมตรวจความน่าเชื่อถือ</p></div><button class="btn sm" type="button" data-act="addsrc">+ เพิ่มแหล่ง</button></div>
+  <div class="stack" id="srcs">${r.sources.map(srcBlock).join('')||'<p class="muted small">ยังไม่มีแหล่งอ้างอิง กด "เพิ่มแหล่ง" เพื่อบันทึกเว็บไซต์ที่ใช้ค้นคว้า</p>'}</div>
+ </div>
+ <div class="card stack"><h2>ตรวจสอบข้อมูลก่อนเขียนรายงาน</h2>
+  <div class="checks col">${RESEARCH_CHECKS.map(([k,l])=>`<label><input type="checkbox" id="rc-${k}" data-bind="research.checks.${k}" ${r.checks[k]?'checked':''}>${l}</label>`).join('')}</div>
+  <div class="foot-actions" style="margin-top:4px"><span class="row"><a class="btn ghost" href="#topic">ย้อนกลับ</a><button class="btn" type="button" data-act="savedraft">บันทึกฉบับร่าง</button></span><a class="btn primary" href="#report">ไปเขียนรายงาน</a></div>
+ </div>
+ </div>
+ ${side(t.aira,`<div class="card stack"><h3>แหล่งข้อมูลแนะนำ</h3><div class="links">${sug}</div><h3 style="margin-top:4px">คำค้นที่ลองใช้ได้</h3><div class="kw">${t.kw.map(k=>`<code>${esc(k)}</code>`).join('')}</div>
+ <p class="small muted">ใช้แชตบอต AI ช่วยอธิบายได้ แต่ต้องตรวจกับแหล่งข้อมูลจริงทุกครั้ง และไม่นับแชตบอตเป็นแหล่งอ้างอิง</p></div>`)}</div>`};
+function srcBlock(s,i){const c=s.checks||{};const n=['who','date','cross'].filter(k=>c[k]).length;
+ return `<div class="src"><div class="row between"><b class="head" style="font-size:15px">แหล่งที่ ${i+1}</b><span class="row" style="gap:8px"><span class="badge ${n===3?'ok':n>=2?'warn':'bad'}">น่าเชื่อถือ ${n}/3</span><button class="btn sm ghost" type="button" data-act="delsrc" data-i="${i}">ลบ</button></span></div>
+ <div class="cols2"><label class="f"><span>ชื่อบทความ/หน้าเว็บ</span><input type="text" id="s-t-${i}" data-bind="research.sources.${i}.title" value="${esc(s.title)}"></label>
+ <label class="f"><span>ผู้เขียน/หน่วยงาน</span><input type="text" id="s-o-${i}" data-bind="research.sources.${i}.org" value="${esc(s.org)}"></label>
+ <label class="f"><span>URL</span><input type="url" id="s-u-${i}" data-bind="research.sources.${i}.url" value="${esc(s.url)}" placeholder="https://"></label>
+ <label class="f"><span>ปีที่เผยแพร่ <em>(ถ้ามี)</em></span><input type="text" id="s-y-${i}" data-bind="research.sources.${i}.year" value="${esc(s.year)}" placeholder="เช่น 2025"></label></div>
+ <div class="checks"><label><input type="checkbox" id="s-c1-${i}" data-bind="research.sources.${i}.checks.who" ${c.who?'checked':''}>ระบุผู้เขียนหรือหน่วยงาน</label>
+ <label><input type="checkbox" id="s-c2-${i}" data-bind="research.sources.${i}.checks.date" ${c.date?'checked':''}>มีวันที่เผยแพร่หรือปรับปรุง</label>
+ <label><input type="checkbox" id="s-c3-${i}" data-bind="research.sources.${i}.checks.cross" ${c.cross?'checked':''}>ข้อมูลตรงกับแหล่งอื่น</label></div></div>`}
+function refreshResearch(){const st=researchState();const set=(id,ok,txt)=>{const b=$(id);if(!b)return;b.className='badge '+(ok?'ok':'warn');if(txt)b.textContent=txt};
+ set('#b-points',st.done===st.total,`จดบันทึก ${st.done}/${st.total} ประเด็น`);set('#b-sum',st.sum);set('#b-src',st.src>=2,`แหล่งอ้างอิง ${st.src}/2`);set('#b-chk',st.chk);
+ T().points.forEach((p,i)=>{const n=$('#pn-'+i);if(n){const ok=len(S.research.notes[i])>=20;n.classList.toggle('ok',ok);n.textContent=ok?'✓':i+1}});
+ document.querySelectorAll('.src').forEach((el,i)=>{const c=(S.research.sources[i]||{}).checks||{};const n=['who','date','cross'].filter(k=>c[k]).length;const b=el.querySelector('.badge');b.textContent=`น่าเชื่อถือ ${n}/3`;b.className='badge '+(n===3?'ok':n>=2?'warn':'bad')});
+ updateStepper();}
+
+/* ---- REPORT ---- */
+let reportMode='edit';
+const RFIELDS=[['intro','บทนำ',40,'ปูพื้นว่าหัวข้อนี้คืออะไร และสำคัญอย่างไร',3],['content','เนื้อหาที่ค้นคว้า',200,'# ประเด็นที่ 1\nอธิบาย...\n# ประเด็นที่ 2\nอธิบาย...',10],['example','ตัวอย่างประกอบ',30,'ยกตัวอย่างจริงที่ช่วยให้เข้าใจเนื้อหามากขึ้น',3],['summary','สรุปความรู้',30,'สรุปสาระสำคัญ 2–3 ประโยค',3]];
+function a4HTML(){const r=S.report;const para=v=>String(v||'').split(/\n+/).map(s=>s.trim()).filter(Boolean).map(l=>l.startsWith('#')?`<h3>${esc(zw(l.replace(/^#+\s*/,'')))}</h3>`:`<p>${esc(zw(l))}</p>`).join('');
+ const sec=(h,v,cls='')=>`<h2>${h}</h2><div class="${cls}">${String(v||'').trim()?para(v):'<p class="ph">…</p>'}</div>`;
+ const who=[r.name.trim(),r.classroom?('ชั้น '+r.classroom):'',r.number?('เลขที่ '+r.number):''].filter(Boolean).join('  ');
+ return `<div class="a4-flow"><div class="meta"><span>รายวิชา ว32281 ปัญญาประดิษฐ์เบื้องต้น</span><span>${T()?esc(zw(T().th)):''}</span></div>
+ <h1>${r.title.trim()?esc(zw(r.title)):'<span class="ph">ชื่อเรื่องรายงาน</span>'}</h1><div class="by">${who?esc(zw(who)):'<span class="ph">ชื่อ–สกุล ชั้น เลขที่</span>'}</div>
+ ${sec('บทนำ',r.intro)}${sec('เนื้อหา',r.content)}${sec('ตัวอย่างประกอบ',r.example)}${sec('สรุป',r.summary)}${sec('แหล่งอ้างอิง',r.refs,'refs')}</div>`}
+let fillCache={fits:true,pct:0};
+function measureA4(){const st=$('#pdfstage');st.innerHTML=a4HTML();const fl=st.firstElementChild;const h=fl.scrollHeight;fillCache={fits:h<=1123,pct:Math.round(h/1123*100)};return fillCache}
+function reportFill(){return fillCache}
+VIEW.report=()=>{const r=S.report;
+ if(reportMode==='preview')return `<div class="card stack full-preview"><div class="row between"><div><div class="eyebrow">ชิ้นงานที่ 1</div><h2>ตัวอย่างรายงานเต็มหน้า</h2></div>
+   <div class="row"><button class="btn" type="button" data-act="editreport">แก้ไขรายงาน</button><button class="btn primary" type="button" data-act="pdf">${ico.dl}ดาวน์โหลด PDF</button></div></div>
+  <div class="a4-frame" data-a4><div class="a4"></div><div class="a4-cut">ข้อความเกิน 1 หน้า</div></div>${navBtns('report','ไปสร้างอินโฟกราฟิก')}</div>`;
+ return `<div class="split"><div class="stack">
+ <div class="card stack">
+  <div><div class="eyebrow">ขั้นที่ 3 · One-Page Report</div><h2>เขียนรายงาน 1 หน้า A4</h2><p class="muted small">บันทึกอัตโนมัติขณะพิมพ์ ในช่องเนื้อหา บรรทัดที่ขึ้นต้นด้วย <b>#</b> จะเป็นหัวข้อย่อย</p></div>
+  <label class="f"><span>ชื่อเรื่อง</span><input type="text" id="r-title" data-bind="report.title" value="${esc(r.title)}" maxlength="120" placeholder="${esc(T().th)}"></label>
+  <div class="cols3"><label class="f"><span>ชื่อ–สกุล</span><input type="text" id="r-name" data-bind="report.name" value="${esc(r.name)}" maxlength="80" placeholder="นายปัญญา ใฝ่รู้" autocomplete="name"></label>
+   <label class="f"><span>ชั้น</span><select id="r-class" data-bind="report.classroom"><option value="">เลือก</option>${['ม.5/1','ม.5/2','ม.5/3','ม.5/4','ม.5/5','ม.5/6'].map(c=>`<option ${r.classroom===c?'selected':''}>${c}</option>`).join('')}</select></label>
+   <label class="f"><span>เลขที่</span><input type="number" id="r-num" data-bind="report.number" value="${esc(r.number)}" min="1" max="60" inputmode="numeric"></label></div>
+  ${RFIELDS.map(([k,l,min,ph,rows])=>`<label class="f"><span>${l}</span>${k==='content'?`<span class="row" style="margin:-2px 0 2px"><button class="btn sm" type="button" data-act="fillbody">นำโน้ตจากขั้นค้นคว้ามาเป็นโครง</button></span>`:''}<textarea id="r-${k}" data-bind="report.${k}" rows="${rows}" placeholder="${esc(ph)}">${esc(r[k])}</textarea><div class="counter" id="c-${k}"></div></label>`).join('')}
+  <label class="f"><span>แหล่งอ้างอิง <em>(บรรทัดละ 1 แหล่ง อย่างน้อย 2 แหล่ง)</em></span><span class="row" style="margin:-2px 0 2px"><button class="btn sm" type="button" data-act="fillrefs">สร้างจากแหล่งในขั้นค้นคว้า</button></span>
+   <textarea id="r-refs" data-bind="report.refs" rows="3" placeholder="ผู้เขียน/หน่วยงาน. (ปี). ชื่อเรื่อง. สืบค้นเมื่อ ..., จาก URL">${esc(r.refs)}</textarea><div class="counter" id="c-refs"></div></label>
+ </div>
+ ${navBtns('report','ไปสร้างอินโฟกราฟิก')}
+ </div>
+ <div class="a4-side stack"><div class="card stack" style="padding:16px">
+  <div class="row between"><b class="head" style="font-size:15px">Live A4 Preview</b><span class="badge" id="fitbadge"></span></div>
+  <div class="row between small"><span class="muted" id="wc"></span><span class="muted" id="fill-t"></span></div>
+  <div class="meter" id="meter"><i id="meter-i"></i></div>
+  <div class="a4-frame" data-a4><div class="a4"></div><div class="a4-cut">ข้อความเกิน 1 หน้า</div></div>
+  <div class="row"><button class="btn primary" type="button" data-act="pdf" id="pdfbtn">${ico.dl}ดาวน์โหลดรายงาน PDF</button><button class="btn" type="button" data-act="fullpreview">ดูเต็มหน้า</button></div>
+  <p class="small muted" id="pdfnote">ไฟล์ PDF เป็นหน้ากระดาษ A4 1 หน้า ตรงกับตัวอย่างนี้</p>
+ </div></div></div>`};
+function paintA4(){const f=measureA4();const html=a4HTML();document.querySelectorAll('[data-a4]').forEach(fr=>{fr.querySelector('.a4').innerHTML=html;fr.classList.toggle('over',!f.fits);scaleFrame(fr)});
+ const m=$('#meter');if(m){m.classList.toggle('over',!f.fits);$('#meter-i').style.width=Math.min(100,f.pct)+'%';
+  $('#fill-t').textContent=f.fits?`ใช้พื้นที่ ${f.pct}% ของหน้า`:`เกินหน้า ${f.pct-100}%`;
+  const b=$('#fitbadge');b.textContent=!f.fits?'เกิน 1 หน้า':f.pct<55?'ยังสั้นเกินไป':'ความยาวเหมาะสม';b.className='badge '+(!f.fits?'bad':f.pct<55?'warn':'ok');
+  const r=S.report;const total=['intro','content','example','summary'].reduce((a,k)=>a+words(r[k]),0);$('#wc').textContent=`${total.toLocaleString('th-TH')} คำ`;
+  RFIELDS.forEach(([k,,min])=>{const c=$('#c-'+k);if(c){const n=words(r[k]);const ok=len(r[k])>=min;c.textContent=`${n} คำ`+(ok?'':' · ยังสั้นไป');c.style.color=ok?'var(--ok)':''}});
+  const cr=$('#c-refs');if(cr){const n=refCount();cr.textContent=`${n} แหล่ง`;cr.style.color=n>=2?'var(--ok)':''}
+  const pb=$('#pdfbtn');if(pb)pb.disabled=!f.fits;const pn=$('#pdfnote');if(pn)pn.textContent=f.fits?'ไฟล์ PDF เป็นหน้ากระดาษ A4 1 หน้า ตรงกับตัวอย่างนี้':'ตัดเนื้อหาให้อยู่ใน 1 หน้าก่อน จึงจะดาวน์โหลด PDF ได้';}
+ document.querySelectorAll('[data-act="pdf"]').forEach(b=>b.disabled=!f.fits);updateStepper();}
+function scaleFrame(fr){const sc=fr.clientWidth/794;fr.querySelector('.a4').style.transform=`scale(${sc})`;fr.style.height=(1123*sc)+'px'}
+let ro=null;function observeFrames(){if(ro)ro.disconnect();ro=new ResizeObserver(es=>es.forEach(e=>scaleFrame(e.target)));document.querySelectorAll('[data-a4]').forEach(f=>ro.observe(f))}
+AFTER.report=()=>{paintA4();observeFrames();fontsReady.then(paintA4)};
+const fontsReady=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('16px Sarabun'),document.fonts.load('700 16px Sarabun'),document.fonts.load('600 16px Sarabun')]).catch(()=>{}).then(()=>document.fonts.ready):Promise.resolve();
+async function makePDF(){await fontsReady;const f=measureA4();if(!f.fits)throw new Error('over');
+ const st=$('#pdfstage');if(!window.html2canvas||!window.jspdf)throw new Error('lib');
+ const canvas=await window.html2canvas(st,{scale:2,backgroundColor:'#ffffff',width:794,height:1123,windowWidth:1200,logging:false});
+ const pdf=new window.jspdf.jsPDF({orientation:'p',unit:'mm',format:'a4'});pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297);
+ pdf.setProperties({title:S.report.title||'รายงาน',subject:'ว32281 AI Research & Infographic Sprint',author:S.report.name});return pdf.output('blob')}
+function reportFileName(){const r=S.report;return safeName(`รายงาน ${r.classroom.replace('/','-')} เลขที่${r.number} ${r.name}`)+'.pdf'}
+async function downloadReport(btn){const r=S.report;if(!len(r.name)||!r.classroom||!r.number){toast('กรอกชื่อ–สกุล ชั้น และเลขที่ในรายงานก่อน',3000);if(curView()==='report'&&reportMode==='edit')$('#r-name')&&$('#r-name').focus();return}
+ const old=btn.innerHTML;btn.disabled=true;btn.innerHTML='<span class="spin"></span> กำลังสร้าง PDF…';
+ try{const blob=await makePDF();const ok=await saveFile(reportFileName(),blob);if(ok){S.dl.report=Date.now();save(true)}}
+ catch(e){toast(e.message==='over'?'รายงานเกิน 1 หน้า ตัดให้กระชับก่อน':'สร้าง PDF ไม่สำเร็จ ลองใหม่อีกครั้ง',3200)}
+ finally{btn.innerHTML=old;btn.disabled=!reportFill().fits;if(curView()==='review')render()}}
+
+/* ---- POSTER ---- */
+function defaultLayout(){return S.poster.layout||T().layout}
+function buildPrompt(){const p=S.poster,t=T(),r=S.report;const L=LAYOUTS.find(x=>x.v===defaultLayout()),P=PALETTES.find(x=>x.v===p.palette)||PALETTES[0],St=STYLES.find(x=>x.v===p.style)||STYLES[0];
+ const pts=p.points.split('\n').map(x=>x.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean);
+ return `ช่วยออกแบบโปสเตอร์อินโฟกราฟิกแนวตั้ง ขนาด A4 (210 × 297 มม.) สำหรับนักเรียนมัธยมศึกษาตอนปลาย
+ชื่อโปสเตอร์: "${(p.title||r.title||t.th).trim()}"
+รูปแบบโปสเตอร์: ${L.th}
+โทนสี: ${P.th}
+สไตล์ภาพ: ${St.th}
+
+เนื้อหาบนโปสเตอร์ (ใช้ข้อความนี้เท่านั้น ห้ามเพิ่มข้อเท็จจริง ตัวเลข หรือปี ค.ศ. เอง):
+${pts.length?pts.map((x,k)=>`${k+1}. ${x}`).join('\n'):'1. (ใส่ประเด็นสำคัญ 3–5 ข้อ)'}
+
+ส่วนท้าย: "จัดทำโดย ${r.name||'[ชื่อ–สกุล]'} ${r.classroom||'[ชั้น]'} เลขที่ ${r.number||'[เลขที่]'}" และ "ออกแบบโดยใช้ AI ช่วย"
+ข้อกำหนด: ตัวอักษรใหญ่ อ่านง่าย ลำดับข้อมูลชัด ใช้ไอคอนประกอบแทนภาพบุคคลจริง ไม่ใส่โลโก้หน่วยงานใด
+
+English style notes: A4 portrait educational infographic, ${L.en}, ${P.en}, ${St.en}, strong visual hierarchy, generous white space, high contrast, leave clear space for Thai text.`}
+VIEW.poster=()=>{const p=S.poster,t=T();const m=S.posterMeta;
+ const seg=(arr,key,cur,extra)=>`<div class="seg" role="group">${arr.map(o=>`<button type="button" data-seg="${key}" data-v="${o.v}" aria-pressed="${cur===o.v}">${extra?extra(o):''}${esc(o.th)}</button>`).join('')}</div>`;
+ const npts=p.points.split('\n').filter(x=>x.trim()).length;
+ return `<div class="grid"><div class="stack">
+ <div class="card stack">
+  <div><div class="eyebrow">ขั้นที่ 4 · AI Infographic Studio</div><h2>ออกแบบโปสเตอร์อินโฟกราฟิก 1 หน้า A4</h2><p class="muted small">เลือกองค์ประกอบ สร้าง Prompt แล้วนำไปใช้กับเครื่องมือ AI ภายนอก จากนั้นอัปโหลดโปสเตอร์กลับมาที่นี่ หน้านี้ไม่ได้สร้างภาพเอง</p></div>
+  <label class="f"><span>ชื่อโปสเตอร์</span><input type="text" id="p-title" data-bind="poster.title" value="${esc(p.title)}" maxlength="80" placeholder="${esc(S.report.title||t.th)}"></label>
+  <label class="f"><span>ประเด็นสำคัญ 3–5 ประเด็น <em>(บรรทัดละ 1 ข้อ สั้น กระชับ)</em></span>
+   <span class="row" style="margin:-2px 0 2px"><button class="btn sm" type="button" data-act="pullpoints">ดึงหัวข้อย่อยจากรายงาน</button><span class="badge ${npts>=3&&npts<=5?'ok':'warn'}" id="b-npts">${npts} ประเด็น</span></span>
+   <textarea id="p-points" data-bind="poster.points" rows="5" placeholder="เช่น&#10;AI คือระบบที่...&#10;McCarthy นิยามว่า...">${esc(p.points)}</textarea></label>
+  <div class="stack" style="gap:8px"><span class="flabel">รูปแบบโปสเตอร์</span>${seg(LAYOUTS,'layout',defaultLayout())}</div>
+  <div class="stack" style="gap:8px"><span class="flabel">โทนสี</span>${seg(PALETTES,'palette',p.palette,o=>`<span class="sw">${o.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span>`)}</div>
+  <div class="stack" style="gap:8px"><span class="flabel">สไตล์ภาพ</span>${seg(STYLES,'style',p.style)}</div>
+ </div>
+ <div class="card stack">
+  <div class="row between"><h2>AI Prompt Generator</h2><span class="row"><button class="btn" type="button" data-act="genprompt">สร้าง Prompt</button><button class="btn primary" type="button" data-act="copyprompt">คัดลอก Prompt</button></span></div>
+  <textarea id="p-prompt" class="prompt" data-bind="poster.prompt" rows="14" aria-label="Prompt สำหรับสร้างโปสเตอร์" placeholder="กด &quot;สร้าง Prompt&quot; ระบบจะเขียน Prompt จากรายงานและตัวเลือกด้านบน แก้ไขต่อได้">${esc(p.prompt)}</textarea>
+  <div class="stack" style="gap:8px"><span class="flabel">เปิดเครื่องมือ AI ภายนอก <em>(เปิดในแท็บใหม่)</em></span>
+   <div class="tools">${TOOLS.map(o=>`<a href="${o.u}" target="_blank" rel="noopener">${esc(o.v)} ${ico.ext.replace('<svg','<svg width="13" height="13" style="display:inline;vertical-align:-1px"')}<small>${esc(o.d)}</small></a>`).join('')}</div></div>
+  <div class="note"><b>เคล็ดลับ</b> AI สร้างภาพมักสะกดภาษาไทยผิด ใช้ AI ช่วยวางเลย์เอาต์ ภาพ และไอคอน แล้วพิมพ์ข้อความภาษาไทยเองใน Canva หรือ Google Slides ส่งออกเป็น PNG, JPG หรือ PDF ขนาด A4</div>
+ </div>
+ <div class="card stack">
+  <h2>อัปโหลดโปสเตอร์</h2>
+  <label class="drop" id="drop"><input type="file" id="p-file" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf">
+   <div class="stack" style="gap:6px;align-items:center">${ico.up.replace('<svg','<svg width="30" height="30" style="color:var(--neon)"')}<b class="head" style="font-size:16px">${m?'เปลี่ยนไฟล์โปสเตอร์':'เลือกไฟล์ หรือลากไฟล์มาวางที่นี่'}</b><span class="small muted">PNG, JPG หรือ PDF ไม่เกิน 20 MB</span></div></label>
+  ${m?`<div class="filecard">${m.type==='application/pdf'?ico.file:`<img src="${posterURL||''}" alt="" style="width:34px;height:48px;object-fit:cover;border-radius:4px">`}<div style="min-width:0;flex:1"><b>${esc(m.name)}</b><div class="muted small">${fmtSize(m.size)}${m.w?` · ${m.w}×${m.h} px`:''} ${ratioBadge(m)}</div></div><button class="btn sm danger" type="button" data-act="delposter">ลบ</button></div>`:''}
+  <div class="stack" style="gap:8px"><span class="flabel">เครื่องมือ AI ที่ใช้</span>
+   <div class="seg" role="group">${TOOLS.map(o=>o.v).concat(['อื่น ๆ']).map(v=>`<button type="button" data-seg="tool" data-v="${esc(v)}" aria-pressed="${p.tool===v}">${esc(v)}</button>`).join('')}</div>
+   ${p.tool==='อื่น ๆ'?`<input type="text" id="p-tool-o" data-bind="poster.toolOther" value="${esc(p.toolOther)}" placeholder="ชื่อเครื่องมือ AI">`:''}</div>
+  <label class="f"><span>สิ่งที่ตรวจพบและแก้ไขหลัง AI สร้าง <em>(ช่วยแสดงการใช้ AI อย่างรับผิดชอบ)</em></span><textarea id="p-edits" data-bind="poster.edits" rows="3" placeholder="เช่น แก้คำสะกดภาษาไทย 3 คำ / AI ใส่ปี ค.ศ. ผิด จึงแก้เป็น...">${esc(p.edits)}</textarea></label>
+ </div>
+ ${navBtns('poster','ไปตรวจสอบและส่งงาน')}
+ </div>
+ <aside class="side"><div class="card stack"><h3>ตัวอย่างโปสเตอร์</h3><div class="poster-frame" id="pframe">${posterPreview()}</div>
+  ${m?`<button class="btn" type="button" data-act="dlposter">${ico.dl}ดาวน์โหลดโปสเตอร์</button>`:''}</div>
+  <div class="card">${aira(`ภาพสวยไม่พอ ต้อง <b>ถูกต้อง</b> ด้วย AI ช่วยออกแบบได้ แต่คนที่รับผิดชอบเนื้อหาคือเรา ตรวจตัวสะกดและข้อเท็จจริงทุกจุดก่อนอัปโหลด`)}</div>
+  <div class="card stack" style="gap:10px"><h3>เกณฑ์การให้คะแนน</h3>${rubricHTML()}</div></aside></div>`};
+function ratioBadge(m){if(!m.w)return '';const r=m.h/m.w;const ok=Math.abs(r-1.414)<0.12;return `<span class="badge ${ok?'ok':'warn'}" style="margin-left:4px">${ok?'สัดส่วน A4':'สัดส่วนไม่ใช่ A4 แนวตั้ง'}</span>`}
+function posterPreview(){const m=S.posterMeta;if(!m||!posterURL)return `<div class="poster-empty">${airaSVG().replace('<svg','<svg width="60" height="68"')}<p style="margin-top:8px">อัปโหลดโปสเตอร์แล้ว<br>ตัวอย่างจะแสดงที่นี่</p></div>`;
+ if(m.type==='application/pdf')return `<canvas id="pdfcanvas" hidden></canvas><div class="poster-empty" id="pdfph">${ico.file}<p style="margin-top:8px">${esc(m.name)}</p><p class="small">กำลังเตรียมตัวอย่าง…</p></div>`;
+ return `<img src="${posterURL}" alt="ตัวอย่างโปสเตอร์ ${esc(m.name)}">`}
+let pdfjsP=null;
+function loadScript(u){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=u;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function pdfjs(){if(!pdfjsP)pdfjsP=(async()=>{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+ const lib=window.pdfjsLib;lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';return lib})();return pdfjsP}
+async function renderPdfPreviews(){const m=S.posterMeta;if(!m||m.type!=='application/pdf'||!posterBlob)return;const cvs=[...document.querySelectorAll('#pdfcanvas,[data-pdfcanvas]')];if(!cvs.length)return;
+ try{const lib=await pdfjs();const buf=await posterBlob.arrayBuffer();const doc=await lib.getDocument({data:buf,isEvalSupported:false}).promise;const page=await doc.getPage(1);
+  const vp0=page.getViewport({scale:1});
+  for(const c of cvs){const vp=page.getViewport({scale:Math.min(2,900/vp0.height)});c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;c.hidden=false;const ph=c.parentElement.querySelector('.poster-empty');if(ph)ph.remove()}
+  if(!m.w){m.w=Math.round(vp0.width);m.h=Math.round(vp0.height);save()}}
+ catch(e){document.querySelectorAll('.poster-empty .small').forEach(x=>{if(x.textContent.includes('กำลัง'))x.textContent='แสดงตัวอย่าง PDF ไม่ได้ แต่ไฟล์ถูกเก็บไว้แล้ว'})}}
+AFTER.poster=()=>{if(!S.poster.prompt.trim()&&(S.poster.points.trim()||S.report.title.trim())){} renderPdfPreviews();
+ const drop=$('#drop'),inp=$('#p-file');
+ inp.addEventListener('change',()=>{if(inp.files[0])takeFile(inp.files[0])});
+ ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('on')}));
+ ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('on')}));
+ drop.addEventListener('drop',e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];if(f)takeFile(f)});};
+async function takeFile(f){const okType=/^(image\/(png|jpeg)|application\/pdf)$/.test(f.type)||/\.(png|jpe?g|pdf)$/i.test(f.name);
+ if(!okType){toast('รองรับเฉพาะไฟล์ PNG, JPG หรือ PDF',3000);return}if(f.size>20*1048576){toast('ไฟล์ใหญ่เกิน 20 MB ให้ลดขนาดก่อน',3000);return}
+ const type=f.type||(/\.pdf$/i.test(f.name)?'application/pdf':/\.png$/i.test(f.name)?'image/png':'image/jpeg');
+ const blob=f.slice(0,f.size,type);const meta={name:f.name,type,size:f.size,at:Date.now()};
+ if(type!=='application/pdf'){try{const bm=await createImageBitmap(blob);meta.w=bm.width;meta.h=bm.height;bm.close&&bm.close()}catch(e){}}
+ const ok=await IDB.put('poster',blob);posterBlob=blob;posterURL&&URL.revokeObjectURL(posterURL);posterURL=URL.createObjectURL(blob);
+ S.posterMeta=meta;S.dl.poster=null;save(true);render();toast(ok?'อัปโหลดโปสเตอร์แล้ว':'แสดงโปสเตอร์ได้ แต่บันทึกในเบราว์เซอร์นี้ไม่ได้ ถ้าปิดหน้าต้องอัปโหลดใหม่',3600)}
+function posterFileName(){const r=S.report,m=S.posterMeta;const ext=(m.name.match(/\.(png|jpe?g|pdf)$/i)||['','png'])[1].toLowerCase();return safeName(`โปสเตอร์ ${r.classroom.replace('/','-')} เลขที่${r.number} ${r.name}`.trim())+'.'+ext}
+async function downloadPoster(btn){if(!posterBlob){toast('ยังไม่มีไฟล์โปสเตอร์');return}const old=btn.innerHTML;btn.disabled=true;
+ const ok=await saveFile(posterFileName(),posterBlob);btn.disabled=false;btn.innerHTML=old;if(ok){S.dl.poster=Date.now();save(true);if(curView()==='review')render()}}
+
+/* ---- REVIEW ---- */
+VIEW.review=()=>{const m=S.posterMeta,rv=S.review;const all=reviewState().ok;
+ const reqs=REVIEW_CHECKS.map(c=>{const a=c.auto?c.auto():null;return `<li><label><input type="checkbox" id="rv-${c.k}" data-bind="review.checks.${c.k}" ${rv.checks[c.k]?'checked':''}><span>${c.t}</span></label>${c.hint?`<span class="hint" style="color:${a?'var(--ok)':'var(--gold)'}">${esc(c.hint())}</span>`:''}</li>`}).join('');
+ const dlBadge=t=>t?`<span class="badge ok">ดาวน์โหลดแล้ว ${new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</span>`:`<span class="badge warn">ยังไม่ดาวน์โหลด</span>`;
+ return `<div class="grid"><div class="stack">
+ <div class="card stack"><div><div class="eyebrow">ขั้นที่ 5 · Review &amp; Submission</div><h2>ตรวจสอบและส่งงาน</h2></div>
+  <div class="works">
+   <div class="work"><div class="row between"><b class="head">ชิ้นงานที่ 1 · รายงาน</b>${dlBadge(S.dl.report)}</div>
+    <div class="thumb"><div class="a4-frame" data-a4><div class="a4"></div><div class="a4-cut">เกิน 1 หน้า</div></div></div>
+    <div class="row"><button class="btn primary" type="button" data-act="pdf">${ico.dl}ดาวน์โหลด PDF</button><a class="btn" href="#report">แก้ไขรายงาน</a></div></div>
+   <div class="work"><div class="row between"><b class="head">ชิ้นงานที่ 2 · โปสเตอร์</b>${m?dlBadge(S.dl.poster):'<span class="badge bad">ยังไม่อัปโหลด</span>'}</div>
+    <div class="thumb"><div class="poster-frame">${m&&m.type==='application/pdf'?`<canvas data-pdfcanvas hidden></canvas><div class="poster-empty">${ico.file}<p class="small">กำลังเตรียมตัวอย่าง…</p></div>`:posterPreview()}</div></div>
+    <div class="row">${m?`<button class="btn primary" type="button" data-act="dlposter">${ico.dl}ดาวน์โหลดโปสเตอร์</button>`:''}<a class="btn" href="#poster">${m?'แก้ไขโปสเตอร์':'ไปอัปโหลดโปสเตอร์'}</a></div></div>
+  </div></div>
+ <div class="card stack"><h2>Checklist ก่อนส่ง</h2><p class="muted small">ติ๊กเมื่อตรวจแล้ว ข้อที่ระบบตรวจได้จะแสดงผลไว้ด้านขวา</p>
+  <ul class="clean reqs" id="reqs">${reqs}</ul></div>
+ <div class="card stack">
+  ${all?`<div class="ready fade"><h2 style="color:var(--neon)">ตรวจครบแล้ว พร้อมส่ง</h2></div>`:''}
+  <h3>วิธีส่งงาน</h3>
+  <ol class="qlist" style="font-size:16px"><li>กดดาวน์โหลดรายงาน PDF และโปสเตอร์ด้านบน</li><li>เปิด Google Classroom ของรายวิชา ว32281 แล้วเข้างาน "AI Research &amp; Infographic Sprint"</li><li>แนบไฟล์ทั้ง 2 ชิ้น แล้วกด "ส่งงาน" ใน Google Classroom</li></ol>
+  <div class="note"><b>หมายเหตุ</b> เว็บไซต์นี้ไม่ได้ส่งงานถึงครู งานจะถึงครูเมื่อส่งใน Google Classroom หรือช่องทางที่ครูกำหนดเท่านั้น</div>
+  <div class="row"><button class="btn primary" type="button" data-act="dlboth">${ico.dl}ดาวน์โหลดทั้ง 2 ชิ้น</button><button class="btn" type="button" data-act="copyreport">คัดลอกข้อความรายงาน</button></div>
+ </div>
+ ${navBtns('review','')}
+ <div class="row" style="justify-content:flex-end"><button class="btn sm danger" type="button" data-act="reset">ล้างข้อมูลทั้งหมด</button></div>
+ </div>
+ ${side(all?'เยี่ยมมาก! ตรวจครบทุกข้อแล้ว อย่าลืม <b>แนบไฟล์และกดส่งใน Google Classroom</b> นะ':'ช่วงสุดท้าย 10 นาที ตรวจทีละข้อให้ครบ แล้วดาวน์โหลดผลงานทั้ง 2 ชิ้นไปส่งใน Google Classroom')}</div>`};
+AFTER.review=()=>{paintA4();observeFrames();fontsReady.then(paintA4);renderPdfPreviews()};
+function reportText(){const r=S.report;const clean=v=>String(v||'').split('\n').map(l=>l.replace(/^#+\s*/,'')).join('\n').trim();
+ return `${r.title.trim()}\n${r.name} ชั้น ${r.classroom} เลขที่ ${r.number}\n\nบทนำ\n${clean(r.intro)}\n\nเนื้อหา\n${clean(r.content)}\n\nตัวอย่างประกอบ\n${clean(r.example)}\n\nสรุป\n${clean(r.summary)}\n\nแหล่งอ้างอิง\n${r.refs.trim()}`}
+
+/* ================= STEPPER LIVE ================= */
+function updateStepper(){const v=curView();document.querySelectorAll('.stepper li').forEach((li,i)=>{const k=VIEWS[i];if(k===v)return;const d=viewDone(k);li.className=d?'done':'';li.querySelector('.dot').textContent=d?'✓':i+1})}
+
+/* ================= EVENTS ================= */
+document.addEventListener('input',e=>{const el=e.target;const p=el.dataset&&el.dataset.bind;if(!p)return;
+ setP(p,el.type==='checkbox'?el.checked:el.value);save();const v=curView();
+ if(v==='research')refreshResearch();
+ else if(v==='report')paintA4();
+ else if(v==='poster'){if(p==='poster.points'){const n=S.poster.points.split('\n').filter(x=>x.trim()).length;const b=$('#b-npts');b.textContent=n+' ประเด็น';b.className='badge '+(n>=3&&n<=5?'ok':'warn')}updateStepper()}
+ else if(v==='review'){if(reviewState().ok&&p.startsWith('review.')){render();confetti(140)}else if(p.startsWith('review.'))updateStepper()}});
+document.addEventListener('change',e=>{if(e.target.matches('select[data-bind]'))e.target.dispatchEvent(new Event('input',{bubbles:true}))});
+function arm(btn,label,fn){if(btn.dataset.arm==='1'){btn.dataset.arm='';fn();return}const old=btn.textContent;btn.dataset.arm='1';btn.textContent=label;btn.classList.add('gold');
+ setTimeout(()=>{if(btn.isConnected&&btn.dataset.arm==='1'){btn.dataset.arm='';btn.textContent=old;btn.classList.remove('gold')}},5000)}
+document.addEventListener('click',async e=>{
+ const sg=e.target.closest('[data-seg]');if(sg){S.poster[sg.dataset.seg]=sg.dataset.v;save();if(sg.dataset.seg==='tool'){render();return}sg.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===sg));return}
+ const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
+ if(act==='draw')draw();
+ else if(act==='redraw')arm(a,'กดอีกครั้ง: โน้ตค้นคว้าจะถูกล้าง',()=>{S.topic=null;S.topicAt=null;S.research=blank().research;save(true);render();toast('ล้างหัวข้อแล้ว สุ่มใหม่ได้')});
+ else if(act==='addsrc'){S.research.sources.push({title:'',org:'',url:'',year:'',checks:{}});save();render();setTimeout(()=>{const f=$('#s-t-'+(S.research.sources.length-1));f&&f.focus()},30)}
+ else if(act==='delsrc'){S.research.sources.splice(+a.dataset.i,1);save();render()}
+ else if(act==='savedraft'){const ok=save(true);toast(ok?'บันทึกฉบับร่างในเบราว์เซอร์นี้แล้ว':'บันทึกไม่ได้ เบราว์เซอร์นี้ปิดการเก็บข้อมูลไว้',3000)}
+ else if(act==='fillbody'){if(S.report.content.trim()){toast('ช่องเนื้อหามีข้อความแล้ว ลบออกก่อนหากต้องการเริ่มจากโครงใหม่',3200);return}
+  S.report.content=T().points.map((p,i)=>`# ${p.t}\n${(S.research.notes[i]||'').trim()}`).join('\n');if(!S.report.summary.trim())S.report.summary=S.research.summary;save(true);render();toast('นำโน้ตมาเป็นโครงแล้ว เรียบเรียงต่อเป็นย่อหน้า',3000)}
+ else if(act==='fillrefs'){const d=new Date().toLocaleDateString('th-TH',{dateStyle:'long'});const list=S.research.sources.filter(s=>s.title&&isUrl(s.url));
+  if(!list.length){toast('ยังไม่มีแหล่งอ้างอิงที่กรอกครบในขั้นค้นคว้า',3000);return}
+  S.report.refs=list.map(s=>`${s.org&&s.org.trim()?s.org.trim()+'. ':''}(${s.year&&s.year.trim()?s.year.trim():'ม.ป.ป.'}). ${s.title.trim()}. สืบค้นเมื่อ ${d}, จาก ${s.url.trim()}`).join('\n');save(true);render()}
+ else if(act==='fullpreview'){reportMode='preview';render();window.scrollTo(0,0)}
+ else if(act==='editreport'){reportMode='edit';render()}
+ else if(act==='pdf')downloadReport(a);
+ else if(act==='copyreport')copy(reportText(),'คัดลอกข้อความรายงานแล้ว');
+ else if(act==='pullpoints'){const heads=S.report.content.split('\n').filter(l=>l.trim().startsWith('#')).map(l=>l.replace(/^#+\s*/,'').trim()).slice(0,5);
+  if(!heads.length){toast('ยังไม่มีหัวข้อย่อย (#) ในรายงาน',3000);return}S.poster.points=heads.join('\n');save(true);render();toast('ดึงหัวข้อแล้ว เติมสาระสั้น ๆ ต่อท้ายแต่ละข้อ',3000)}
+ else if(act==='genprompt'){S.poster.prompt=buildPrompt();save(true);const t=$('#p-prompt');if(t)t.value=S.poster.prompt;toast('สร้าง Prompt แล้ว แก้ไขต่อได้')}
+ else if(act==='copyprompt'){if(!S.poster.prompt.trim()){S.poster.prompt=buildPrompt();save(true);const t=$('#p-prompt');if(t)t.value=S.poster.prompt}copy(S.poster.prompt,'คัดลอก Prompt แล้ว')}
+ else if(act==='delposter')arm(a,'กดอีกครั้งเพื่อลบ',async()=>{await IDB.del('poster');posterBlob=null;posterURL&&URL.revokeObjectURL(posterURL);posterURL=null;S.posterMeta=null;S.dl.poster=null;save(true);render()});
+ else if(act==='dlposter')downloadPoster(a);
+ else if(act==='dlboth'){if(!reportFill().fits){toast('รายงานเกิน 1 หน้า แก้ไขก่อนดาวน์โหลด',3000);return}await downloadReport(a);if(posterBlob)setTimeout(()=>{const b=document.querySelector('[data-act="dlposter"]');if(b)downloadPoster(b)},400);else toast('ยังไม่มีโปสเตอร์ให้ดาวน์โหลด',3000)}
+ else if(act==='reset')arm(a,'กดอีกครั้งเพื่อลบข้อมูลทั้งหมด',async()=>{lsDel(KEY);await IDB.del('poster');posterBlob=null;posterURL=null;S=blank();reportMode='edit';location.hash='#home';render();toast('ล้างข้อมูลแล้ว')});
+});
+window.addEventListener('resize',()=>document.querySelectorAll('[data-a4]').forEach(scaleFrame));
+
+/* rubric drawer */
+$('#drawer-body').innerHTML=rubricHTML();
+function drawer(on){$('#drawer').classList.toggle('on',on);$('#drawer-bg').classList.toggle('on',on);$('#drawer').setAttribute('aria-hidden',String(!on));if(on)$('#drawer-x').focus()}
+$('#fab').onclick=()=>drawer(true);$('#drawer-x').onclick=()=>drawer(false);$('#drawer-bg').onclick=()=>drawer(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')drawer(false)});
+
+/* ================= FX ================= */
+(function particles(){const c=$('#particles');const x=c.getContext('2d');let W,H,P=[];const dpr=Math.min(2,devicePixelRatio||1);
+ function size(){W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';x.setTransform(dpr,0,0,dpr,0,0);
+  P=Array.from({length:Math.round(Math.min(44,W*H/26000))},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.14,vy:-Math.random()*.18-.03,c:Math.random()<.6?'0,229,255':'155,135,245',a:Math.random()*.5+.15}))}
+ function drawP(){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-5){p.y=H+5;p.x=Math.random()*W}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;
+  x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fillStyle=`rgba(${p.c},${p.a})`;x.fill()});if(!reduce&&!document.hidden)requestAnimationFrame(drawP)}
+ size();addEventListener('resize',size);drawP();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!reduce)drawP()});})();
+function confetti(n){if(reduce)return;const c=$('#confetti');const x=c.getContext('2d');const W=innerWidth,H=innerHeight;c.width=W;c.height=H;
+ const cols=['#9B87F5','#57CCF2','#00E5FF','#FFD66D','#F8FAFC'];const P=Array.from({length:n||140},()=>({x:W/2+(Math.random()-.5)*120,y:H*.35,vx:(Math.random()-.5)*11,vy:-Math.random()*11-4,s:Math.random()*6+4,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[rnd(cols.length)]}));
+ const t0=performance.now();(function f(t){x.clearRect(0,0,W,H);const k=(t-t0)/2600;P.forEach(p=>{p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=Math.max(0,1-k);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+ if(k<1)requestAnimationFrame(f);else x.clearRect(0,0,W,H)})(t0);}
+
+/* test hook (no effect for students) */
+window.__sprint={makePDF,state:()=>S};
+/* boot */
+lsDel('krunok_sprint_v1');
+measureA4();
+loadPoster().then(()=>{render();fontsReady.then(()=>{measureA4();if(['report','review'].includes(curView()))paintA4()})});
+})();
+</script>
+
+
+<style>.slmode #krunok-home,#krunok-home.slmode{display:none!important}@media print{#krunok-home{display:none!important}}</style>
+<a href="../index.html" id="krunok-home" aria-label="กลับหน้าหลัก KruNok AI Academy" title="กลับหน้าหลัก" style="position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2147483000;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2A2365;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35);opacity:.85;text-decoration:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></a>
+</body></html>

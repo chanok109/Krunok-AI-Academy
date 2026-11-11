@@ -1,0 +1,437 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AI Quest หน่วยที่ 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@600&display=swap">
+<style>
+/* Layout: sticker-style arcade console on a dot-grid lab mat; each stage (learning objective) owns one bright color, the stage map is a 5-layer neural net */
+:root{
+  --bg:#F4F1FF; --dot:#DAD3FA; --surface:#FFFFFF; --ink:#1D1742; --muted:#5D5683; --edge:#1D1742; --shadow:#1D1742; --on:#FFFFFF;
+  --s1:#7246F5; --s2:#F06A0A; --s3:#008F83; --s4:#E2316F; --s5:#2A68E8;
+  --good:#12955A; --bad:#DD3437; --gold:#FFC22E;
+  --f-display:"Mitr","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --c:var(--s1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141127; --dot:#272149; --surface:#211C3D; --ink:#F2EFFF; --muted:#ADA5D8; --edge:#4B437E; --shadow:#07060F; --on:#141127;
+  --s1:#A486FF; --s2:#FF9B4D; --s3:#2FD0BE; --s4:#FF77A4; --s5:#6FA0FF;
+  --good:#45D18A; --bad:#FF6B6E; --gold:#FFD15C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141127; --dot:#272149; --surface:#211C3D; --ink:#F2EFFF; --muted:#ADA5D8; --edge:#4B437E; --shadow:#07060F; --on:#141127;
+  --s1:#A486FF; --s2:#FF9B4D; --s3:#2FD0BE; --s4:#FF77A4; --s5:#6FA0FF;
+  --good:#45D18A; --bad:#FF6B6E; --gold:#FFD15C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background-color:var(--bg);background-image:radial-gradient(var(--dot) 1.3px,transparent 1.4px);background-size:22px 22px;color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.muted{color:var(--muted)}
+.tint{background:color-mix(in srgb,var(--c) 14%,var(--surface))}
+
+.box{background:var(--surface);border:2px solid var(--edge);border-radius:20px;box-shadow:5px 5px 0 var(--shadow)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;border:2px solid var(--edge);border-radius:999px;padding:2px 10px;background:var(--surface);white-space:nowrap}
+.chip.c{background:var(--c);color:var(--on);border-color:var(--edge)}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{padding:20px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(2rem,7vw,2.9rem);line-height:1.05;letter-spacing:-.01em}
+.hero h1 span{background:linear-gradient(transparent 58%,color-mix(in srgb,var(--gold) 75%,transparent) 58%);padding:0 4px}
+.hero .sub{font-size:.95rem;color:var(--muted)}
+.hero .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.bot{width:96px;height:96px}
+.bot .eye{animation:blink 4s infinite;transform-origin:center;transform-box:fill-box}
+.bot .ant{animation:bob 2.4s ease-in-out infinite;transform-origin:bottom;transform-box:fill-box}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes bob{50%{transform:rotate(-12deg)}}
+.who{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem;color:var(--muted)}
+.tog{border:2px solid var(--edge);border-radius:999px;background:var(--surface);padding:2px 12px;font-size:.8rem;font-weight:600}
+
+/* network map */
+.net{padding:12px 10px 6px}
+.net svg{display:block;width:100%;height:auto}
+.net .edge{stroke:var(--dot);stroke-width:2}
+.net .edge.on{stroke:var(--ink);stroke-opacity:.35}
+.net .node{stroke:var(--edge);stroke-width:2}
+.net .lbl{fill:var(--muted);font-family:var(--f-display);font-size:12px}
+
+/* stage list */
+.stages{display:grid;gap:14px}
+.stage{--c:var(--s1);display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;padding:14px 16px;transition:transform .15s,box-shadow .15s}
+.stage:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--shadow)}
+.stage:active:not(:disabled){transform:translate(3px,3px);box-shadow:2px 2px 0 var(--shadow)}
+.stage:disabled{opacity:.5;cursor:default}
+.tile{width:62px;height:62px;border-radius:16px;background:var(--c);color:var(--on);border:2px solid var(--edge);display:grid;place-items:center;position:relative;transform:rotate(-4deg)}
+.tile svg{width:30px;height:30px}
+.tile b{position:absolute;right:-8px;top:-8px;width:26px;height:26px;border-radius:50%;background:var(--surface);color:var(--ink);border:2px solid var(--edge);display:grid;place-items:center;font-family:var(--f-display);font-size:.85rem}
+.stage h3{font-size:1.12rem}
+.stage p{font-size:.86rem;color:var(--muted)}
+.stage .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.stage .end{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.go{background:var(--c);color:var(--on);border:2px solid var(--edge);border-radius:12px;padding:4px 14px;font-weight:600;font-family:var(--f-display)}
+.stars{display:flex;gap:2px}
+.stars svg{width:20px;height:20px}
+.stars .f{fill:var(--gold);stroke:var(--edge);stroke-width:1.5}
+.stars .e{fill:var(--surface);stroke:var(--edge);stroke-width:1.5;opacity:.5}
+
+/* buttons */
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:2px solid var(--edge);background:var(--surface);border-radius:14px;padding:10px 20px;font-weight:600;font-family:var(--f-display);box-shadow:0 4px 0 var(--shadow);transition:transform .08s,box-shadow .08s}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+.btn.primary{background:var(--c);color:var(--on)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* play */
+.panel{overflow:hidden;display:flex;flex-direction:column}
+.banner{background:var(--c);color:var(--on);padding:14px 18px;display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--edge)}
+.banner svg{width:28px;height:28px;flex:none}
+.banner .t{flex:1;min-width:0}
+.banner small{display:block;font-size:.78rem;opacity:.9;font-weight:500}
+.banner h2{font-size:1.1rem}
+.banner .count{font-family:var(--f-display);font-size:1.1rem;white-space:nowrap}
+.inner{padding:20px;display:flex;flex-direction:column;gap:16px}
+.hud{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar{flex:1;min-width:120px;height:14px;border:2px solid var(--edge);border-radius:99px;background:var(--surface);overflow:hidden}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--c) 0 10px,color-mix(in srgb,var(--c) 75%,var(--surface)) 10px 20px);transition:width .35s}
+.score{position:relative}
+.combo{background:var(--gold);color:#1D1742;border-color:var(--edge)}
+.plus{position:absolute;right:6px;top:-6px;font-family:var(--f-display);font-weight:600;color:var(--good);animation:up .9s ease-out forwards;pointer-events:none}
+@keyframes up{to{transform:translateY(-26px);opacity:0}}
+.q{font-size:1.14rem;font-weight:500;line-height:1.6}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--surface);border:2px solid var(--edge);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:center;box-shadow:0 3px 0 var(--shadow);transition:transform .1s,background .15s}
+.opt .k{width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--c) 18%,var(--surface));border:2px solid var(--c);display:grid;place-items:center;font-family:var(--f-display);font-weight:600;color:var(--ink)}
+.opt:hover:not(:disabled){transform:translateY(-2px);background:color-mix(in srgb,var(--c) 8%,var(--surface))}
+.opt:disabled{cursor:default}
+.opt.right,.bin.right,.slot.right{background:color-mix(in srgb,var(--good) 20%,var(--surface));border-color:var(--good)}
+.opt.right .k{background:var(--good);border-color:var(--good);color:var(--on)}
+.opt.wrong,.bin.wrong,.slot.wrong{background:color-mix(in srgb,var(--bad) 18%,var(--surface));border-color:var(--bad)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:var(--on)}
+.opt.dim{opacity:.55}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:pop .3s cubic-bezier(.3,1.6,.6,1)}
+@keyframes pop{from{transform:scale(.92)}to{transform:none}}
+.feedback{border:2px solid var(--edge);border-radius:14px;padding:12px 14px;font-size:.95rem;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}
+.feedback .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--on);font-weight:700;font-family:var(--f-display)}
+.feedback.good{background:color-mix(in srgb,var(--good) 14%,var(--surface))}.feedback.good .ic{background:var(--good)}
+.feedback.bad{background:color-mix(in srgb,var(--bad) 12%,var(--surface))}.feedback.bad .ic{background:var(--bad)}
+.feedback strong{font-family:var(--f-display);font-weight:600}
+
+.card{background:color-mix(in srgb,var(--gold) 28%,var(--surface));border:2px solid var(--edge);border-radius:16px;padding:20px 18px;font-size:1.08rem;font-weight:500;text-align:center;box-shadow:4px 4px 0 var(--shadow);transform:rotate(-1deg)}
+.bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bin{background:var(--surface);border:2px solid var(--edge);border-radius:14px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0;box-shadow:0 3px 0 var(--shadow);transition:transform .1s}
+.bin b{font-family:var(--f-display);font-weight:600;color:var(--c)}
+.bin span{font-size:.8rem;color:var(--muted)}
+.bin:hover:not(:disabled){transform:translateY(-2px)}
+.bin:disabled{cursor:default}
+.bin.right b{color:var(--good)}.bin.wrong b{color:var(--bad)}
+
+.pool,.slots{display:grid;gap:8px}
+.ev{text-align:left;background:var(--surface);border:2px solid var(--edge);border-radius:12px;padding:10px 12px;font-size:.95rem;box-shadow:0 3px 0 var(--shadow)}
+.ev:hover:not(:disabled){transform:translateY(-2px)}
+.ev:disabled{opacity:.3;cursor:default;box-shadow:none}
+.slot{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;border:2px dashed color-mix(in srgb,var(--edge) 50%,transparent);border-radius:12px;padding:8px 12px;min-height:48px;background:transparent;text-align:left;font-size:.95rem}
+.slot .n{width:26px;height:26px;border-radius:50%;background:var(--c);color:var(--on);display:grid;place-items:center;font-family:var(--f-display);font-size:.85rem}
+.slot.filled{border-style:solid;border-color:var(--edge);background:color-mix(in srgb,var(--c) 12%,var(--surface))}
+.slot.right,.slot.wrong{border-style:solid}
+.slot .yr{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lab{font-family:var(--f-display);font-weight:600;font-size:.95rem;color:var(--muted)}
+.note{font-size:.88rem;color:var(--muted)}
+
+.form{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:600;min-width:0}
+.form input{font:inherit;color:var(--ink);background:var(--surface);border:2px solid var(--edge);border-radius:12px;padding:9px 12px;width:100%}
+
+.result{text-align:center;align-items:center}
+.big{font-family:var(--f-display);font-weight:600;font-size:clamp(3rem,12vw,4.4rem);line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.bigstars{display:flex;gap:8px;justify-content:center}
+.bigstars svg{width:48px;height:48px}
+.bigstars svg:nth-child(2){transform:translateY(-10px) scale(1.15)}
+.rank{display:inline-block;font-family:var(--f-display);font-weight:600;background:var(--gold);color:#1D1742;border:2px solid var(--edge);border-radius:999px;padding:6px 18px;box-shadow:3px 3px 0 var(--shadow)}
+.tbl{overflow-x:auto;width:100%}
+table{width:100%;border-collapse:collapse;font-size:.92rem;text-align:left}
+th{font-size:.75rem;color:var(--muted);font-weight:600;padding:6px 6px;border-bottom:2px solid var(--edge)}
+td{padding:9px 6px;border-bottom:1px solid color-mix(in srgb,var(--edge) 30%,transparent);vertical-align:middle}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dotc{display:inline-block;width:12px;height:12px;border-radius:4px;background:var(--c);border:1.5px solid var(--edge);margin-right:8px;vertical-align:-1px}
+.ok{color:var(--good);font-weight:600}.low{color:var(--bad);font-weight:600}
+.slip{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;border:2px dashed var(--edge);border-radius:14px;padding:12px 14px;font-size:.92rem;text-align:left}
+.slip span{display:block;font-size:.75rem;color:var(--muted)}
+.foot{font-size:.8rem;color:var(--muted)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:540px){.bins{grid-template-columns:1fr}.inner{padding:16px}.form{grid-template-columns:1fr 1fr}.form label:first-child{grid-column:1/-1}.hero{grid-template-columns:1fr}.bot{width:72px;height:72px}.stage{grid-template-columns:54px minmax(0,1fr)}.tile{width:54px;height:54px}.stage .end{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start}}
+</style>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="wrap" id="app"></div>
+
+<script>
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const Q=(q,a,w,e)=>({type:'quiz',q,a,w,e});
+const S=(bins,t,k,e)=>({type:'sort',bins,t,k,e});
+const O=(title,events)=>({type:'order',title,events});
+
+const BINS={
+ layers:[{k:'ai',b:'AI (เขียนกฎด้วยมือ)',s:'ไม่ได้เรียนรู้จากข้อมูลเอง'},{k:'ml',b:'Machine Learning',s:'เรียนรู้รูปแบบจากข้อมูล'},{k:'dl',b:'Deep Learning',s:'โครงข่ายประสาทเทียมหลายชั้น'},{k:'gen',b:'Generative AI',s:'สร้างเนื้อหาใหม่'}],
+ tech:[{k:'cv',b:'Computer Vision',s:'มองเห็นและเข้าใจภาพ'},{k:'nlp',b:'NLP',s:'เข้าใจและสร้างภาษามนุษย์'},{k:'sp',b:'การรู้จำเสียงพูด',s:'แปลงเสียงพูดเป็นข้อความ'},{k:'rec',b:'ระบบแนะนำ',s:'แนะนำตามความสนใจ'},{k:'fc',b:'การพยากรณ์',s:'คาดการณ์สิ่งที่จะเกิด'},{k:'an',b:'ตรวจจับความผิดปกติ',s:'หาสิ่งที่ต่างจากรูปแบบปกติ'}],
+ risk:[{k:'un',b:'ยอมรับไม่ได้',s:'ห้ามใช้'},{k:'hi',b:'ความเสี่ยงสูง',s:'ประเมินความเสี่ยง มีมนุษย์กำกับ'},{k:'li',b:'ความเสี่ยงจำกัด',s:'ต้องแจ้งผู้ใช้ว่าใช้ AI'},{k:'mi',b:'ความเสี่ยงต่ำ',s:'ไม่มีข้อบังคับเฉพาะ'}]
+};
+
+/* One stage per learning objective. Item set is fixed so every student covers the same content; order of items and options is shuffled. */
+const STAGES=[
+{id:'s1',obj:'จุดประสงค์ 1',title:'ความหมายของปัญญาประดิษฐ์',desc:'Turing Test, McCarthy, 4 แนวทางของ Russell & Norvig, นิยามปัจจุบัน และองค์ประกอบของ AI',read:'ใบความรู้หัวข้อ 1',min:4,items:[
+ Q('ข้อใดอธิบายหลักการของการทดสอบของทัวริง (Turing Test) ได้ถูกต้อง','ผู้ถามพิมพ์คุยกับคนและเครื่องที่มองไม่เห็นตัว ถ้าแยกไม่ออกว่าฝ่ายใดเป็นเครื่อง ถือว่าเครื่องแสดงพฤติกรรมที่ฉลาด',['ให้เครื่องแข่งหมากรุกกับแชมป์โลก ถ้าเครื่องชนะได้ภายใต้กติกามาตรฐาน ถือว่าเครื่องแสดงพฤติกรรมที่ฉลาด','ให้เครื่องทำข้อสอบคณิตศาสตร์ชุดเดียวกับมนุษย์ ถ้าได้คะแนนสูงกว่า ถือว่าเครื่องแสดงพฤติกรรมที่ฉลาด','ให้เครื่องอธิบายการทำงานภายในของตนเอง ถ้าอธิบายได้ครบถ้วน ถือว่าเครื่องแสดงพฤติกรรมที่ฉลาด'],'Turing เสนอ "เกมเลียนแบบ" ในบทความ Computing Machinery and Intelligence (ค.ศ. 1950) โดยวัดจากการที่ผู้ถามแยกคนกับเครื่องไม่ออก'),
+ Q('ใครเป็นผู้บัญญัติคำว่า Artificial Intelligence และได้รับการยกย่องว่าเป็น "บิดาแห่งปัญญาประดิษฐ์"','John McCarthy',['Alan Turing','Marvin Minsky','Geoffrey Hinton'],'McCarthy ใช้คำนี้ในข้อเสนอโครงการวิจัย Dartmouth (ค.ศ. 1955) และใช้อย่างเป็นทางการในการประชุมที่ Dartmouth College ค.ศ. 1956'),
+ Q('หุ่นยนต์ดูดฝุ่นรับรู้สิ่งกีดขวางด้วยเซนเซอร์ แล้วสั่งมอเตอร์ให้เลี้ยวหลบเพื่อทำความสะอาดให้ทั่วห้อง ตรงกับแนวทางใดของ Russell & Norvig','กระทำอย่างมีเหตุผล (Acting Rationally)',['คิดเหมือนมนุษย์ (Thinking Humanly)','กระทำเหมือนมนุษย์ (Acting Humanly)','คิดอย่างมีเหตุผล (Thinking Rationally)'],'เป็นตัวแทนที่กระทำอย่างมีเหตุผล (Rational Agent) คือรับรู้สภาพแวดล้อมผ่านเซนเซอร์ แล้วลงมือกระทำผ่านตัวขับเคลื่อนเพื่อบรรลุเป้าหมายได้ดีที่สุด ซึ่งเป็นแนวคิดหลักของการศึกษา AI ในปัจจุบัน'),
+ Q('นิยาม AI ของ OECD และ UNESCO ในปัจจุบัน ต่างจากนิยามยุคแรกของ Turing และ McCarthy อย่างไร','เน้นสิ่งที่ระบบทำได้จริง คือการอนุมานจากข้อมูลเพื่อสร้างผลลัพธ์',['เน้นการเลียนแบบความคิดและพฤติกรรมของมนุษย์ให้เหมือนที่สุด','เน้นว่าระบบต้องมีจิตสำนึกและอารมณ์ความรู้สึกเหมือนมนุษย์','เน้นว่าระบบต้องทำงานด้วยกฎที่มนุษย์เขียนไว้ทุกข้อเท่านั้น'],'นิยามปัจจุบันเน้นสิ่งที่ระบบทำได้จริง จึงใช้เป็นฐานในการออกกฎหมายกำกับดูแล AI ได้ เช่น นิยามของ OECD ที่ใช้ใน EU AI Act'),
+ Q('แอปถ่ายภาพใบพืชแล้วบอกว่าเป็นโรคอะไร เพื่อช่วยเกษตรกรดูแลแปลงปลูก "ภาพใบพืชที่ถ่าย" คือองค์ประกอบใดของ AI','ข้อมูลนำเข้า (Input)',['การเรียนรู้และการอนุมาน (Learning & Inference)','ผลลัพธ์ (Output)','เป้าหมาย (Objective)'],'ภาพเป็นข้อมูลนำเข้า การเทียบกับรูปแบบที่เรียนรู้มาคือการอนุมาน ชื่อโรคที่บอกคือผลลัพธ์ และการช่วยเกษตรกรดูแลแปลงปลูกคือเป้าหมาย'),
+ Q('AI เห็นภาพแมวตัวที่ไม่เคยเห็นมาก่อน แต่ยังบอกได้ว่าเป็นแมว แสดงถึงความสามารถใด','การอนุมาน คือสรุปหาคำตอบที่ไม่ได้ถูกเขียนไว้ตรง ๆ',['การจำภาพแมวทุกภาพที่มีอยู่ในอินเทอร์เน็ตไว้ล่วงหน้า','การทำตามกฎที่โปรแกรมเมอร์เขียนไว้สำหรับแมวตัวนั้น','การตั้งเป้าหมายใหม่ให้ตัวเองโดยไม่ต้องมีมนุษย์กำหนด'],'AI ใช้รูปแบบที่เรียนรู้จากข้อมูลเพื่ออนุมานคำตอบสำหรับข้อมูลใหม่ที่ไม่เคยเห็น')
+]},
+{id:'s2',obj:'จุดประสงค์ 2',title:'พัฒนาการของปัญญาประดิษฐ์',desc:'เรียงเหตุการณ์สำคัญ 2 ยุค และเหตุผลของฤดูหนาวของ AI',read:'ใบความรู้หัวข้อ 2',min:7,items:[
+ O('ยุคบุกเบิกถึงฤดูหนาวครั้งที่ 2 (ค.ศ. 1950–1993)',[
+  {y:1950,l:'1950',t:'Alan Turing ตีพิมพ์บทความเสนอ "เกมเลียนแบบ"'},
+  {y:1956,l:'1956',t:'การประชุมที่ Dartmouth College จุดกำเนิดชื่อ Artificial Intelligence'},
+  {y:1958,l:'1958',t:'Frank Rosenblatt สร้าง Perceptron ต้นแบบโครงข่ายประสาทเทียม'},
+  {y:1966,l:'1966',t:'Joseph Weizenbaum สร้างแชตบอต ELIZA'},
+  {y:1974,l:'1974–1980',t:'ฤดูหนาวของ AI ครั้งที่ 1 รัฐบาลอังกฤษและสหรัฐฯ ลดงบวิจัย'},
+  {y:1986,l:'1986',t:'Rumelhart, Hinton และ Williams เผยแพร่วิธี Backpropagation'},
+  {y:1987,l:'1987–1993',t:'ฤดูหนาวของ AI ครั้งที่ 2 ตลาด Lisp Machine ล่มสลาย'}]),
+ O('ยุค AI ก้าวกระโดด (ค.ศ. 1997–2024)',[
+  {y:1997,l:'1997',t:'Deep Blue ของ IBM ชนะแชมป์หมากรุกโลก Garry Kasparov'},
+  {y:2011,l:'2011',t:'IBM Watson ชนะรายการ Jeopardy! และ Apple เปิดตัว Siri'},
+  {y:2012,l:'2012',t:'AlexNet ชนะการแข่งขันจำแนกภาพ ImageNet'},
+  {y:2016,l:'2016',t:'AlphaGo ชนะ Lee Sedol นักโกะระดับโลก 4 ต่อ 1'},
+  {y:2017,l:'2017',t:'บทความ Attention Is All You Need เสนอสถาปัตยกรรม Transformer'},
+  {y:2020,l:'2020',t:'AlphaFold 2 ทำนายโครงสร้างโปรตีนได้แม่นยำใน CASP14'},
+  {y:2022,l:'2022',t:'OpenAI เปิดตัว ChatGPT'},
+  {y:2024,l:'2024',t:'รางวัลโนเบลมอบแก่งานด้าน AI และ EU AI Act มีผลใช้บังคับ'}]),
+ Q('ข้อใดเป็นสาเหตุสำคัญของฤดูหนาวของ AI ครั้งที่ 1 (ค.ศ. 1974–1980)','ความคาดหวังสูงเกินจริงและพลังคอมพิวเตอร์ไม่พอ ทำให้รัฐบาลลดงบวิจัย',['คอมพิวเตอร์ทั่วไปเร็วขึ้นและถูกลง จนตลาด Lisp Machine ล่มสลาย','ระบบผู้เชี่ยวชาญดูแลและปรับปรุงกฎยาก ทำให้ต้นทุนสูงเกินไป','รัฐบาลอังกฤษและสหรัฐฯ ออกกฎหมายห้ามการวิจัยด้าน AI'],'หนังสือ Perceptrons (1969) ชี้ข้อจำกัดของ Perceptron ชั้นเดียว และรายงาน Lighthill (1973) วิจารณ์ว่า AI ไม่บรรลุเป้าหมาย ส่วนตัวเลือกเรื่อง Lisp Machine และระบบผู้เชี่ยวชาญเป็นสาเหตุของฤดูหนาวครั้งที่ 2'),
+ Q('ปัจจัย 3 อย่างใดที่ทำให้ยุคการเรียนรู้เชิงลึก (Deep Learning) เริ่มต้นได้ในปี ค.ศ. 2012','ข้อมูลจำนวนมาก, GPU และอัลกอริทึม',['ระบบผู้เชี่ยวชาญ, กฎถ้า…แล้ว และ Lisp Machine','Turing Test, ELIZA และ Perceptron ชั้นเดียว','กฎหมาย AI, จริยธรรม AI และ AI Sandbox'],'AlexNet ใช้โครงข่ายประสาทเทียมเชิงลึกที่ฝึกบน GPU กับข้อมูลภาพจำนวนมากจาก ImageNet'),
+ Q('สถาปัตยกรรมใดเป็นรากฐานของโมเดลภาษาขนาดใหญ่ (LLM) เช่น GPT และ Gemini','Transformer (ค.ศ. 2017)',['Perceptron (ค.ศ. 1958)','ระบบผู้เชี่ยวชาญ (ค.ศ. 1980s)','ELIZA (ค.ศ. 1966)'],'Transformer ให้โมเดล "ให้ความสนใจ" ความสัมพันธ์ของทุกคำในประโยคพร้อมกัน')
+]},
+{id:'s3',obj:'จุดประสงค์ 3',title:'ประเภทของปัญญาประดิษฐ์',desc:'ANI/AGI/ASI, การจำแนกของ Hintze และความสัมพันธ์ AI · ML · DL · Generative AI',read:'ใบความรู้หัวข้อ 3',min:6,items:[
+ Q('ระบบจดจำใบหน้า ระบบแนะนำวิดีโอ และแชตบอตที่ใช้ในปัจจุบัน จัดอยู่ในระดับความสามารถใด','ปัญญาประดิษฐ์แบบแคบ (ANI)',['ปัญญาประดิษฐ์ทั่วไป (AGI)','ปัญญาประดิษฐ์ขั้นสูง (ASI)','ปัญญาประดิษฐ์ตระหนักรู้ (Self-aware AI)'],'AI ที่ใช้งานจริงในปัจจุบันทั้งหมดยังเป็น ANI ส่วน AGI ยังไม่มีจริง และ ASI เป็นแนวคิดเชิงทฤษฎี'),
+ Q('Deep Blue ประเมินตำแหน่งหมากจากสถานการณ์บนกระดานตอนนั้นเท่านั้น ไม่มีความจำ ตามการจำแนกของ Hintze จัดเป็นประเภทใด','เครื่องจักรแบบตอบสนอง (Reactive Machines)',['ความจำจำกัด (Limited Memory)','ทฤษฎีทางจิต (Theory of Mind)','ตระหนักรู้ในตนเอง (Self-awareness)'],'Reactive Machines ตอบสนองต่อสถานการณ์ปัจจุบันเท่านั้น ส่วนรถยนต์ขับเคลื่อนอัตโนมัติและแชตบอตปัจจุบันเป็น Limited Memory'),
+ Q('AlphaGo ฝึกเล่นโกะกับตัวเองจำนวนมาก โดยได้รางวัลเมื่อชนะและได้บทลงโทษเมื่อแพ้ เป็นการเรียนรู้แบบใด','การเรียนรู้แบบเสริมกำลัง (Reinforcement Learning)',['การเรียนรู้แบบมีผู้สอน (Supervised Learning)','การเรียนรู้แบบไม่มีผู้สอน (Unsupervised Learning)','ระบบผู้เชี่ยวชาญ (Expert System)'],'การเรียนรู้แบบเสริมกำลังเรียนจากรางวัลและบทลงโทษจากการลองผิดลองถูก'),
+ Q('ข้อใดอธิบายความสัมพันธ์ของ AI, ML, DL และ Generative AI ได้ถูกต้อง','Generative AI ทุกระบบเป็น Deep Learning แต่ Deep Learning ไม่จำเป็นต้องเป็น Generative AI',['Machine Learning ทุกระบบเป็น Deep Learning แต่ Deep Learning ไม่จำเป็นต้องเป็น Machine Learning','AI ทุกระบบต้องเรียนรู้จากข้อมูล ระบบที่เขียนกฎด้วยมือจึงไม่นับเป็น AI','Generative AI เป็นสาขาที่แยกออกจาก Machine Learning และไม่ใช้โครงข่ายประสาทเทียม'],'ทั้งสี่คำซ้อนกันเป็นชั้น คำด้านในเป็นส่วนหนึ่งของคำด้านนอกเสมอ: Generative AI ⊂ DL ⊂ ML ⊂ AI'),
+ S('layers','ระบบ XCON ใช้กฎ "ถ้า…แล้ว" ราว 2,500 ข้อ ช่วยเลือกชิ้นส่วนคอมพิวเตอร์','ai','ระบบผู้เชี่ยวชาญใช้กฎที่มนุษย์เขียนไว้ จึงเป็น AI ชั้นนอกสุด แต่ไม่ใช่ ML'),
+ S('layers','ELIZA จับคำสำคัญในประโยค แล้วตอบด้วยรูปแบบที่เตรียมไว้','ai','ELIZA ตอบตามรูปแบบที่เขียนไว้ล่วงหน้า ไม่ได้เรียนรู้จากข้อมูล'),
+ S('layers','ตัวกรองอีเมลขยะที่เรียนรู้จากอีเมลตัวอย่าง','ml','ใบความรู้ใช้ตัวกรองอีเมลขยะเป็นตัวอย่างของ ML คือเรียนรู้รูปแบบจากข้อมูลโดยไม่ต้องเขียนกฎทุกข้อ'),
+ S('layers','โปรแกรมจัดกลุ่มลูกค้าที่มีพฤติกรรมคล้ายกัน จากข้อมูลที่ไม่มีป้ายกำกับ','ml','เป็นการเรียนรู้แบบไม่มีผู้สอน (Unsupervised Learning) ซึ่งเป็นวิธีหนึ่งของ ML'),
+ S('layers','ระบบจดจำใบหน้าสำหรับปลดล็อกโทรศัพท์','dl','ระบบจดจำใบหน้าใช้โครงข่ายประสาทเทียมหลายชั้นซึ่งเหมาะกับงานภาพ จึงเป็น Deep Learning'),
+ S('layers','ChatGPT เขียนเรียงความใหม่ตามหัวข้อที่ผู้ใช้กำหนด','gen','การสร้างข้อความใหม่เป็นงานของ Generative AI ซึ่งอยู่ชั้นในสุด')
+]},
+{id:'s4',obj:'จุดประสงค์ 4',title:'AI ในชีวิตประจำวัน',desc:'จับคู่บริการที่ใช้ทุกวันกับเทคนิค AI และการใช้ AI อย่างรู้เท่าทัน',read:'ใบความรู้หัวข้อ 3.4 และ 4',min:5,items:[
+ S('tech','ฟีดวิดีโอที่เลือกคลิปตามความสนใจของผู้ใช้แต่ละคน','rec','ฟีดวิดีโอใช้ระบบแนะนำ (ด้านสื่อสังคมและความบันเทิง)'),
+ S('tech','แอปวิเคราะห์โรคพืชจากภาพถ่ายใบ','cv','การวิเคราะห์ภาพใบพืชใช้ Computer Vision (ด้านการเกษตร)'),
+ S('tech','ช่วยแพทย์อ่านภาพเอกซเรย์เพื่อคัดกรองโรคเบื้องต้น','cv','การอ่านภาพทางการแพทย์ใช้ Computer Vision ร่วมกับ Deep Learning'),
+ S('tech','แปลข้อความภาษาอังกฤษเป็นภาษาไทยอัตโนมัติ','nlp','การแปลภาษาเป็นงานของการประมวลผลภาษาธรรมชาติ (NLP)'),
+ S('tech','พูดสั่งโทรศัพท์ว่า "ตั้งปลุก 6 โมงเช้า"','sp','ระบบต้องแปลงเสียงพูดเป็นข้อความก่อน จึงเป็นการรู้จำเสียงพูด (Speech Recognition)'),
+ S('tech','แอปนำทางบอกว่าอีก 20 นาทีถนนสายนี้จะติด','fc','การคาดการณ์การจราจรล่วงหน้าเป็นงานพยากรณ์ (ด้านการเดินทาง)'),
+ S('tech','ธนาคารระงับบัตรทันทีเมื่อพบการซื้อของต่างประเทศที่ไม่เคยเกิดขึ้น','an','การตรวจจับธุรกรรมผิดปกติเป็นงานตรวจจับความผิดปกติ (ด้านการเงิน)'),
+ Q('นักเรียนใช้ Generative AI หาแหล่งอ้างอิงทำรายงาน แต่ได้ชื่อหนังสือที่ไม่มีอยู่จริง ควรทำอย่างไร','ตรวจสอบจากแหล่งที่น่าเชื่อถือก่อนใช้ เพราะ AI อาจสร้างข้อมูลที่ไม่จริง (Hallucination)',['ใช้ได้ทันที เพราะ Generative AI ค้นข้อมูลจากอินเทอร์เน็ตให้ทุกครั้งที่ตอบ','ถามซ้ำจนได้คำตอบเหมือนเดิมสองครั้ง แล้วจึงใส่ในรายการอ้างอิง','เปลี่ยนไปใช้ AI ตัวอื่น แล้วเชื่อคำตอบที่ได้จากตัวใหม่แทน'],'AI ทำนายจากรูปแบบในข้อมูลที่เคยเรียน จึงผิดพลาดได้ ผู้ใช้ควรตรวจสอบข้อเท็จจริงทุกครั้ง')
+]},
+{id:'s5',obj:'จุดประสงค์ 5',title:'จริยธรรมและกฎหมาย AI',desc:'สถานการณ์จริง แนวปฏิบัติของไทย กฎหมายไทย และระดับความเสี่ยงของ EU AI Act',read:'ใบความรู้หัวข้อ 5 และ 6',min:7,items:[
+ Q('นักเรียนคนหนึ่งถ่ายภาพใบหน้าเพื่อนทั้งห้องไปใช้สอน AI โดยไม่ได้ขอความยินยอม เข้าข่ายกฎหมายใดโดยตรง','พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562',['พ.ร.บ.ลิขสิทธิ์ พ.ศ. 2537','พ.ร.บ.คอมพิวเตอร์ พ.ศ. 2560','ร่าง พ.ร.บ.ว่าด้วยปัญญาประดิษฐ์'],'ภาพใบหน้าเป็นข้อมูลส่วนบุคคล การเก็บหรือใช้ต้องได้รับความยินยอมหรือมีเหตุผลที่กฎหมายรองรับ'),
+ Q('ใช้ AI ตัดต่อวิดีโอปลอม (Deepfake) ให้ผู้อื่นเสียชื่อเสียงแล้วโพสต์ลงสื่อสังคม มีความผิดตามกฎหมายใด','พ.ร.บ.คอมพิวเตอร์ (ฉบับที่ 2) พ.ศ. 2560',['พ.ร.บ.ลิขสิทธิ์ พ.ศ. 2537','ร่าง พ.ร.บ.ว่าด้วยปัญญาประดิษฐ์','แนวปฏิบัติจริยธรรม AI ของ UNESCO'],'การนำข้อมูลปลอมเข้าสู่ระบบคอมพิวเตอร์และการตัดต่อภาพผู้อื่นให้เสียชื่อเสียงมีความผิด ครอบคลุมการใช้ AI สร้าง Deepfake ส่วนร่าง พ.ร.บ. AI ยังไม่มีผลบังคับใช้'),
+ Q('นักเรียนส่งรายงานที่ AI เขียนให้ทั้งหมดโดยไม่บอกครู ขัดกับประเด็นจริยธรรมใดมากที่สุด','ความซื่อสัตย์ทางวิชาการ (Academic Integrity)',['อคติของข้อมูล (Data Bias)','ความเป็นส่วนตัว (Privacy)','ทรัพย์สินทางปัญญา (Intellectual Property)'],'ควรระบุให้ชัดเมื่อใช้ AI ช่วยทำงาน และไม่นำผลงานของ AI มาอ้างเป็นของตนเอง'),
+ Q('AI คัดเลือกผู้รับทุนที่ฝึกจากข้อมูลนักเรียนโรงเรียนในเมืองเท่านั้น ทำให้นักเรียนต่างจังหวัดเสียเปรียบ ขัดหลักใดของแนวปฏิบัติจริยธรรม AI ของไทย','ความเท่าเทียม หลากหลาย ครอบคลุม และเป็นธรรม',['ความมั่นคงปลอดภัยและความเป็นส่วนตัว','ความสามารถในการแข่งขันและการพัฒนาอย่างยั่งยืน','ความสอดคล้องกับกฎหมายและมาตรฐานสากล'],'ข้อมูลที่ไม่หลากหลายทำให้เกิดอคติ (Data Bias) ผลลัพธ์จึงไม่เป็นธรรมต่อบางกลุ่ม ขัดหลักด้านที่ 5 (Fairness)'),
+ Q('หลักที่ว่า "ระบบ AI ต้องอธิบายการทำงานได้ และมีผู้รับผิดชอบเมื่อเกิดผลกระทบ" คือหลักใด','ความโปร่งใสและภาระความรับผิดชอบ',['ความน่าเชื่อถือ','ความมั่นคงปลอดภัยและความเป็นส่วนตัว','ความเท่าเทียมและเป็นธรรม'],'เป็นหลักการด้านที่ 3 (Transparency and Accountability) จาก 6 ด้านในแนวปฏิบัติของกระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม'),
+ Q('ณ ตุลาคม 2569 สถานะของกฎหมาย AI ในประเทศไทยเป็นอย่างไร','ยังไม่มีกฎหมายเฉพาะ แต่ใช้กฎหมายที่มีอยู่ และกำลังผลักดันร่างกฎหมาย',['มีกฎหมายเฉพาะแล้ว ประกาศใช้พร้อม PDPA ตั้งแต่ปี พ.ศ. 2562','ใช้ EU AI Act ฉบับแปลภาษาไทยบังคับใช้ในประเทศไทยโดยตรง','ยังไม่มีกฎหมายเฉพาะ และไม่มีกฎหมายใดนำมาใช้กับ AI ได้'],'การใช้ AI ต้องเป็นไปตาม PDPA, พ.ร.บ.คอมพิวเตอร์ และ พ.ร.บ.ลิขสิทธิ์ ส่วนร่าง พ.ร.บ. AI ผ่านการรับฟังความคิดเห็นแล้ว และใช้แนวคิดกำกับตามระดับความเสี่ยง'),
+ S('risk','ระบบให้คะแนนพฤติกรรมพลเมือง (Social Scoring)','un','Social Scoring เป็นความเสี่ยงที่ยอมรับไม่ได้ จึงห้ามใช้'),
+ S('risk','AI คัดกรองใบสมัครงานเพื่อเลือกผู้เข้าสัมภาษณ์','hi','AI ในการจ้างงานเป็นความเสี่ยงสูง ต้องประเมินความเสี่ยง มีเอกสาร และมีมนุษย์กำกับดูแล'),
+ S('risk','ระบบพิสูจน์ตัวตนด้วยใบหน้าก่อนเข้าห้องสอบ','hi','การพิสูจน์ตัวตนด้วยชีวมิติ และ AI ในการศึกษา เป็นความเสี่ยงสูง'),
+ S('risk','แชตบอตตอบคำถามลูกค้าบนเว็บไซต์ร้านค้า','li','แชตบอตเป็นความเสี่ยงจำกัด ต้องแจ้งผู้ใช้ว่ากำลังคุยกับ AI'),
+ S('risk','AI ควบคุมตัวละครศัตรูในเกม','mi','AI ในเกมเป็นความเสี่ยงต่ำ ไม่มีข้อบังคับเฉพาะ')
+]}
+];
+
+const PTS=it=>it.type==='order'?3:1;
+const maxOf=s=>s.items.reduce((a,it)=>a+PTS(it),0);
+const PASS=60;
+const RANKS=[[90,'ระดับ Transformer','เข้าใจหน่วยที่ 1 ครบทุกจุดประสงค์'],[75,'ระดับ Deep Learning','แม่นยำมาก เหลือรายละเอียดเล็กน้อย'],[60,'ระดับ Expert System','ผ่านเกณฑ์ ลองทบทวนจุดประสงค์ที่คะแนนต่ำ'],[0,'ระดับ Perceptron ชั้นเดียว','ยังไม่ผ่านเกณฑ์ กลับไปอ่านใบความรู้แล้วเล่นด่านที่คะแนนต่ำอีกครั้ง']];
+
+const sv=(p)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICON={
+ s1:sv('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.8 10.6c.6.5.8 1.3.8 2.4h6c0-1.1.2-1.9.8-2.4A6 6 0 0 0 12 3z"/>'),
+ s2:sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>'),
+ s3:sv('<path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="m2 13 10 5 10-5"/><path d="m2 17.5 10 5 10-5"/>'),
+ s4:sv('<rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M11 18h2"/>'),
+ s5:sv('<path d="M12 3v18M6 21h12M4 7h16"/><path d="M4 7l-3 6a3 3 0 0 0 6 0L4 7zM20 7l-3 6a3 3 0 0 0 6 0l-3-6z"/>')
+};
+const col=s=>`--c:var(--${s.id})`;
+const STAR='<path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5-4.9-4.6 6.6-.8z"/>';
+const nStars=p=>p>=90?3:p>=60?2:p>=30?1:0;
+const stars=(p,cls='stars')=>`<span class="${cls}">${[0,1,2].map(i=>`<svg viewBox="0 0 24 24"><g class="${i<nStars(p)?'f':'e'}">${STAR}</g></svg>`).join('')}</span>`;
+const BOT=`<svg class="bot" viewBox="0 0 100 100" aria-hidden="true"><g class="ant"><line x1="50" y1="20" x2="50" y2="8" stroke="var(--edge)" stroke-width="3"/><circle cx="50" cy="8" r="5" fill="var(--gold)" stroke="var(--edge)" stroke-width="2.5"/></g><rect x="14" y="20" width="72" height="56" rx="18" fill="var(--s1)" stroke="var(--edge)" stroke-width="3"/><rect x="24" y="32" width="52" height="30" rx="12" fill="var(--surface)" stroke="var(--edge)" stroke-width="2.5"/><circle class="eye" cx="40" cy="47" r="5.5" fill="var(--ink)"/><circle class="eye" cx="60" cy="47" r="5.5" fill="var(--ink)"/><path d="M44 56q6 4 12 0" stroke="var(--ink)" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="6" y="40" width="9" height="18" rx="4" fill="var(--s4)" stroke="var(--edge)" stroke-width="2.5"/><rect x="85" y="40" width="9" height="18" rx="4" fill="var(--s4)" stroke="var(--edge)" stroke-width="2.5"/><rect x="32" y="78" width="36" height="12" rx="5" fill="var(--s3)" stroke="var(--edge)" stroke-width="2.5"/></svg>`;
+
+const KEY='aiq1v2';
+let D={student:null,res:{},start:null,end:null,sound:false};
+try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.res)D=Object.assign(D,x)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+let play=null;
+const app=document.getElementById('app');
+const pct=(a,b)=>Math.round(a/b*100);
+const tm=t=>t?new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'–';
+const stagePct=s=>D.res[s.id]?pct(D.res[s.id].first,maxOf(s)):null;
+const overall=()=>{const v=STAGES.map(stagePct);return v.every(x=>x!=null)?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null};
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const reduced=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+
+/* sound: off by default so a full classroom stays quiet */
+let actx=null;
+function beep(ok){if(!D.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime;
+  (ok?[660,880]:[220,170]).forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=ok?'triangle':'square';o.frequency.value=f;g.gain.setValueAtTime(.0001,t+i*.09);g.gain.exponentialRampToValueAtTime(.08,t+i*.09+.01);g.gain.exponentialRampToValueAtTime(.0001,t+i*.09+.16);o.connect(g).connect(actx.destination);o.start(t+i*.09);o.stop(t+i*.09+.18)})}catch(e){}}
+
+/* confetti */
+const fx=document.getElementById('fx');let parts=[],raf=0;
+function confetti(n,x,y){if(reduced())return;const cs=getComputedStyle(document.documentElement);const cols=['--s1','--s2','--s3','--s4','--s5','--gold'].map(v=>cs.getPropertyValue(v).trim());
+  const dpr=window.devicePixelRatio||1;fx.width=innerWidth*dpr;fx.height=innerHeight*dpr;
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=4+Math.random()*7;parts.push({x:(x??innerWidth/2)*dpr,y:(y??innerHeight/3)*dpr,vx:Math.cos(a)*v*dpr,vy:(Math.sin(a)*v-5)*dpr,r:Math.random()*6,s:(5+Math.random()*6)*dpr,c:cols[i%cols.length],life:70+Math.random()*40})}
+  if(!raf)tick()}
+function tick(){const g=fx.getContext('2d');g.clearRect(0,0,fx.width,fx.height);parts=parts.filter(p=>p.life-->0);
+  parts.forEach(p=>{p.vy+=.25*(window.devicePixelRatio||1);p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=.15;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;g.globalAlpha=Math.min(1,p.life/30);g.fillRect(-p.s/2,-p.s/3,p.s,p.s*.66);g.restore()});
+  raf=parts.length?requestAnimationFrame(tick):0;if(!raf)g.clearRect(0,0,fx.width,fx.height)}
+
+function netSVG(activeIdx){
+  const W=640,H=124,cols=STAGES.length,layer=[2,3,3,3,2];
+  const xs=STAGES.map((_,i)=>40+i*((W-80)/(cols-1)));
+  const pts=layer.map((n,i)=>Array.from({length:n},(_,j)=>({x:xs[i],y:14+(j+1)*((H-40)/(n+1))})));
+  let e='',nd='',lb='';
+  for(let i=0;i<cols-1;i++){const on=D.res[STAGES[i].id]&&D.res[STAGES[i+1].id];
+    pts[i].forEach(a=>pts[i+1].forEach(b=>{e+=`<line class="edge${on?' on':''}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`}))}
+  pts.forEach((c,i)=>{const s=STAGES[i];const on=D.res[s.id]||i===activeIdx;c.forEach(p=>{nd+=`<circle class="node" cx="${p.x}" cy="${p.y}" r="${on?9:7}" fill="${on?`var(--${s.id})`:'var(--surface)'}"/>`});lb+=`<text class="lbl" x="${xs[i]}" y="${H-4}" text-anchor="middle">ด่าน ${i+1}</text>`});
+  return `<div class="box net"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="แผนที่ด่านแบบโครงข่ายประสาทเทียม ด่านที่ผ่านแล้วจะมีสี">${e}${nd}${lb}</svg></div>`;
+}
+
+function hero(){const done=STAGES.filter(s=>D.res[s.id]).length;const st=D.student;
+  return `<section class="box hero">${BOT}<div><span class="chip c" style="--c:var(--s5)">ว32281 · ม.5 · หน่วยที่ 1</span><h1 style="margin-top:8px"><span>AI Quest</span></h1><p class="sub">ภารกิจเปิดโครงข่าย 5 ชั้น ด้วยความรู้เรื่องแนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์</p><div class="tags"><span class="chip">ผ่านแล้ว <span class="num">${done}/5</span> ด่าน</span>${st?`<span class="chip">${esc(st.name)} · ม.${esc(st.room)} เลขที่ ${esc(st.no)}</span>`:''}</div></div></section>`}
+
+function topbar(){const st=D.student;return `<div class="who"><span>${st?`${esc(st.name)} · ม.${esc(st.room)} เลขที่ ${esc(st.no)} · เริ่ม ${tm(D.start)}`:''}</span><button class="tog" id="snd" aria-pressed="${D.sound}">เสียง: ${D.sound?'เปิด':'ปิด'}</button></div>`}
+function bindTop(){const b=document.getElementById('snd');if(b)b.onclick=()=>{D.sound=!D.sound;save();b.textContent='เสียง: '+(D.sound?'เปิด':'ปิด');b.setAttribute('aria-pressed',D.sound);beep(true)}}
+
+function home(){
+  play=null;
+  const need=!D.student;const all=STAGES.every(s=>D.res[s.id]);
+  const totalMin=STAGES.reduce((a,s)=>a+s.min,0);
+  app.innerHTML=hero()+(need?'':topbar())+netSVG(-1)+
+  (need?`<section class="box inner" style="--c:var(--s1)"><h2>ลงชื่อเข้าภารกิจ</h2><p class="note">ชื่อจะแสดงบนใบสรุปผลตอนจบ สำหรับถ่ายภาพหน้าจอส่งครู</p><form class="form" id="f"><label>ชื่อ–สกุล<input id="nm" required autocomplete="name"></label><label>ห้อง ม.<input id="rm" required placeholder="5/1"></label><label>เลขที่<input id="no" required inputmode="numeric"></label></form><div class="actions"><button class="btn primary" id="go">เริ่มภารกิจ</button><span class="note" id="err" hidden>กรอกชื่อ ห้อง และเลขที่ให้ครบ</span></div></section>`:'')+
+  `<p class="muted">อ่านใบความรู้ตามหัวข้อที่ระบุ แล้วเล่นด่านที่ตรงกันทันที เล่นครบ 5 ด่านใช้เวลาประมาณ ${totalMin} นาที คะแนนที่ส่งครูคือคะแนน<b>ครั้งแรก</b> เล่นซ้ำเพื่อฝึกได้ ตอบถูกติดกันจะได้คอมโบ</p>
+  <div class="stages">${STAGES.map((s,i)=>{const r=D.res[s.id];const m=maxOf(s);const p=r?pct(r.first,m):0;return `<button class="box stage" style="${col(s)}" data-i="${i}" ${need?'disabled':''}><span class="tile">${ICON[s.id]}<b>${i+1}</b></span><span><span class="meta"><span class="chip c">${s.obj}</span><span class="chip">อ่าน${s.read}</span></span><h3>${s.title}</h3><p>${s.desc}</p></span><span class="end">${r?`${stars(p)}<span class="num">${r.first}/${m}</span>`:`<span class="go">เล่น</span><span class="note">${s.items.length} ข้อ · ~${s.min} นาที</span>`}</span></button>`}).join('')}</div>
+  <div class="actions">${all?'<button class="btn primary" id="fin" style="--c:var(--s5)">ดูใบสรุปผล</button>':''}${need?'':'<button class="btn" id="reset">เริ่มใหม่ (ล้างชื่อและคะแนน)</button>'}</div>
+  <p class="foot">เนื้อหาจากใบความรู้หน่วยที่ 1 แนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์ ใช้ประกอบใบงานที่ 1.1</p>`;
+  bindTop();
+  app.querySelectorAll('.stage').forEach(b=>b.onclick=()=>start(+b.dataset.i));
+  if(need){const go=()=>{const nm=document.getElementById('nm').value.trim(),rm=document.getElementById('rm').value.trim(),no=document.getElementById('no').value.trim();
+      if(!nm||!rm||!no){document.getElementById('err').hidden=false;return}
+      D.student={name:nm,room:rm,no:no};D.start=Date.now();save();home()};
+    document.getElementById('go').onclick=go;document.getElementById('f').onsubmit=e=>{e.preventDefault();go()}}
+  const r=document.getElementById('reset');if(r)r.onclick=()=>{if(r.dataset.c){D={student:null,res:{},start:null,end:null,sound:D.sound};save();home()}else{r.dataset.c=1;r.textContent='แตะอีกครั้งเพื่อยืนยัน'}};
+  const f=document.getElementById('fin');if(f)f.onclick=final;
+}
+
+function start(i){
+  const s=STAGES[i];const out=[];let run=[];
+  const flush=()=>{if(run.length){out.push(...(run[0].type==='order'?run:shuffle(run)));run=[]}};
+  s.items.forEach(it=>{if(run.length&&run[0].type!==it.type)flush();run.push(it)});flush();
+  const items=out.map(it=>it.type==='quiz'?{...it,opts:shuffle([it.a,...it.w])}:it.type==='order'?{...it,shown:shuffle(it.events),picked:[]}:it);
+  play={i,s,items,k:0,score:0,answered:false,combo:0,best:0};render();window.scrollTo({top:0});
+}
+
+function render(){
+  const{s,items,k}=play;const it=items[k];let body='';
+  if(it.type==='quiz')body=`<p class="q">${it.q}</p><div class="opts">${it.opts.map((o,j)=>`<button class="opt" data-o="${j}"><span class="k">${'กขคง'[j]}</span><span>${o}</span></button>`).join('')}</div><div id="fb"></div>`;
+  else if(it.type==='sort')body=`<p class="q">ตัวอย่างนี้จัดอยู่ในกลุ่มใด${it.bins==='layers'?' (เลือกชั้นที่เฉพาะเจาะจงที่สุด)':''}</p><div class="card pop">${it.t}</div><div class="bins">${BINS[it.bins].map(b=>`<button class="bin" data-k="${b.k}"><b>${b.b}</b><span>${b.s}</span></button>`).join('')}</div><div id="fb"></div>`;
+  else body=orderBody(it);
+  app.innerHTML=topbar()+netSVG(play.i)+`<section class="box panel" style="${col(s)}"><div class="banner">${ICON[s.id]}<div class="t"><small>ด่าน ${play.i+1} · ${s.obj}</small><h2>${s.title}</h2></div><span class="count num">${k+1}/${items.length}</span></div><div class="inner"><div class="hud"><div class="bar"><i style="width:${k/items.length*100}%"></i></div><span class="chip score">คะแนน <span class="num" id="sc">${play.score}</span>/${maxOf(s)}</span>${play.combo>=2?`<span class="chip combo">คอมโบ ×${play.combo}</span>`:''}</div>${body}<div class="actions"><button class="btn primary" id="next" ${play.answered?'':'hidden'}>${k===items.length-1?'สรุปผลด่าน':'ข้อต่อไป'}</button><button class="btn" id="quit">กลับหน้าด่าน</button></div></div></section>`;
+  bindTop();
+  document.getElementById('quit').onclick=home;document.getElementById('next').onclick=next;
+  if(it.type==='quiz')app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answerQuiz(+b.dataset.o,b));
+  if(it.type==='sort')app.querySelectorAll('.bin').forEach(b=>b.onclick=()=>answerSort(b.dataset.k,b));
+  if(it.type==='order')bindOrder(it);
+}
+
+const PRAISE=['เยี่ยม!','ถูกต้อง!','แม่นมาก!','สุดยอด!','ใช่เลย!'];
+function reward(ok,el,pts){
+  if(ok){play.combo++;play.best=Math.max(play.best,play.combo)}else play.combo=0;
+  beep(ok);
+  const sc=document.getElementById('sc');sc.textContent=play.score;
+  const hud=app.querySelector('.hud');const oldc=hud.querySelector('.combo');if(oldc)oldc.remove();
+  if(play.combo>=2)hud.insertAdjacentHTML('beforeend',`<span class="chip combo pop">คอมโบ ×${play.combo}</span>`);
+  if(ok&&pts){const s=sc.parentElement;s.insertAdjacentHTML('beforeend',`<span class="plus">+${pts}</span>`);
+    if(el){const r=el.getBoundingClientRect();confetti(play.combo>=3?40:18,r.left+r.width/2,r.top+r.height/2)}}
+  if(!ok&&el){el.classList.add('shake')}
+}
+function fb(ok,text){document.getElementById('fb').innerHTML=`<div class="feedback ${ok?'good':'bad'} pop"><span class="ic">${ok?'✓':'!'}</span><div><strong>${ok?PRAISE[Math.floor(Math.random()*PRAISE.length)]:'ยังไม่ถูก'}</strong> ${text}</div></div>`;
+  play.answered=true;const n=document.getElementById('next');n.hidden=false;n.focus({preventScroll:true})}
+
+function answerQuiz(j,el){if(play.answered)return;const q=play.items[play.k];const ok=q.opts[j]===q.a;if(ok)play.score++;
+  app.querySelectorAll('.opt').forEach((b,x)=>{b.disabled=true;if(q.opts[x]===q.a)b.classList.add('right','pop');else if(x===j)b.classList.add('wrong');else b.classList.add('dim')});
+  reward(ok,el,1);fb(ok,(ok?'':'คำตอบคือ “'+q.a+'” ')+'— '+q.e)}
+
+function answerSort(k,el){if(play.answered)return;const c=play.items[play.k];const ok=k===c.k;if(ok)play.score++;
+  const right=BINS[c.bins].find(b=>b.k===c.k).b;
+  app.querySelectorAll('.bin').forEach(b=>{b.disabled=true;if(b.dataset.k===c.k)b.classList.add('right','pop');else if(b.dataset.k===k)b.classList.add('wrong')});
+  reward(ok,el,1);fb(ok,(ok?'':'คำตอบคือ “'+right+'” ')+'— '+c.e)}
+
+/* order round: 3 points scaled by the share of events in the correct position */
+const orderPts=(n,c)=>Math.round(c/n*3);
+function orderBody(r){const correct=[...r.events].sort((a,b)=>a.y-b.y);const checked=play.answered;
+  const slots=r.events.map((_,i)=>{const ev=r.picked[i];
+    if(!ev)return `<div class="slot"><span class="n">${i+1}</span><span class="muted">แตะเหตุการณ์ด้านล่าง</span><span></span></div>`;
+    const cls=checked?(ev===correct[i]?'right':'wrong'):'filled pop';
+    return `<button class="slot ${cls}" data-s="${i}" ${checked?'disabled':''} aria-label="เอาออก"><span class="n">${i+1}</span><span>${ev.t}</span><span class="yr">${checked?ev.l:'✕'}</span></button>`}).join('');
+  const pool=r.shown.map((ev,j)=>`<button class="ev" data-e="${j}" ${r.picked.includes(ev)||checked?'disabled':''}>${ev.t}</button>`).join('');
+  let extra='';
+  if(checked){const n=r.picked.filter((e,i)=>e===correct[i]).length;const all=n===r.events.length;
+    extra=`<div class="feedback ${all?'good':'bad'} pop"><span class="ic">${all?'✓':'!'}</span><div><strong>ถูก ${n} จาก ${r.events.length} ตำแหน่ง ได้ ${orderPts(r.events.length,n)}/3 คะแนน</strong><br>ลำดับที่ถูก: ${correct.map(e=>e.l).join(' → ')}</div></div>`}
+  return `<p class="q">${r.title}: เรียงจาก <b>เก่าที่สุด</b> ไป <b>ใหม่ที่สุด</b></p><p class="note">แตะเหตุการณ์ตามลำดับ แตะช่องที่เลือกแล้วเพื่อเอาออก</p><div class="lab">ไทม์ไลน์ของคุณ</div><div class="slots">${slots}</div>${checked?'':`<div class="lab">เหตุการณ์</div><div class="pool">${pool}</div><div class="actions"><button class="btn primary" id="check" ${r.picked.length===r.events.length?'':'disabled'}>ตรวจคำตอบ</button></div>`}${extra}`}
+
+function bindOrder(r){
+  app.querySelectorAll('.ev').forEach(b=>b.onclick=()=>{r.picked.push(r.shown[+b.dataset.e]);render()});
+  app.querySelectorAll('.slot[data-s]').forEach(b=>b.onclick=()=>{r.picked.splice(+b.dataset.s,1);render()});
+  const c=document.getElementById('check');if(c)c.onclick=()=>{const correct=[...r.events].sort((a,b)=>a.y-b.y);const n=r.picked.filter((e,i)=>e===correct[i]).length;const p=orderPts(r.events.length,n);
+    play.score+=p;play.answered=true;const ok=n===r.events.length;if(ok){play.combo++;play.best=Math.max(play.best,play.combo)}else play.combo=0;render();beep(ok);
+    const nx=document.getElementById('next');nx.focus({preventScroll:true});if(p>0)confetti(ok?50:15)}}
+
+function next(){if(play.k<play.items.length-1){play.k++;play.answered=false;render();window.scrollTo({top:0})}else stageEnd()}
+
+function stageEnd(){const{s,score,i,best}=play;const m=maxOf(s);
+  const prev=D.res[s.id];const firstTime=!prev;
+  D.res[s.id]=prev?{first:prev.first,best:Math.max(prev.best,score)}:{first:score,best:score};
+  if(STAGES.every(x=>D.res[x.id])&&!D.end)D.end=Date.now();save();
+  const p=pct(score,m);const nextI=STAGES.findIndex(x=>!D.res[x.id]);
+  app.innerHTML=topbar()+netSVG(-1)+`<section class="box panel" style="${col(s)}"><div class="banner">${ICON[s.id]}<div class="t"><small>จบด่าน ${i+1} · ${s.obj}</small><h2>${s.title}</h2></div></div><div class="inner result">${stars(p,'bigstars')}<div class="big">${score}<span class="muted" style="font-size:.4em"> / ${m}</span></div><p>${p>=90?'สมบูรณ์แบบ! ชั้นนี้ของโครงข่ายเปิดเต็มที่':p>=PASS?'ผ่านเกณฑ์แล้ว ไปด่านต่อไปกันเลย':'ยังไม่ถึงเกณฑ์ 60% ลองอ่าน'+s.read+'อีกครั้ง'}</p>${best>=3?`<span class="chip combo">คอมโบสูงสุด ×${best}</span>`:''}${firstTime?'':`<p class="note">เป็นการเล่นซ้ำ คะแนนครั้งแรกที่บันทึกไว้คือ ${D.res[s.id].first}/${m}</p>`}<div class="actions" style="justify-content:center">${nextI>=0?`<button class="btn primary" id="go" style="--c:var(--${STAGES[nextI].id})">ไปด่าน ${nextI+1}</button>`:'<button class="btn primary" id="fin">ดูใบสรุปผล</button>'}<button class="btn" id="again">เล่นด่านนี้ซ้ำ</button><button class="btn" id="home">หน้าด่าน</button></div></div></section>`;
+  bindTop();
+  const g=document.getElementById('go');if(g)g.onclick=()=>start(nextI);
+  const f=document.getElementById('fin');if(f)f.onclick=final;
+  document.getElementById('again').onclick=()=>start(i);document.getElementById('home').onclick=home;window.scrollTo({top:0});
+  if(p>=PASS){beep(true);setTimeout(()=>confetti(p>=90?140:70),150)}}
+
+function final(){const o=overall();const rk=RANKS.find(r=>o>=r[0]);const st=D.student||{name:'-',room:'-',no:'-'};
+  const used=D.start&&D.end?Math.max(1,Math.round((D.end-D.start)/60000)):null;
+  app.innerHTML=topbar()+netSVG(-1)+`<section class="box panel" style="--c:var(--s5)"><div class="banner">${ICON.s3}<div class="t"><small>ถ่ายภาพหน้าจอนี้ส่งครู</small><h2>ใบสรุปผล AI Quest หน่วยที่ 1</h2></div></div><div class="inner result">
+  <div class="slip"><div><span>ชื่อ–สกุล</span>${esc(st.name)}</div><div><span>ห้อง / เลขที่</span>ม.${esc(st.room)} เลขที่ ${esc(st.no)}</div><div><span>เวลาเริ่ม – จบ</span>${tm(D.start)} – ${tm(D.end)}${used?` (${used} นาที)`:''}</div><div><span>วันที่</span>${D.end?new Date(D.end).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):'–'}</div></div>
+  ${stars(o,'bigstars')}<div class="big">${o}%</div><span class="rank">${rk[1]}</span><p>${rk[2]}</p>
+  <div class="tbl"><table><thead><tr><th>จุดประสงค์</th><th class="n">ครั้งแรก</th><th class="n">%</th><th class="n">ผล</th></tr></thead><tbody>${STAGES.map(x=>{const r=D.res[x.id];const p=stagePct(x);return `<tr><td><span class="dotc" style="${col(x)}"></span>${x.obj.replace('จุดประสงค์ ','')}. ${x.title}</td><td class="n">${r.first}/${maxOf(x)}</td><td class="n">${p}%</td><td class="n ${p>=PASS?'ok':'low'}">${p>=PASS?'ผ่าน':'ทบทวน'}</td></tr>`}).join('')}</tbody></table></div>
+  <p class="foot">คะแนนรวมคิดจากค่าเฉลี่ยร้อยละของ 5 จุดประสงค์ (น้ำหนักเท่ากัน) เกณฑ์ผ่านแต่ละจุดประสงค์ ${PASS}% · ระดับตั้งชื่อตามพัฒนาการของ AI: Perceptron ชั้นเดียว → Expert System → Deep Learning → Transformer</p>
+  <div class="actions"><button class="btn primary" id="home">กลับหน้าด่าน</button></div></div></section>`;
+  bindTop();
+  document.getElementById('home').onclick=home;window.scrollTo({top:0});if(o>=PASS)setTimeout(()=>confetti(160),150)}
+
+document.addEventListener('keydown',e=>{if(!play||['BUTTON','INPUT'].includes(e.target.tagName))return;
+  if(e.key==='Enter'&&play.answered){next();return}
+  const n=parseInt(e.key,10);if(n>=1&&n<=6&&!play.answered){const btns=app.querySelectorAll('.opt,.bin');if(btns[n-1])btns[n-1].click()}});
+
+home();
+</script>
+
+
+<style>.slmode #krunok-home,#krunok-home.slmode{display:none!important}@media print{#krunok-home{display:none!important}}</style>
+<a href="../index.html" id="krunok-home" aria-label="กลับหน้าหลัก KruNok AI Academy" title="กลับหน้าหลัก" style="position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2147483000;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2A2365;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35);opacity:.85;text-decoration:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></a>
+</body></html>

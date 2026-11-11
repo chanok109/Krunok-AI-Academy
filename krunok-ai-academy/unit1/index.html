@@ -1,0 +1,568 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>KruNok AI หน่วยที่ 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;700&display=swap">
+<style>
+/* Layout: home menu of four doors → each door opens a 16:9 slide deck (scales with the screen for projecting, reflows on phones) or the activity/quiz page. KruNok AI tokens: navy stage, one colour per set. Dark-first. */
+:root{
+  --bg:#0B1026;--stage:#121135;--panel:rgba(255,255,255,.06);--edge:rgba(255,255,255,.14);
+  --ink:#F8FAFC;--body:#DCE3F2;--muted:#A9B2CC;--onc:#0B1026;
+  --s1:#57CCF2;--s2:#FFD66D;--s3:#FF8FB8;--s4:#5BE3A8;--lav:#B3A4FF;
+  --crit:#FF7A8A;--warn:#FFB454;--info:#57CCF2;--good:#5BE3A8;
+  --f-h:'Prompt','Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  --f-b:'Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#EEF1FA;--stage:#FFFFFF;--panel:rgba(40,50,120,.05);--edge:rgba(40,50,120,.16);
+  --ink:#0B1026;--body:#1E2747;--muted:#4C5577;--onc:#FFFFFF;
+  --s1:#066E93;--s2:#8A6300;--s3:#B8246A;--s4:#0B7A4E;--lav:#5B45C9;
+  --crit:#C21F3A;--warn:#A85A00;--info:#066E93;--good:#0B7A4E;color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#EEF1FA;--stage:#FFFFFF;--panel:rgba(40,50,120,.05);--edge:rgba(40,50,120,.16);
+  --ink:#0B1026;--body:#1E2747;--muted:#4C5577;--onc:#FFFFFF;
+  --s1:#066E93;--s2:#8A6300;--s3:#B8246A;--s4:#0B7A4E;--lav:#5B45C9;
+  --crit:#C21F3A;--warn:#A85A00;--info:#066E93;--good:#0B7A4E;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--body);font-family:var(--f-b);font-size:16px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--lav);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-h);color:var(--ink);margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{min-height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[data-set="1"]{--c:var(--s1)}[data-set="2"]{--c:var(--s2)}[data-set="3"]{--c:var(--s3)}[data-set="4"]{--c:var(--s4)}
+
+/* ---------- home ---------- */
+#home{max-width:1180px;width:100%;margin:auto;display:grid;gap:28px;padding-block:24px}
+.hero{display:grid;gap:14px}
+.eyebrow{font-family:var(--f-h);font-size:15px;color:var(--lav);letter-spacing:.02em}
+.hero h1{font-size:clamp(30px,5.2vw,60px);line-height:1.18}
+.hero h1 span{display:block;color:var(--s1)}
+.hero .lead{font-size:clamp(16px,1.8vw,20px);line-height:1.55;color:var(--muted);max-width:62ch}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.door{text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 18px;align-items:center;background:var(--panel);border:0;border-radius:18px;padding:22px 24px;box-shadow:inset 0 0 0 1px var(--edge);transition:transform .18s,box-shadow .18s}
+.door:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 2px var(--c)}
+.door .no{grid-row:span 2;width:62px;height:62px;border-radius:16px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
+.door .no svg{width:32px;height:32px}
+.door small{font-family:var(--f-h);font-size:14px;color:var(--c);font-weight:600}
+.door b{grid-column:2;font-family:var(--f-h);font-size:clamp(18px,2vw,23px);color:var(--ink);font-weight:600;line-height:1.3}
+.door .go{grid-row:1/span 2;grid-column:3;font-family:var(--f-h);color:var(--c);font-size:24px}
+.door .meta{grid-column:2;font-size:14px;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);line-height:1.5}
+svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- top bar ---------- */
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:10px}
+.top .ttl{flex:1;min-width:0;font-family:var(--f-h);font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .ttl b{color:var(--c)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);padding:6px 16px;min-height:42px;font-family:var(--f-h);font-size:15px}
+.pill:hover{box-shadow:inset 0 0 0 1.5px var(--c,var(--lav))}
+.pill svg{width:18px;height:18px}
+.pill.pri{background:var(--c);color:var(--onc);box-shadow:none;font-weight:600}
+.pill:disabled{opacity:.4;cursor:default}
+
+/* ---------- deck ---------- */
+#deck{flex:1;min-height:0;display:flex;flex-direction:column}
+.stagebox{flex:1;min-height:0;display:grid;place-items:center}
+.stage{--u:1cqw;container-type:inline-size;width:min(100%,calc((100dvh - 150px)*16/9));aspect-ratio:16/9;background:
+  radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--c) 20%,transparent),transparent 70%),var(--stage);
+  border-radius:18px;box-shadow:inset 0 0 0 1px var(--edge),0 18px 50px rgba(3,6,24,.3);overflow:hidden;position:relative}
+.slide{position:absolute;inset:0;padding:calc(var(--u)*3.6) calc(var(--u)*4.6);display:flex;flex-direction:column;gap:calc(var(--u)*1.6);overflow:auto;font-size:calc(var(--u)*1.85);line-height:1.5}
+.slide .crumb{font-family:var(--f-h);font-size:calc(var(--u)*1.25);color:var(--c);display:flex;gap:.6em;align-items:center}
+.slide .crumb::before{content:"";width:.7em;height:.7em;border-radius:50%;background:var(--c)}
+.slide h2{font-size:calc(var(--u)*3.3);line-height:1.22}
+.slide h2::after{content:"";display:block;width:3.2em;height:.12em;border-radius:1em;margin-top:.3em;background:var(--c)}
+.slide h3{font-size:1.08em;color:var(--c)}
+.sb{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--u)*1.4)}
+.big{font-size:1.15em;color:var(--ink)}
+.muted{color:var(--muted)}
+.sm{font-size:.84em}
+b{color:var(--ink)}
+.c{color:var(--c)}
+ul,ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:.35em}
+li::marker{color:var(--c);font-family:var(--f-h);font-weight:600}
+.g2,.g3,.g4{display:grid;gap:calc(var(--u)*1.4)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);border-radius:14px;padding:.8em 1em;display:flex;flex-direction:column;gap:.3em;min-width:0}
+.card.k{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--k,var(--c)) 70%,transparent);background:color-mix(in srgb,var(--k,var(--c)) 10%,transparent)}
+.card .tag{font-family:var(--f-h);font-weight:600;color:var(--k,var(--c))}
+.yr{font-family:var(--f-h);font-weight:700;font-size:2.2em;line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.box{border-radius:14px;padding:.8em 1.1em;box-shadow:inset 0 0 0 2px var(--c);background:color-mix(in srgb,var(--c) 9%,transparent)}
+.box.warn{box-shadow:inset 0 0 0 2px var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+.box>.lbl{display:inline-block;font-family:var(--f-h);font-size:.78em;font-weight:600;background:var(--c);color:var(--onc);border-radius:999px;padding:0 .9em;margin-bottom:.25em}
+.box.warn>.lbl{background:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:.5em;list-style:none;padding:0;flex-direction:row}
+.chips li{border-radius:999px;padding:.15em .9em;box-shadow:inset 0 0 0 1.5px var(--c)}
+table{width:100%;border-collapse:separate;border-spacing:0 .3em;font-size:.84em;line-height:1.38}
+th{font-family:var(--f-h);font-weight:600;color:var(--c);text-align:left;padding:0 .7em;font-size:.9em}
+td{background:var(--panel);padding:.45em .7em;vertical-align:top}
+td:first-child{border-radius:10px 0 0 10px;font-family:var(--f-h);font-weight:500;color:var(--ink)}
+td:last-child{border-radius:0 10px 10px 0}
+.tw{overflow-x:auto}
+/* slide kinds */
+.k-div{justify-content:center}
+.k-div .num{align-self:flex-start;font-family:var(--f-h);font-weight:700;background:var(--c);color:var(--onc);border-radius:999px;padding:.1em 1em}
+.k-div h2{font-size:calc(var(--u)*4.6)}
+.k-open .q{font-family:var(--f-h);font-size:1.32em;line-height:1.5;color:var(--ink);font-weight:500}
+.k-open .q em{font-style:normal;color:var(--c)}
+.k-think{background:radial-gradient(80% 90% at 100% 100%,color-mix(in srgb,var(--c) 30%,transparent),transparent 70%)}
+.k-think .q{font-family:var(--f-h);font-weight:500;font-size:1.18em;color:var(--ink);line-height:1.45}
+.ans{display:none}.rev .ans{display:flex}.rev .showans{display:none}
+.showans{align-self:flex-start;border:0;border-radius:999px;padding:.35em 1.2em;background:var(--c);color:var(--onc);font-family:var(--f-h);font-weight:600;font-size:.8em;min-height:44px}
+.ans{flex-direction:column;gap:.3em;font-size:.84em}
+/* rings */
+.rings{width:100%;height:auto}
+.rings circle{stroke-width:2.5}
+.rings text{font-family:var(--f-h);font-weight:600;fill:var(--ink);text-anchor:middle;font-size:30px}
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));position:relative;list-style:none;padding:0;gap:0}
+.tl::before{content:"";position:absolute;left:0;right:0;top:50%;height:.18em;border-radius:1em;background:linear-gradient(90deg,var(--lav),var(--warn) 32%,var(--warn) 46%,var(--c))}
+.tl li{text-align:center;padding:0 .3em;height:10.5em;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:6.2em;position:relative;font-size:.8em;line-height:1.3}
+.tl li:nth-child(even){justify-content:flex-start;padding-top:6.2em;padding-bottom:0}
+.tl li::after{content:"";position:absolute;left:50%;top:50%;width:1em;height:1em;margin:-.5em;border-radius:50%;background:var(--stage);border:.2em solid var(--c)}
+.tl li.w::after{border-color:var(--warn);background:var(--warn)}
+.tl b{font-family:var(--f-h);font-size:1.3em;color:var(--c);font-variant-numeric:tabular-nums}
+.tl li.w b{color:var(--warn)}
+/* pyramid */
+.pyr{display:grid;gap:.25em}
+.py{display:grid;grid-template-columns:34% minmax(0,1fr);gap:1.2em;align-items:center}
+.py i{display:block;height:2.6em;background:color-mix(in srgb,var(--p) 55%,transparent)}
+.py:nth-child(1) i{clip-path:polygon(50% 0,50% 0,62.5% 100%,37.5% 100%)}
+.py:nth-child(2) i{clip-path:polygon(37.5% 0,62.5% 0,75% 100%,25% 100%)}
+.py:nth-child(3) i{clip-path:polygon(25% 0,75% 0,87.5% 100%,12.5% 100%)}
+.py:nth-child(4) i{clip-path:polygon(12.5% 0,87.5% 0,100% 100%,0 100%)}
+.py div{font-size:.84em;line-height:1.35}
+.py div b{color:var(--p);font-family:var(--f-h)}
+.checks{list-style:none;padding:0}
+.checks label{display:flex;gap:.6em;align-items:flex-start;cursor:pointer}
+.checks input{width:1.1em;height:1.1em;margin-top:.25em;accent-color:var(--c);flex:none}
+/* deck controls */
+.ctl{display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap}
+.count{font-family:var(--f-h);font-variant-numeric:tabular-nums;color:var(--ink);min-width:4.5em;text-align:center}
+.prog{flex:1;min-width:120px;display:flex;gap:3px;height:6px}
+.prog span{flex:1;border-radius:3px;background:var(--c);opacity:.22}
+.prog span.done{opacity:1}
+
+/* ---------- activities page ---------- */
+#act{max-width:1100px;width:100%;margin:0 auto;display:grid;gap:18px;padding-bottom:30px}
+#act h1{font-size:clamp(26px,3.6vw,40px)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{border:0;border-radius:999px;padding:8px 18px;min-height:44px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);font-family:var(--f-h);font-size:15px}
+.tabs button[aria-selected="true"]{background:var(--c);color:var(--onc);box-shadow:none;font-weight:600}
+.pane{background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);border-radius:18px;padding:22px clamp(16px,3vw,32px);display:grid;gap:16px;font-size:17px;line-height:1.55;min-width:0}
+.pane h2{font-size:clamp(20px,2.4vw,26px)}
+.pane .sub{color:var(--muted);font-size:15px}
+.qhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--f-h);color:var(--muted);font-size:15px}
+.qbar{height:6px;border-radius:3px;background:var(--edge);overflow:hidden}.qbar i{display:block;height:100%;background:var(--c);transition:width .25s}
+.qq{font-family:var(--f-h);font-size:clamp(19px,2.2vw,24px);color:var(--ink);line-height:1.45;font-weight:500}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;border:0;border-radius:14px;padding:12px 18px;min-height:52px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);font-size:17px;line-height:1.45;display:flex;gap:12px;align-items:flex-start}
+.opt i{font-style:normal;font-family:var(--f-h);color:var(--c);font-weight:600}
+.opt:hover:not(:disabled){box-shadow:inset 0 0 0 2px var(--c)}
+.opt:disabled{cursor:default}
+.opt.ok{box-shadow:inset 0 0 0 2px var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.opt.no{box-shadow:inset 0 0 0 2px var(--crit);background:color-mix(in srgb,var(--crit) 12%,transparent)}
+.fb{border-radius:14px;padding:12px 18px;background:color-mix(in srgb,var(--c) 10%,transparent);box-shadow:inset 0 0 0 1px var(--edge)}
+.fb b{font-family:var(--f-h)}
+.fb.ok b{color:var(--good)}.fb.no b{color:var(--crit)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.score{font-family:var(--f-h);font-size:clamp(44px,7vw,72px);color:var(--c);line-height:1;font-variant-numeric:tabular-nums}
+.review{display:grid;gap:8px;list-style:none;padding:0;margin:0}
+.review li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;font-size:15px;line-height:1.45}
+.review li span:first-child{font-family:var(--f-h);font-weight:700}
+.review .y{color:var(--good)}.review .n{color:var(--crit)}
+.rcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rc{border-radius:14px;padding:14px 16px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge);display:grid;gap:8px;min-width:0}
+.rc p{font-size:16px;line-height:1.45}
+.rc p i{font-style:normal;font-family:var(--f-h);color:var(--c);font-weight:700;margin-right:6px}
+.lv{display:flex;flex-wrap:wrap;gap:6px}
+.lv button{border:0;border-radius:999px;padding:4px 12px;min-height:38px;font-family:var(--f-h);font-size:14px;background:transparent;box-shadow:inset 0 0 0 1px var(--edge)}
+.lv button[aria-pressed="true"]{background:var(--p);color:var(--onc);box-shadow:none}
+.rc .res{display:none;font-size:15px;line-height:1.45}
+.checked .rc .res{display:block}
+.res.y b{color:var(--good)}.res.n b{color:var(--crit)}
+.fillt input{width:100%;min-width:110px;font:inherit;font-size:15px;color:var(--ink);background:transparent;border:1px solid var(--edge);border-radius:8px;padding:6px 10px}
+.pane table{font-size:15px}
+.pane td{padding:8px 10px}
+
+@media (max-width:760px){
+  .doors{grid-template-columns:minmax(0,1fr)}
+  .stage{--u:8.2px;aspect-ratio:auto;width:100%;height:100%;min-height:440px}
+  .slide{position:absolute;padding:20px 18px 26px;font-size:16px}
+  .slide h2{font-size:24px}.k-div h2{font-size:28px}.slide .crumb{font-size:13px}
+  .g2,.g3,.g4,.rcards{grid-template-columns:minmax(0,1fr)}
+  .tl{grid-template-columns:minmax(0,1fr);gap:8px}
+  .tl::before{display:none}
+  .tl li,.tl li:nth-child(even){height:auto;padding:0 0 0 1.6em;text-align:left;justify-content:flex-start;font-size:15px}
+  .tl li::after{left:.5em;top:.7em}
+  .py{grid-template-columns:28% minmax(0,1fr);gap:.8em}
+  .sb{justify-content:flex-start}
+  .stagebox{place-items:stretch}
+}
+@media (prefers-reduced-motion:no-preference){.slide.on{animation:in .25s ease-out}}
+@keyframes in{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- decoration layer ---------- */
+body{background:radial-gradient(900px 520px at 88% -12%,color-mix(in srgb,var(--lav) 18%,transparent),transparent 62%),radial-gradient(700px 480px at -8% 108%,color-mix(in srgb,var(--s1) 12%,transparent),transparent 62%),radial-gradient(color-mix(in srgb,var(--ink) 7%,transparent) 1px,transparent 1.3px) 0 0/26px 26px,var(--bg);background-attachment:fixed}
+.herow{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:36px;align-items:center}
+.homeart{--c:var(--lav)}
+.hero h1 span{background:linear-gradient(95deg,var(--s1),var(--lav) 55%,var(--s3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.door{background:linear-gradient(150deg,color-mix(in srgb,var(--c) 14%,transparent),var(--panel) 70%);position:relative;overflow:hidden}
+.door::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%);pointer-events:none}
+.door .no{background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 50%,var(--lav)));color:var(--onc);box-shadow:0 0 24px color-mix(in srgb,var(--c) 40%,transparent)}
+.sh{display:flex;gap:calc(var(--u)*1.5);align-items:center}
+.sh-t{display:flex;flex-direction:column;gap:calc(var(--u)*.3);min-width:0}
+.hic{flex:none;width:calc(var(--u)*5.6);aspect-ratio:1;border-radius:28%;display:grid;place-items:center;color:var(--onc);background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 50%,var(--lav)));box-shadow:0 0 calc(var(--u)*2.6) color-mix(in srgb,var(--c) 45%,transparent)}
+.hic svg{width:56%;height:56%}
+.slide svg.i,.pane svg.i,.tabs svg.i{width:1.1em;height:1.1em;vertical-align:-.17em;flex:none}
+.card .tag,.card b.c,.card h3{display:flex;gap:.45em;align-items:center}
+.card .tag svg,.card b.c svg,.card h3 svg{width:1.2em;height:1.2em}
+.bigc{align-items:center;text-align:center}
+.bigic{display:grid;place-items:center;width:2.6em;height:2.6em;border-radius:50%;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 50%,transparent)}
+.bigic svg.i{width:1.5em;height:1.5em}
+.yrw{display:flex;align-items:center;gap:.4em}
+.yric{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:30%;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+ol.big b svg.i{color:var(--c)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 33%;gap:calc(var(--u)*3.4);align-items:center}
+.split-t{display:flex;flex-direction:column;gap:calc(var(--u)*1.6);min-width:0}
+.art{position:relative;aspect-ratio:1;width:100%;max-width:100%}
+.art::before{content:"";position:absolute;inset:9%;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c) 45%,transparent);animation:spin 40s linear infinite}
+.art::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 26%,transparent),transparent 68%)}
+.art-m{position:absolute;inset:26%;z-index:1;border-radius:50%;display:grid;place-items:center;color:var(--onc);background:linear-gradient(145deg,var(--c),color-mix(in srgb,var(--c) 45%,var(--lav)));box-shadow:0 0 50px color-mix(in srgb,var(--c) 50%,transparent)}
+.art-m svg.i{width:54%;height:54%;stroke-width:1.6}
+.art-s{position:absolute;z-index:2;width:22%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;display:grid;place-items:center;color:var(--k);background:var(--stage);box-shadow:inset 0 0 0 2px var(--k),0 8px 20px rgba(3,6,24,.3);animation:bob 4s ease-in-out infinite alternate}
+.art-s:nth-child(2){--k:var(--s1)}.art-s:nth-child(3){--k:var(--s2);animation-delay:.8s}.art-s:nth-child(4){--k:var(--s3);animation-delay:1.6s}.art-s:nth-child(5){--k:var(--s4);animation-delay:2.4s}
+.art-s svg.i{width:52%;height:52%}
+@keyframes spin{to{rotate:360deg}}
+@keyframes bob{from{transform:translateY(-7%)}to{transform:translateY(7%)}}
+.k-div .split-t h2{font-size:calc(var(--u)*4.4)}
+.tbot{position:absolute;right:calc(var(--u)*3);bottom:calc(var(--u)*2.4);width:calc(var(--u)*9);aspect-ratio:1;color:color-mix(in srgb,var(--c) 45%,transparent);pointer-events:none}
+.tbot svg.i{width:100%;height:100%;stroke-width:1.2}
+.k-think .sb{padding-right:calc(var(--u)*9)}
+.stage::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--c),color-mix(in srgb,var(--c) 30%,var(--lav)),transparent)}
+.tabs button{display:inline-flex;align-items:center;gap:8px}
+.pane h2{display:flex;gap:10px;align-items:center}
+.pane h2 svg.i{color:var(--c)}
+#act h1{display:flex;gap:14px;align-items:center}
+.h1ic{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;color:var(--onc);background:linear-gradient(140deg,var(--s4),var(--s1))}
+.h1ic svg.i{width:28px;height:28px}
+.opt i{display:grid;place-items:center;flex:none;width:1.8em;height:1.8em;border-radius:50%;background:color-mix(in srgb,var(--c) 16%,transparent)}
+@media (max-width:760px){
+  .herow{grid-template-columns:minmax(0,1fr)}
+  .homeart{width:min(60%,220px);justify-self:center;order:-1}
+  .split{grid-template-columns:minmax(0,1fr)}
+  .split .art{width:min(55%,190px);justify-self:center;order:-1}
+  .hic{width:42px}
+  .tbot{display:none}.k-think .sb{padding-right:0}
+}
+@media (prefers-reduced-motion:reduce){.art::before,.art-s{animation:none}}
+
+.flow3{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:calc(var(--u)*1);align-items:stretch}
+.arw{align-self:center;font-family:var(--f-h);font-size:1.4em;color:var(--c)}
+.steps5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:calc(var(--u)*1)}
+table.tsm{font-size:.76em}
+.slide table{font-size:.8em}
+@media (max-width:760px){.flow3,.steps5{grid-template-columns:minmax(0,1fr)}.arw{transform:rotate(90deg);justify-self:center}}
+</style>
+
+<div class="wrap" id="app">
+
+<section id="home" aria-labelledby="h-home">
+  <div class="herow"><div class="hero">
+    <p class="eyebrow">KruNok AI Academy · ว32281 ปัญญาประดิษฐ์เบื้องต้น · ม.5</p>
+    <h1 id="h-home">หน่วยที่ 1 แนวคิดเบื้องต้นเกี่ยวกับ<span>ปัญญาประดิษฐ์</span></h1>
+    <p class="lead">เลือกชุดที่จะเรียนวันนี้ ชุดละ 1 คาบ ในแต่ละชุดใช้ปุ่ม ถัดไป / ก่อนหน้า หรือปุ่มลูกศรบนแป้นพิมพ์</p>
+  </div><div class="art homeart" id="homeart" aria-hidden="true"></div></div>
+  <div class="doors">
+    <button class="door" data-set="1" data-open="set1"><span class="no"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4H8M2 14h2M20 14h2M9 13v2M15 13v2"/></svg></span><small>ชุดที่ 1</small><b>AI คืออะไร</b><span class="meta">ความหมาย · ประวัติ · ประเภทของ AI</span><span class="go">→</span></button>
+    <button class="door" data-set="2" data-open="set2"><span class="no"><svg class="i" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.9.7-1.9 1-3 1s-2.1-.3-3-1ZM2 16l3-8 3 8c-.9.7-1.9 1-3 1s-2.1-.3-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span><small>ชุดที่ 2</small><b>จริยธรรมและความเสี่ยง</b><span class="meta">จริยธรรม AI · พีระมิดความเสี่ยง · ร่าง พ.ร.บ. AI</span><span class="go">→</span></button>
+    <button class="door" data-set="3" data-open="set3"><span class="no"><svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><small>ชุดที่ 3</small><b>PDPA และ Deepfake</b><span class="meta">ข้อมูลส่วนบุคคล · จับผิดคลิปปลอม · กฎหมายที่ใช้ได้แล้ว</span><span class="go">→</span></button>
+    <button class="door" data-set="4" data-open="act"><span class="no"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><small>ทบทวน</small><b>กิจกรรม/แบบทดสอบ</b><span class="meta">แบบทดสอบ 12 ข้อ · การ์ดจัดระดับความเสี่ยง · กรณีศึกษา</span><span class="go">→</span></button>
+  </div>
+  <p class="note">ข้อมูลกฎหมายตรวจสอบเมื่อ 26 ตุลาคม 2569 · ร่าง พ.ร.บ.ว่าด้วยปัญญาประดิษฐ์ ยังไม่บังคับใช้ ส่วน PDPA และ พ.ร.บ.คอมพิวเตอร์ ใช้บังคับแล้ว</p>
+</section>
+
+<section id="deck" hidden>
+  <div class="top">
+    <button class="pill" data-home><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าแรก</button>
+    <p class="ttl" id="deck-ttl"></p>
+  </div>
+  <div class="stagebox"><div class="stage" id="stage"></div></div>
+  <div class="ctl">
+    <button class="pill" id="prev"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>ก่อนหน้า</button>
+    <span class="count" id="count"></span>
+    <button class="pill pri" id="next">ถัดไป<svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section id="act" data-set="4" hidden>
+  <div class="top">
+    <button class="pill" data-home><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าแรก</button>
+  </div>
+  <h1>กิจกรรม/แบบทดสอบ หน่วยที่ 1</h1>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-quiz" aria-selected="true" data-tab="quiz">แบบทดสอบ 12 ข้อ</button>
+    <button role="tab" id="t-risk" aria-selected="false" data-tab="risk">การ์ดจัดระดับความเสี่ยง</button>
+    <button role="tab" id="t-spy" aria-selected="false" data-tab="spy">นักสืบ AI รอบตัว</button>
+    <button role="tab" id="t-case" aria-selected="false" data-tab="case">วิเคราะห์กรณีศึกษา</button>
+  </div>
+
+  <div class="pane" id="p-quiz" role="tabpanel"></div>
+
+  <div class="pane" id="p-risk" role="tabpanel" hidden>
+    <div><h2>การ์ดจัดระดับความเสี่ยง (ชุดที่ 2 · 20 นาที)</h2><p class="sub">กดเลือกระดับความเสี่ยงตาม EU AI Act ให้ครบทั้ง 8 การ์ด แล้วกด ตรวจคำตอบ</p></div>
+    <div class="rcards" id="rcards"></div>
+    <div class="row"><button class="pill pri" id="rcheck">ตรวจคำตอบ</button><button class="pill" id="rreset">เริ่มใหม่</button><span id="rscore" class="sub"></span></div>
+  </div>
+
+  <div class="pane" id="p-spy" role="tabpanel" hidden>
+    <div><h2>นักสืบ AI รอบตัว (ชุดที่ 1 · 15 นาที)</h2><p class="sub">จับคู่กับเพื่อน เขียน AI ที่ใช้ในชีวิตประจำวัน 5 อย่าง (ห้ามซ้ำกับตัวอย่างในบทเรียน) แล้วจัดกลุ่ม สิ่งที่พิมพ์เก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น ไม่ส่งถึงครู</p></div>
+    <div class="tw fillt"><table><thead><tr><th>AI ที่พบ</th><th>ทำงานอะไรให้เรา</th><th>ชั้น (AI / ML / DL / GenAI)</th><th>แบ่งตามงาน</th></tr></thead><tbody id="spybody"></tbody></table></div>
+    <p class="sub">ขั้นสุดท้าย: เลือก 1 อย่างที่คู่ของเรา "ไม่แน่ใจที่สุด" ว่าจัดอยู่กลุ่มไหน แล้วนำเสนอเหตุผลให้เพื่อนทั้งห้องช่วยตัดสิน</p>
+  </div>
+
+  <div class="pane" id="p-case" role="tabpanel" hidden>
+    <div><h2>วิเคราะห์กรณีศึกษา (ชุดที่ 3 · 20 นาที)</h2><p class="sub">แต่ละกลุ่มได้ 1 กรณี ตอบ 3 คำถาม แล้วนำเสนอ 2 นาที</p></div>
+    <div class="tw"><table><thead><tr><th>กรณี</th><th>สถานการณ์</th></tr></thead><tbody>
+      <tr><td>ก</td><td>ภาพหน้าของ "ต้น" ถูก AI ตัดต่อให้ดูน่าอับอาย ส่งต่อในกลุ่มไลน์ห้องกว่า 40 ครั้ง ตอนเย็นแม่ของต้นได้รับโทรศัพท์เสียงเหมือนต้น ขอให้โอนเงินด่วน 5,000 บาท</td></tr>
+      <tr><td>ข</td><td>คลิปคนดังชวนลงทุน "กำไร 30% ใน 7 วัน" แต่ปากขยับไม่ตรงกับเสียง ถูกแชร์ในเฟซบุ๊กหลายพันครั้ง</td></tr>
+      <tr><td>ค</td><td>นักเรียนใช้แอป AI ทำมีมหน้าครูกำลังเต้นตลก ๆ แล้วโพสต์ในเพจสาธารณะของโรงเรียน โดยบอกว่า "แค่ขำ ๆ"</td></tr>
+    </tbody></table></div>
+    <div><h3 style="font-size:18px;margin-bottom:6px">คำถามสำหรับทุกกลุ่ม</h3><ol><li>ใครได้รับความเสียหาย และเสียหายอย่างไร</li><li>การกระทำนี้อาจผิดกฎหมายข้อใด (ดูตารางในชุดที่ 3)</li><li>ถ้าเป็นผู้เสียหาย ผู้ที่เห็นโพสต์ หรือเพื่อนของคนทำ ควรทำอย่างไร</li></ol></div>
+  </div>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const rings=`<svg class="rings" viewBox="0 0 520 520" role="img" aria-label="วงซ้อนกัน AI ครอบ ML ครอบ DL ครอบ Generative AI"><circle cx="260" cy="260" r="250" style="fill:color-mix(in srgb,var(--lav) 10%,transparent);stroke:var(--lav)"/><circle cx="260" cy="306" r="196" style="fill:color-mix(in srgb,var(--s1) 12%,transparent);stroke:var(--s1)"/><circle cx="260" cy="352" r="146" style="fill:color-mix(in srgb,var(--s4) 14%,transparent);stroke:var(--s4)"/><circle cx="260" cy="398" r="96" style="fill:color-mix(in srgb,var(--s2) 18%,transparent);stroke:var(--s2)"/><text x="260" y="58">AI</text><text x="260" y="158">ML</text><text x="260" y="256">DL</text><text x="260" y="408" style="font-size:25px">Generative AI</text></svg>`;
+const IC={
+brain:'<path d="M12 5a3 3 0 1 0-6 .1 4 4 0 0 0-2.5 5.8 4 4 0 0 0 .6 6.6A4 4 0 1 0 12 18Z"/><path d="M9 13a4.5 4.5 0 0 0 3-4M12 13h4M12 18h6a2 2 0 0 1 2 2v1M12 8h8M16 8V5a2 2 0 0 1 2-2"/><circle cx="16" cy="13" r=".5"/><circle cx="18" cy="3" r=".5"/><circle cx="20" cy="21" r=".5"/><circle cx="20" cy="8" r=".5"/>',
+bot:'<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M9 13v2M15 13v2"/>',
+sparkles:'<path d="M9.9 15.5A2 2 0 0 0 8.5 14l-6.1-1.6a.5.5 0 0 1 0-1L8.5 9.9A2 2 0 0 0 9.9 8.5l1.6-6.1a.5.5 0 0 1 1 0L14 8.5a2 2 0 0 0 1.5 1.4l6.1 1.6a.5.5 0 0 1 0 1L15.5 14a2 2 0 0 0-1.5 1.5l-1.6 6.1a.5.5 0 0 1-1 0z"/><path d="M20 3v4M22 5h-4"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+layers:'<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/>',
+bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/>',
+q:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+scale:'<path d="m16 16 3-8 3 8c-.9.7-1.9 1-3 1s-2.1-.3-3-1ZM2 16l3-8 3 8c-.9.7-1.9 1-3 1s-2.1-.3-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+shield:'<path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+alert:'<path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"/><path d="M12 9v4M12 17h.01"/>',
+eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"/><circle cx="12" cy="12" r="3"/>',
+ear:'<path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+finger:'<path d="M12 10a2 2 0 0 0-2 2c0 1 0 3-1 5M14 13.1c0 2.5 0 5-1 7.9M17.3 21c.3-1.5.6-3 .7-5M2 12a10 10 0 0 1 18-6M21.8 16c.2-2 .1-5.4 0-6M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .3-2M8.6 22c.2-.6.5-1.3.6-2M9 6.8a6 6 0 0 1 9 5.2v2"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.1a4 4 0 0 1 0 7.8M22 21a7 7 0 0 0-5-6.7"/>',
+gavel:'<path d="m14 13-7.5 7.5a2.1 2.1 0 0 1-3-3L11 10M16 16l6-6M8 8l6-6M9 7l8 8M21 11l-8-8"/>',
+db:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5M3 12a9 3 0 0 0 18 0"/>',
+cpu:'<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/>',
+zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+check:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3-3a2 2 0 0 0-3 0L6 21"/>',
+globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>',
+book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+copy:'<circle cx="12" cy="12" r="10"/><path d="M15 9.4a4 4 0 1 0 0 5.2"/>',
+scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
+car:'<path d="M19 17h2v-4l-2-5H5L3 13v4h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/>',
+bike:'<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h2l3 11.5M5.5 17.5 9 10h7l-4 7.5M12 6h3"/>',
+truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2M15 18H9M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+money:'<circle cx="8" cy="8" r="6"/><path d="M18.1 10.4A6 6 0 1 1 10.3 18M7 6h1v4M16.7 13.9l.7.7-2.8 2.8"/>',
+news:'<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9c0-1.1.9-2 2-2h2M18 14h-8M15 18h-5M10 6h8v4h-8z"/>',
+flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/>',
+msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+grad:'<path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5"/>',
+ban:'<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+heart:'<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+list:'<path d="M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13"/>',
+trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z"/>'};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||''}</svg>`;
+const artIn=(m,l)=>`<span class="art-m">${ic(m)}</span>`+l.map((n,i)=>`<span class="art-s" style="left:${[15,85,15,85][i]}%;top:${[15,15,85,85][i]}%">${ic(n)}</span>`).join('');
+const ICONS={
+set1:[['brain',['bot','db','cpu','sparkles']],['scan',['phone','image','globe','bot']],'bot','clock','layers','q','clock','zap','q','target','cpu','q','check'],
+set2:[['scale',['users','ban','gavel','shield']],['grad',['camera','image','users','q']],'book','alert','shield','users','q','car','layers','q','gavel','q','check'],
+set3:[['lock',['finger','user','scan','phone']],['scan',['image','phone','msg','alert']],'lock','finger','user','gavel','q','scan','search','q','gavel','shield','q','flag','check']};
+const PIC=['scale','lock','q','car','news','copy','phone','users'];
+const think=(q,a)=>`<p class="q">${q}</p><button class="showans">ดูแนวคำตอบ</button><div class="ans box"><span class="lbl">แนวคำตอบ</span>${a}</div>`;
+const checks=items=>`<ul class="checks">${items.map(t=>`<li><label><input type="checkbox"><span>${t}</span></label></li>`).join('')}</ul>`;
+
+const DECKS={
+set1:{set:1,name:'ชุดที่ 1 AI คืออะไร มาจากไหน มีกี่แบบ',slides:[
+{k:'div',h:'AI คืออะไร มาจากไหน มีกี่แบบ',b:`<p class="num">ชุดที่ 1</p><h2>AI คืออะไร มาจากไหน มีกี่แบบ</h2><div><h3>เป้าหมายของชุดนี้</h3><ul><li>ฉันอธิบายได้ว่า AI คืออะไร และ AI, ML, DL, Generative AI ต่างกันอย่างไร</li><li>ฉันเล่าเหตุการณ์สำคัญในประวัติ AI ได้ และบอกได้ว่าทำไม AI เคยซบเซาแล้วกลับมาบูม</li><li>ฉันแยกประเภทของ AI ได้ และรู้ว่า AI ที่ใช้กันตอนนี้เป็นแบบไหน</li></ul></div>`},
+{k:'open',h:'เปิดเรื่อง',b:`<p class="q">ตั้งแต่ตื่นนอนจนมาถึงโรงเรียนวันนี้ นักเรียนใช้ AI ไปแล้ว<em>กี่ครั้ง</em> ลองนับดู</p><p class="muted">ปลดล็อกมือถือด้วยใบหน้า? เลื่อนดูคลิปที่แอปเลือกมาให้? ถามแชตบอตเรื่องการบ้าน? ดูแผนที่ว่ารถติดตรงไหน? หลายคนใช้ไปแล้วเกิน 5 ครั้งโดยไม่รู้ตัว</p>`},
+{h:'AI คืออะไร',b:`<p class="big"><b>พูดง่าย ๆ</b> AI คือโปรแกรมคอมพิวเตอร์ที่ทำงานแบบที่ปกติต้องใช้ "ความคิด" ของคน เช่น มองภาพแล้วรู้ว่าเป็นอะไร ฟังเสียงแล้วเข้าใจ ตอบคำถาม แปลภาษา</p><ul class="chips"><li>สแกนหน้าปลดล็อกมือถือ</li><li>ฟีดคลิปที่เลือกมาให้</li><li>แปลภาษา</li><li>แผนที่บอกทางเลี่ยงรถติด</li><li>แชตบอต ChatGPT, Claude, Gemini</li></ul><div class="box"><span class="lbl">นิยามระดับโลก (OECD ปี 2023)</span><p>AI คือระบบที่<b>รับข้อมูลเข้าไป แล้ว "คิดเอง" ว่าจะตอบอะไรออกมา</b> เช่น ทำนาย สร้างเนื้อหาใหม่ แนะนำ หรือตัดสินใจ</p></div>`},
+{i:'zap',h:'AI ทำงานอย่างไร',b:`<div class="flow3"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('db')}1 รับข้อมูล (Input)</span><p class="sm">ภาพ เสียง ข้อความ ตัวเลข พฤติกรรมการใช้งาน</p></div><span class="arw">→</span><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('brain')}2 ประมวลผลด้วยโมเดล</span><p class="sm">ใช้ "รูปแบบ" ที่เรียนรู้มาจากข้อมูลฝึกจำนวนมาก</p></div><span class="arw">→</span><div class="card k" style="--k:var(--s4)"><span class="tag">${ic('sparkles')}3 ให้ผลลัพธ์ (Output)</span><p class="sm">ทำนาย จัดกลุ่ม แนะนำ ตัดสินใจ หรือสร้างเนื้อหาใหม่</p></div></div><div class="tw"><table><thead><tr><th>ตัวอย่าง</th><th>รับข้อมูล</th><th>ผลลัพธ์</th></tr></thead><tbody><tr><td>ตัวกรองอีเมลขยะ</td><td>หัวเรื่อง ผู้ส่ง ข้อความในอีเมล</td><td>"ขยะ" หรือ "ไม่ใช่ขยะ"</td></tr><tr><td>สแกนใบหน้าปลดล็อก</td><td>ภาพใบหน้าจากกล้อง</td><td>ใช่เจ้าของเครื่องหรือไม่</td></tr><tr><td>ฟีดคลิป</td><td>คลิปที่เราดูจบ กดถูกใจ เลื่อนผ่าน</td><td>คลิปถัดไปที่เราน่าจะชอบ</td></tr><tr><td>แชตบอต</td><td>ข้อความที่เราพิมพ์ (Prompt)</td><td>คำตอบที่สร้างขึ้นใหม่</td></tr></tbody></table></div>`},
+{i:'book',h:'คำศัพท์พื้นฐานที่ต้องรู้',b:`<div class="g2"><div class="card"><b class="c">${ic('list')}Algorithm (อัลกอริทึม)</b><p class="sm">ขั้นตอนการทำงานที่บอกคอมพิวเตอร์ว่าต้องทำอะไรก่อนหลัง</p></div><div class="card"><b class="c">${ic('db')}Training Data (ข้อมูลฝึก)</b><p class="sm">ข้อมูลตัวอย่างที่ใช้สอน AI ยิ่งมาก หลากหลาย และถูกต้อง AI ยิ่งเก่ง</p></div><div class="card"><b class="c">${ic('brain')}Model (โมเดล)</b><p class="sm">"สมอง" ของ AI ที่ได้จากการฝึกด้วยข้อมูล นำไปใช้ทำนายข้อมูลใหม่</p></div><div class="card"><b class="c">${ic('msg')}Prompt (พรอมต์)</b><p class="sm">ข้อความที่เราพิมพ์สั่งหรือถาม AI ยิ่งชัดเจน คำตอบยิ่งตรง</p></div></div><div class="box"><span class="lbl">เปรียบเทียบ</span><p>ข้อมูลฝึก = แบบฝึกหัดที่ทำมา · อัลกอริทึม = วิธีเรียน · โมเดล = ความรู้ที่ติดตัวหลังเรียน · พรอมต์ = ข้อสอบที่ครูถาม</p></div>`},
+{h:'คำว่า AI มาจากไหน',b:`<div class="g2"><div class="card"><span class="yrw"><span class="yric">${ic('q')}</span><span class="yr">1950</span></span><b>แอลัน ทัวริง เสนอการทดสอบทัวริง</b><p>ถ้าคนพิมพ์คุยกับคู่สนทนาที่มองไม่เห็น แล้วแยกไม่ออกว่าเป็นคนหรือคอมพิวเตอร์ ก็ถือว่าคอมพิวเตอร์นั้นแสดงความฉลาดได้</p></div><div class="card"><span class="yrw"><span class="yric">${ic('grad')}</span><span class="yr">1956</span></span><b>จอห์น แมคคาร์ธี ตั้งชื่อ "Artificial Intelligence"</b><p>ในการประชุมวิชาการที่วิทยาลัยดาร์ตมัธ ถือเป็นวันเกิดของวิชา AI</p></div></div>`},
+{h:'AI, ML, DL และ Generative AI',b:`<div class="g2" style="grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);align-items:center"><div>${rings}</div><div class="tw"><table><tr><td>AI</td><td>ทุกวิธีที่ทำให้คอมพิวเตอร์ดูฉลาด รวมถึงแบบที่คนเขียนกฎให้ทีละข้อ</td></tr><tr><td>Machine Learning</td><td>ให้คอมพิวเตอร์ "ดูตัวอย่างเยอะ ๆ" แล้วหารูปแบบเอง เช่น ตัวกรองอีเมลขยะ</td></tr><tr><td>Deep Learning</td><td>ML ที่ใช้โครงข่ายประสาทเทียมหลายชั้น เก่งกับภาพ เสียง ข้อความ เช่น สแกนใบหน้า</td></tr><tr><td>Generative AI</td><td>DL ที่ "สร้างของใหม่" ได้ เช่น ข้อความ ภาพ เพลง โค้ด</td></tr></table></div></div><div class="box"><span class="lbl">จำง่าย ๆ</span><p>ซ้อนกันเหมือนตุ๊กตาแม่ลูกดก Generative AI ทุกตัวเป็น DL, ML และ AI ด้วย แต่ AI ไม่จำเป็นต้องเป็น ML เสมอไป</p></div>`},
+{k:'think',h:'ลองคิด 1',b:think('สิ่งต่อไปนี้เป็น AI หรือไม่ ถ้าเป็น อยู่ชั้นไหน<ol style="font-size:.9em;margin-top:.4em"><li>เครื่องคิดเลข</li><li>ไฟจราจรที่ตั้งเวลาเปลี่ยนสีทุก 60 วินาที</li><li>ฟีดคลิปใน TikTok</li><li>แอปพิมพ์ข้อความแล้วได้ภาพวาด</li></ol>','<p>1–2 ไม่ใช่ AI ทำตามสูตรหรือเวลาที่ตั้งไว้ · 3 เป็น ML/DL เรียนรู้จากพฤติกรรมการดู · 4 เป็น Generative AI</p>')},
+{h:'AI เคยซบเซา 2 ครั้ง ก่อนบูมหลังปี 2012',b:`<ol class="tl"><li><b>1950</b>ทัวริงเสนอการทดสอบ</li><li><b>1956</b>ตั้งชื่อ AI ที่ดาร์ตมัธ</li><li class="w"><b>1970s</b>ฤดูหนาว AI ครั้งที่ 1</li><li class="w"><b>ปลาย 1980s</b>ฤดูหนาว AI ครั้งที่ 2</li><li><b>1997</b>Deep Blue ชนะแชมป์หมากรุกโลก</li><li><b>2012</b>AlexNet เริ่มยุค Deep Learning</li><li><b>2016</b>AlphaGo ชนะแชมป์หมากล้อม</li><li><b>2022</b>ChatGPT เปิดให้ทุกคนใช้</li></ol><p class="sm muted"><b class="c">ฤดูหนาวของ AI</b> คือช่วงที่ AI ทำไม่ได้อย่างที่สัญญาไว้ คนจึงเลิกให้ทุนวิจัย (จุดสีส้ม)</p>`},
+{i:'clock',h:'ประวัติ AI โดยละเอียด (1/2) ยุคบุกเบิก',b:`<div class="tw"><table><thead><tr><th>ปี ค.ศ. (พ.ศ.)</th><th>เกิดอะไรขึ้น</th><th>สำคัญอย่างไร</th></tr></thead><tbody><tr><td>1943 (2486)</td><td>แมคคัลลอกและพิตส์ คิดแบบจำลองเซลล์ประสาทเทียม</td><td>จุดเริ่มของแนวคิด "สมองเทียม"</td></tr><tr><td>1950 (2493)</td><td>ทัวริงเสนอการทดสอบทัวริง</td><td>เริ่มถามจริงจังว่าเครื่องจักรคิดได้ไหม</td></tr><tr><td>1956 (2499)</td><td>การประชุมดาร์ตมัธ ตั้งชื่อ Artificial Intelligence</td><td>วันเกิดของวิชา AI</td></tr><tr><td>1958 (2501)</td><td>โรเซนแบลตต์ สร้าง Perceptron</td><td>สมองเทียมรุ่นแรกที่ฝึกให้เรียนรู้ได้</td></tr><tr><td>1966 (2509)</td><td>ไวเซนบาวม์ สร้าง ELIZA</td><td>แชตบอตรุ่นแรก ๆ ของโลก</td></tr><tr><td>ทศวรรษ 1970</td><td>ฤดูหนาวของ AI ครั้งที่ 1</td><td>ทำไม่ได้ตามที่คาด ทุนวิจัยถูกตัด</td></tr><tr><td>ทศวรรษ 1980</td><td>ระบบผู้เชี่ยวชาญ (Expert System) ได้รับความนิยม</td><td>เขียนกฎ "ถ้า...แล้ว..." จากความรู้ผู้เชี่ยวชาญ</td></tr><tr><td>ปลาย 1980 – ต้น 1990</td><td>ฤดูหนาวของ AI ครั้งที่ 2</td><td>ระบบผู้เชี่ยวชาญแพงและดูแลยาก</td></tr></tbody></table></div>`},
+{i:'trophy',h:'ประวัติ AI โดยละเอียด (2/2) ยุคบูม',b:`<div class="tw"><table><thead><tr><th>ปี ค.ศ. (พ.ศ.)</th><th>เกิดอะไรขึ้น</th><th>สำคัญอย่างไร</th></tr></thead><tbody><tr><td>1997 (2540)</td><td>Deep Blue ของ IBM ชนะแชมป์หมากรุกโลก แกร์รี คาสปารอฟ</td><td>คอมพิวเตอร์ชนะแชมป์โลกหมากรุกครั้งแรก</td></tr><tr><td>2011 (2554)</td><td>IBM Watson ชนะเกมโชว์ Jeopardy!</td><td>เข้าใจคำถามภาษาคนได้ดีขึ้นมาก</td></tr><tr><td>2012 (2555)</td><td>AlexNet ชนะการแข่งขันจำแนกภาพ ImageNet แบบทิ้งห่าง</td><td>เริ่มยุค Deep Learning</td></tr><tr><td>2016 (2559)</td><td>AlphaGo ชนะ อี เซดล แชมป์หมากล้อม</td><td>หมากล้อมยากกว่าหมากรุกมาก</td></tr><tr><td>2017 (2560)</td><td>นักวิจัย Google คิดค้น Transformer</td><td>พื้นฐานของแชตบอตทุกวันนี้</td></tr><tr><td>2022 (2565)</td><td>ChatGPT เปิดให้ทุกคนใช้ (พฤศจิกายน)</td><td>Generative AI เข้าถึงคนทั่วไป</td></tr><tr><td>2024 (2567)</td><td>รางวัลโนเบลฟิสิกส์และเคมีมอบให้งานด้าน AI</td><td>AI ช่วยงานวิทยาศาสตร์ได้จริง เช่น ทำนายโครงสร้างโปรตีน</td></tr><tr><td>2024–2026</td><td>AI ที่เข้าใจทั้งภาพ เสียง ข้อความ และ AI แบบเอเจนต์</td><td>หลายประเทศเริ่มออกกฎหมายควบคุม AI</td></tr></tbody></table></div>`},
+{h:'AI กลับมาบูมเพราะมี 3 อย่างครบพร้อมกัน',b:`<div class="g3"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('db')}1 · ข้อมูลมหาศาล</span><p>จากอินเทอร์เน็ต มือถือ และโซเชียลมีเดีย</p></div><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('cpu')}2 · คอมพิวเตอร์แรงขึ้น</span><p>โดยเฉพาะการ์ดจอ (GPU) ที่คำนวณหลายอย่างพร้อมกันได้</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('brain')}3 · Deep Learning</span><p>วิธีเรียนรู้แบบใหม่ที่ใช้โครงข่ายประสาทเทียมหลายชั้น</p></div></div><p class="sm muted">ประเทศไทยมีแผนปฏิบัติการด้านปัญญาประดิษฐ์แห่งชาติ (พ.ศ. 2565–2570) เพื่อสร้างคนเก่ง AI และส่งเสริมการใช้ AI อย่างมีจริยธรรม</p>`},
+{k:'think',h:'ลองคิด 2',b:think('ใน 3 ปัจจัยที่ทำให้ AI กลับมาบูม นักเรียนคิดว่าข้อไหนสำคัญที่สุด เพราะอะไร ถ้าขาดข้อนั้นไป ChatGPT จะเกิดขึ้นได้ไหม','<p>ตอบได้หลายแบบ ขอให้มีเหตุผล เช่น ขาดข้อมูลมหาศาลก็ไม่มีอะไรให้โมเดลเรียนรู้ ขาด GPU ก็ฝึกโมเดลขนาดใหญ่ไม่ทัน ทั้ง 3 ข้อจึงต้องมาพร้อมกัน</p>')},
+{h:'แบ่งประเภท AI ตามความเก่ง',b:`<div class="g3"><div class="card k" style="--k:var(--good)"><span class="tag">${ic('bot')}AI แบบแคบ (ANI)</span><p>เก่งเฉพาะงานที่ฝึกมา แปลภาษาเก่งแต่ขับรถไม่ได้</p><b>มีแล้ว ทุกตัวที่ใช้ตอนนี้</b></div><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('brain')}AI ทั่วไป (AGI)</span><p>เรียนรู้และคิดได้หลากหลายเท่าคน เอาความรู้ข้ามเรื่องได้</p><b>ยังไม่มี</b></div><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('sparkles')}AI เหนือมนุษย์ (ASI)</span><p>ฉลาดกว่ามนุษย์แทบทุกด้าน</p><b>ยังเป็นแนวคิด</b></div></div>`},
+{h:'แบ่งตามวิธีทำงาน และตามงานที่ทำ',b:`<div class="g2"><div class="card"><h3>${ic('cpu')}ตามวิธีทำงาน (ฮินต์เซอ 2016)</h3><ol class="sm"><li><b>ตอบสนองอย่างเดียว</b> จำอดีตไม่ได้ เช่น Deep Blue</li><li><b>ความจำช่วงสั้น</b> ใช้ข้อมูลที่เพิ่งผ่านมา เช่น รถไร้คนขับ แชตบอต (AI ส่วนใหญ่ตอนนี้)</li><li><b>เข้าใจจิตใจคน</b> ยังอยู่ระหว่างวิจัย</li><li><b>รู้จักตัวเอง</b> ยังเป็นแนวคิด</li></ol></div><div class="card"><h3>${ic('target')}ตามงานที่ทำ</h3><ul class="sm"><li><b>วิเคราะห์และทำนาย</b> ตรวจจับการโกงบัตรเครดิต พยากรณ์อากาศ</li><li><b>สร้างสรรค์ (Generative)</b> เขียนเรียงความ วาดภาพ แต่งเพลง</li><li><b>เอเจนต์ (Agentic)</b> วางแผนและทำงานหลายขั้นเอง โดยมีคนดูแล</li></ul></div></div>`},
+{i:'target',h:'AI แต่ละประเภทในชีวิตจริง',b:`<div class="tw"><table><thead><tr><th>สถานการณ์</th><th>ตามความเก่ง</th><th>ตามวิธีทำงาน</th><th>ตามงานที่ทำ</th></tr></thead><tbody><tr><td>Deep Blue เล่นหมากรุก</td><td>ANI</td><td>ตอบสนองอย่างเดียว</td><td>วิเคราะห์/ทำนาย (เลือกตาเดิน)</td></tr><tr><td>รถยนต์ไร้คนขับ</td><td>ANI</td><td>ความจำช่วงสั้น</td><td>วิเคราะห์/ทำนาย</td></tr><tr><td>แชตบอตช่วยเขียนเรียงความ</td><td>ANI</td><td>ความจำช่วงสั้น</td><td>สร้างสรรค์</td></tr><tr><td>ผู้ช่วยที่ค้นข้อมูลแล้วทำรายงานให้</td><td>ANI</td><td>ความจำช่วงสั้น</td><td>เอเจนต์</td></tr><tr><td>หุ่นยนต์ในภาพยนตร์ที่มีความรู้สึก</td><td>AGI/ASI</td><td>รู้จักตัวเอง</td><td>ยังเป็นแนวคิด</td></tr></tbody></table></div><p class="sm muted">AI ตัวเดียวจัดได้หลายแบบพร้อมกัน เพราะแต่ละแบบใช้เกณฑ์ต่างกัน</p>`},
+{i:'alert',h:'ข้อจำกัดของ AI ที่ต้องรู้ทัน',b:`<div class="g2"><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('q')}ภาวะหลอน (Hallucination)</span><p class="sm">แต่งข้อมูลที่ฟังดูจริงแต่ผิด เช่น อ้างหนังสือหรืองานวิจัยที่ไม่มีอยู่จริง</p></div><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('scale')}ลำเอียงตามข้อมูล</span><p class="sm">ข้อมูลฝึกลำเอียงแบบไหน ผลลัพธ์ก็ลำเอียงแบบนั้น</p></div><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('clock')}ข้อมูลอาจไม่ทันสมัย</span><p class="sm">โมเดลรู้เฉพาะข้อมูลถึงช่วงเวลาที่ฝึก เรื่องใหม่ ๆ อาจตอบผิด</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('brain')}ไม่ได้ "เข้าใจ" แบบคน</span><p class="sm">เดาคำตอบจากรูปแบบ ไม่มีประสบการณ์หรือสามัญสำนึกจริง</p></div></div><div class="box"><span class="lbl">วิธีใช้ให้ปลอดภัย</span><p>ตรวจข้อเท็จจริงกับแหล่งที่เชื่อถือได้ · ถามหาแหล่งอ้างอิงแล้วเปิดดูเอง · ใช้วิจารณญาณของตัวเองเป็นคนตัดสินสุดท้าย</p></div>`},
+{k:'think',h:'ลองคิด 3',b:`<div class="box warn"><span class="lbl">ระวัง</span><p class="sm">แชตบอตเดาคำตอบจากรูปแบบในข้อมูล บางครั้งจึง "แต่งเรื่อง" ที่ฟังดูจริงแต่ผิด เรียกว่า <b>ภาวะหลอน (Hallucination)</b></p></div>`+think('เพื่อนบอกว่า "ChatGPT ตอบได้ทุกเรื่อง แสดงว่าเป็น AGI แล้ว" นักเรียนจะอธิบายเพื่อนว่าอย่างไร','<p>ยังเป็น AI แบบแคบ (ANI) เพราะทำงานจากรูปแบบในข้อมูลที่ฝึกมา ไม่ได้เข้าใจหรือเรียนรู้เรื่องใหม่เองได้แบบคน และยังเกิดภาวะหลอนได้</p>')},
+{h:'สรุปชุดที่ 1 และตรวจสอบตัวเอง',b:`<div class="g2"><ul><li><b>AI</b> รับข้อมูลแล้วคิดผลลัพธ์ออกมาเอง</li><li><b>AI ⊃ ML ⊃ DL ⊃ GenAI</b> ซ้อนกันเหมือนตุ๊กตาแม่ลูกดก</li><li>เกิดปี <b>1956</b> ผ่านฤดูหนาว 2 ครั้ง บูมเพราะข้อมูล + GPU + DL</li><li>AI ที่ใช้ตอนนี้เป็น <b>ANI</b> และหลอนได้</li></ul>${checks(['อธิบายความหมายของ AI ด้วยคำพูดของตัวเองได้','ยกตัวอย่าง AI / ML / DL / GenAI ได้','บอกได้ว่าทำไม AI กลับมาบูม','บอกได้ว่าแชตบอตเป็น ANI เพราะอะไร'])}</div>`}
+]},
+set2:{set:2,name:'ชุดที่ 2 จริยธรรม AI และการควบคุมตามระดับความเสี่ยง',slides:[
+{k:'div',b:`<p class="num">ชุดที่ 2</p><h2>จริยธรรม AI และการควบคุมตามระดับความเสี่ยง</h2><div><h3>เป้าหมายของชุดนี้</h3><ul><li>ฉันบอกปัญหาจริยธรรมของ AI ได้ และรู้วิธีใช้ AI อย่างรับผิดชอบ</li><li>ฉันอธิบายการควบคุม AI ตามระดับความเสี่ยง และจัดระดับความเสี่ยงของ AI ได้</li><li>ฉันบอกสาระสำคัญของร่างกฎหมาย AI ของไทยได้</li></ul></div>`},
+{k:'open',h:'เปิดเรื่อง',b:`<p class="q">โรงเรียนจะใช้ AI คัดนักเรียนเข้าโครงการพิเศษ โดยดู<em>คะแนนสอบ รูปถ่าย และโพสต์ในโซเชียลมีเดีย</em> แล้วตัดสินว่าใครผ่าน โดยไม่มีครูตรวจซ้ำ</p><p class="muted">นักเรียนรู้สึกอย่างไร ระบบนี้ยุติธรรมไหม ถ้าไม่ผ่าน จะถามใครได้ว่าเพราะอะไร</p>`},
+{h:'จริยธรรม กับ กฎหมาย ต่างกันอย่างไร',b:`<div class="g2"><div class="card k" style="--k:var(--s4)"><span class="tag">${ic('book')}จริยธรรม = สิ่งที่ "ควรทำ"</span><p>ข้อตกลงร่วมกันของสังคม ไม่มีโทษจำคุกหรือปรับ</p></div><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('gavel')}กฎหมาย = สิ่งที่ "ต้องทำ"</span><p>ถ้าฝ่าฝืนมีโทษ</p></div></div><div class="box"><span class="lbl">จำง่าย ๆ</span><p>กฎหมายออกช้ากว่าเทคโนโลยีเสมอ ช่วงที่ยังไม่มีกฎหมาย จริยธรรมคือสิ่งที่ช่วยกำกับ</p></div>`},
+{h:'ปัญหาจริยธรรมของ AI',b:`<div class="g4 sm">${[['อคติ ลำเอียง','ข้อมูลสอนลำเอียง AI ก็ลำเอียงตาม'],['ความเป็นส่วนตัว','เอารูปเพื่อนไปให้ AI วิเคราะห์โดยไม่ขออนุญาต'],['อธิบายไม่ได้','ถูกปฏิเสธเงินกู้โดยไม่มีใครบอกเหตุผลได้'],['ใครรับผิดชอบ','รถไร้คนขับชนคน ใครผิด'],['ข้อมูลผิด ข่าวปลอม','อ้างงานวิจัยที่ไม่มีอยู่จริง'],['ลิขสิทธิ์','ทำเพลงเลียนแบบศิลปินโดยไม่ได้รับอนุญาต'],['นำไปใช้ทำผิด','ปลอมเสียงลูกโทรขอเงินพ่อแม่'],['ผลกระทบต่อสังคม','งานบางอย่างถูกแทนที่']].map(([a,b],k)=>`<div class="card"><b class="c">${ic(PIC[k])}${a}</b><p>${b}</p></div>`).join('')}</div>`},
+{i:'scale',h:'ทำไม AI ถึงลำเอียง',b:`<div class="flow3"><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('db')}ข้อมูลในอดีตลำเอียง</span><p class="sm">เช่น บริษัทเคยรับผู้ชายมากกว่าผู้หญิง</p></div><span class="arw">→</span><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('brain')}AI เรียนรู้รูปแบบนั้น</span><p class="sm">สรุปเองว่า "ผู้ชาย = ผู้สมัครที่ดี"</p></div><span class="arw">→</span><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('ban')}ตัดสินไม่เป็นธรรม</span><p class="sm">ให้คะแนนผู้หญิงต่ำกว่า แม้คุณสมบัติเท่ากัน</p></div></div><div class="box"><span class="lbl">ลดอคติได้อย่างไร</span><ul class="sm"><li>ตรวจข้อมูลฝึกว่ามีคนทุกกลุ่มอย่างสมดุล</li><li>ตัดข้อมูลที่ไม่เกี่ยวกับการตัดสิน เช่น เพศ รูปถ่าย ออก</li><li>ทดสอบผลลัพธ์แยกตามกลุ่ม และให้คนตรวจซ้ำก่อนตัดสินจริง</li></ul></div>`},
+{h:'หลักจริยธรรม AI ของไทย 6 ข้อ',b:`<div class="g2"><ol><li><b>แข่งขันได้และยั่งยืน</b></li><li><b>ถูกกฎหมาย ถูกจริยธรรม ได้มาตรฐานสากล</b></li><li><b>โปร่งใสและรับผิดชอบได้</b></li></ol><ol start="4"><li><b>ปลอดภัยและรักษาความเป็นส่วนตัว</b></li><li><b>เป็นธรรม</b> ไม่ลำเอียง ทุกกลุ่มเข้าถึงได้</li><li><b>น่าเชื่อถือ</b> ถูกต้อง สม่ำเสมอ ตรวจสอบได้</li></ol></div><p class="sm muted">ที่มา: แนวทางจริยธรรมปัญญาประดิษฐ์ของประเทศไทย (กระทรวงดีอี ร่วมกับมหาวิทยาลัยมหิดล) · ระดับโลก UNESCO ออกข้อแนะนำว่าด้วยจริยธรรมของ AI ปี 2021 เน้นสิทธิมนุษยชนและศักดิ์ศรีของคน</p>`},
+{i:'shield',h:'หลัก 6 ข้อ ใช้จริงอย่างไร',b:`<div class="tw"><table class="tsm"><thead><tr><th>หลัก</th><th>หมายความว่า</th><th>ตัวอย่างการปฏิบัติ</th></tr></thead><tbody><tr><td>แข่งขันได้และยั่งยืน</td><td>ช่วยพัฒนาประเทศ ไม่ทำร้ายสังคมหรือสิ่งแวดล้อมระยะยาว</td><td>เลือกใช้ AI ที่คุ้มค่า ไม่เปลืองพลังงานเกินจำเป็น</td></tr><tr><td>ถูกกฎหมาย จริยธรรม มาตรฐาน</td><td>ทำตามกฎหมายไทยและมาตรฐานสากล</td><td>ขอความยินยอมก่อนใช้ข้อมูลส่วนบุคคลตาม PDPA</td></tr><tr><td>โปร่งใสและรับผิดชอบได้</td><td>อธิบายได้ว่า AI ทำงานอย่างไร มีคนรับผิดชอบ</td><td>บอกผู้ใช้ว่ากำลังคุยกับแชตบอต และมีช่องทางร้องเรียน</td></tr><tr><td>ปลอดภัยและเป็นส่วนตัว</td><td>ป้องกันการแฮ็ก ไม่ละเมิดข้อมูล</td><td>เข้ารหัสข้อมูล จำกัดคนที่เข้าถึงได้</td></tr><tr><td>เป็นธรรม</td><td>ไม่ลำเอียง ไม่กีดกัน ทุกกลุ่มเข้าถึงได้</td><td>ทดสอบว่า AI ให้ผลเท่าเทียมทุกกลุ่ม</td></tr><tr><td>น่าเชื่อถือ</td><td>ทำงานถูกต้อง สม่ำเสมอ ตรวจสอบได้</td><td>ทดสอบก่อนใช้จริง และติดตามผลอย่างต่อเนื่อง</td></tr></tbody></table></div>`},
+{h:'นักเรียนใช้ AI อย่างมีจริยธรรม',b:`<div class="g2"><div class="card k" style="--k:var(--good)"><span class="tag">${ic('check')}ควรทำ</span><ul><li>ใช้ AI เป็น "ผู้ช่วยคิด" และบอกครูว่าใช้ช่วยส่วนไหน</li><li>ตรวจสอบข้อมูลและแหล่งอ้างอิงทุกครั้ง</li></ul></div><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('ban')}ไม่ควรทำ</span><ul><li>พิมพ์ข้อมูลส่วนตัวของตัวเองหรือเพื่อนลงแชตบอต</li><li>ใช้ AI สร้างสิ่งที่ทำให้คนอื่นเสียหาย อับอาย หรือถูกหลอก</li></ul></div></div>`},
+{k:'think',h:'ลองคิด 1',b:think('กลับไปดูระบบคัดนักเรียนในช่วงเปิดเรื่อง มีปัญหาจริยธรรมข้อใดบ้าง และขัดกับหลักจริยธรรมของไทยข้อใด (อย่างน้อย 2 ข้อ)','<p>อคติ (ใช้รูปถ่ายและโพสต์ที่ไม่เกี่ยวข้อง) · ความเป็นส่วนตัว · อธิบายไม่ได้และไม่มีคนรับผิดชอบ ขัดกับหลักข้อ 3 โปร่งใสและรับผิดชอบได้ ข้อ 4 ความเป็นส่วนตัว และข้อ 5 เป็นธรรม</p>')},
+{h:'ควบคุม AI ตามระดับความเสี่ยง',b:`<p class="big">ถามว่า <b>ถ้า AI ตัวนี้ทำพลาด จะเกิดผลร้ายกับคนมากแค่ไหน</b> ผลร้ายมากต้องคุมเข้ม ผลร้ายน้อยปล่อยให้พัฒนาได้อิสระ</p><div class="g3"><div class="card bigc"><span class="bigic">${ic('bike')}</span><b class="c">จักรยาน</b><p>แทบไม่ต้องมีใบอนุญาต</p></div><div class="card bigc"><span class="bigic">${ic('car')}</span><b class="c">รถยนต์</b><p>ต้องมีใบขับขี่</p></div><div class="card bigc"><span class="bigic">${ic('truck')}</span><b class="c">รถบรรทุกสารเคมี</b><p>ต้องมีใบอนุญาตพิเศษ ตรวจเข้มกว่า</p></div></div>`},
+{h:'พีระมิดความเสี่ยง 4 ระดับ (EU AI Act)',b:`<div class="pyr"><div class="py" style="--p:var(--crit)"><i></i><div><b>ยอมรับไม่ได้ · ห้ามใช้</b><br>ให้คะแนนความประพฤติประชาชน, หลอกล่อจิตใต้สำนึก, จับอารมณ์นักเรียนในห้องเรียน</div></div><div class="py" style="--p:var(--warn)"><i></i><div><b>ความเสี่ยงสูง · คุมเข้มก่อนใช้</b><br>คัดคนเข้าทำงาน ให้คะแนนการกู้เงิน ตรวจข้อสอบ อุปกรณ์การแพทย์</div></div><div class="py" style="--p:var(--info)"><i></i><div><b>ความเสี่ยงจำกัด · ต้องบอกว่าเป็น AI</b><br>แชตบอต เนื้อหาที่ AI สร้าง Deepfake</div></div><div class="py" style="--p:var(--good)"><i></i><div><b>ความเสี่ยงต่ำ · ใช้ได้ตามปกติ</b><br>ตัวกรองอีเมลขยะ AI ในเกม</div></div></div><p class="sm muted">EU AI Act มีผลตั้งแต่ 1 สิงหาคม 2567 และทยอยบังคับใช้ทีละส่วน</p>`},
+{i:'clock',h:'EU AI Act: เริ่มใช้เมื่อไร โทษเท่าไร',b:`<div class="g4 sm"><div class="card"><span class="yr" style="font-size:1.5em">1 ส.ค. 2567</span><p>กฎหมายมีผลใช้บังคับ ทยอยบังคับทีละส่วน</p></div><div class="card"><span class="yr" style="font-size:1.5em">2 ก.พ. 2568</span><p>ข้อห้ามใช้ AI ระดับยอมรับไม่ได้เริ่มบังคับ</p></div><div class="card"><span class="yr" style="font-size:1.5em">2 ธ.ค. 2570</span><p>กฎของ AI ความเสี่ยงสูงแบบระบบทั่วไป (เลื่อนจากเดิม)</p></div><div class="card"><span class="yr" style="font-size:1.5em">2 ส.ค. 2571</span><p>AI ความเสี่ยงสูงที่อยู่ในผลิตภัณฑ์ เช่น อุปกรณ์การแพทย์</p></div></div><div class="box warn"><span class="lbl">ค่าปรับสูงสุด</span><p>ใช้ AI ที่ต้องห้าม ปรับได้ถึง <b>35 ล้านยูโร</b> หรือ <b>ร้อยละ 7 ของรายได้ทั้งโลก</b>ของบริษัท</p></div><p class="sm muted">สหภาพยุโรปเลื่อนกำหนด AI ความเสี่ยงสูงผ่านชุดแก้ไข Digital Omnibus on AI เมื่อมิถุนายน 2569 เพราะมาตรฐานทางเทคนิคยังไม่พร้อม</p>`},
+{k:'think',h:'ลองคิด 2',b:think('ระบบคัดนักเรียนในช่วงเปิดเรื่อง อยู่ระดับความเสี่ยงใด และถ้าโรงเรียนจะใช้จริง ต้องทำอะไรบ้าง','<p>ความเสี่ยงสูง เพราะกระทบโอกาสทางการศึกษา ต้องมีครูตรวจซ้ำ ใช้เฉพาะข้อมูลที่เกี่ยวข้อง (ไม่ใช่รูปถ่ายหรือโพสต์) และอธิบายผลให้นักเรียนได้</p>')},
+{i:'flag',h:'กว่าร่างจะเป็นกฎหมาย',b:`<div class="steps5"><div class="card k" style="--k:var(--good)"><span class="tag">${ic('users')}มิ.ย. 2568</span><p class="sm">รับฟังความเห็นต่อ "หลักการ" กฎหมาย AI</p></div><div class="card k" style="--k:var(--good)"><span class="tag">${ic('book')}2 ก.ค. 2569</span><p class="sm">ETDA เผยแพร่ตัวร่าง รับฟังความเห็นประมาณ 30 วัน</p></div><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('search')}กฤษฎีกา</span><p class="sm">ตรวจพิจารณาถ้อยคำทางกฎหมาย</p></div><div class="card"><span class="tag">${ic('users')}คณะรัฐมนตรี</span><p class="sm">เห็นชอบแล้วเสนอสภา</p></div><div class="card"><span class="tag">${ic('gavel')}รัฐสภา → ราชกิจจาฯ</span><p class="sm">ผ่านสภาแล้วประกาศใช้เป็นกฎหมาย</p></div></div><p class="sm muted">สีเขียว = ผ่านแล้ว · สีส้ม = ขั้นที่กำลังรอ · ตรวจสอบ 26 ต.ค. 2569 ยังไม่พบการประกาศใช้ ผู้ยกร่างคือกระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม (ดีอี) กับสำนักงานพัฒนาธุรกรรมทางอิเล็กทรอนิกส์ (ETDA)</p>`},
+{h:'ร่าง พ.ร.บ.ว่าด้วยปัญญาประดิษฐ์ พ.ศ. ....',b:`<div class="box warn"><span class="lbl">ระวัง</span><p class="sm">ยังเป็น<b>ร่าง</b> ยังไม่บังคับใช้ (ตรวจสอบ 26 ต.ค. 2569) ETDA เปิดรับฟังความเห็นเมื่อ 2 ก.ค. 2569</p></div><ol class="sm"><li><b>ควบคุมตามความเสี่ยง</b> แบ่งเป็น AI ต้องห้าม · ความเสี่ยงสูง · ต้องแจ้งหรือขออนุญาตก่อนใช้</li><li><b>AI ต้องห้าม</b> เช่น แอบชักจูงจิตใจคน หรือใช้ข้อมูลไม่เกี่ยวข้องมาตัดสินคนอย่างไม่เป็นธรรม</li><li><b>AI ความเสี่ยงสูง</b> รัฐประกาศภายหลัง เช่น ด้านสุขภาพ พลังงาน การขนส่ง</li><li><b>ทั้งคนสร้างและคนใช้มีหน้าที่</b> ผู้ประยุกต์ใช้ต้องประเมินความเสี่ยง มีคนดูแล เก็บบันทึกอย่างน้อย 6 เดือน</li><li><b>บทลงโทษ</b> ปรับ 1–5 ล้านบาท ศาลสั่งหยุดให้บริการหรือบล็อกได้</li></ol>`},
+{i:'users',h:'ผู้ให้บริการ กับ ผู้ประยุกต์ใช้',b:`<div class="g2"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('cpu')}ผู้ให้บริการ (Provider)</span><p class="sm">บริษัทที่<b>สร้าง</b> AI</p><ul class="sm"><li>ทำให้ AI ทำงานตรงจุดประสงค์</li><li>โปร่งใส คนควบคุมได้</li><li>เป็นธรรม ไม่เลือกปฏิบัติ</li><li>ทำคู่มือการใช้งานให้ชัด</li></ul></div><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('users')}ผู้ประยุกต์ใช้ (Deployer)</span><p class="sm">องค์กรที่<b>ซื้อหรือนำ</b> AI ไปใช้</p><ul class="sm"><li>ประเมินและบริหารความเสี่ยง</li><li>ใช้ตามคู่มือของผู้ให้บริการ</li><li>มอบหมายคนดูแลการใช้งาน</li><li>เก็บบันทึกการทำงานอย่างน้อย 6 เดือน</li><li>แจ้งรัฐเมื่อพบความเสี่ยงที่ไม่คาดคิด</li></ul></div></div>`},
+{i:'list',h:'สาระเพิ่มเติมของร่าง พ.ร.บ. AI',b:`<div class="g2 sm"><ul><li><b>ใช้กับใคร</b> AI ที่มีผลต่อคนในไทย แม้บริษัทอยู่ต่างประเทศ</li><li><b>ไม่ใช้กับ</b> การใช้ส่วนตัวในบ้าน งานวิจัยในมหาวิทยาลัยที่ผ่านจริยธรรม งานที่ยังทดลองก่อนเปิดบริการ</li><li><b>ใครคุม</b> หน่วยงานของแต่ละวงการ เช่น การเงิน สาธารณสุข คมนาคม</li><li><b>บริษัทต่างประเทศ</b> ต้องตั้งผู้ประสานงานหรือผู้แทนในไทย</li></ul><ul><li><b>หน่วยงานรัฐ</b> ต้องประเมินผลกระทบด้านจริยธรรมก่อนนำ AI มาบริการประชาชน</li><li><b>รับผิดแม้ไม่ได้ตั้งใจ</b> (ความรับผิดเด็ดขาด) เว้นแต่เหตุสุดวิสัยหรือผู้เสียหายทำเอง</li><li><b>สนามทดลอง (Sandbox)</b> ให้ทดสอบ AI ใหม่ภายใต้การดูแล</li><li><b>เริ่มบังคับ</b> ส่วนควบคุมความเสี่ยงใช้ 180 วันหลังประกาศ</li></ul></div>`},
+{i:'globe',h:'เทียบร่างกฎหมายไทยกับ EU AI Act',b:`<div class="tw"><table><thead><tr><th>เรื่อง</th><th>ร่างกฎหมาย AI ของไทย</th><th>EU AI Act</th></tr></thead><tbody><tr><td>สถานะ (ต.ค. 2569)</td><td>ยังเป็นร่าง</td><td>ใช้บังคับแล้ว ทยอยทีละส่วน</td></tr><tr><td>แนวคิด</td><td>ควบคุมตามความเสี่ยง</td><td>ควบคุมตามความเสี่ยง</td></tr><tr><td>การแบ่งกลุ่ม</td><td>ต้องห้าม / เสี่ยงสูง / ต้องแจ้งหรือขออนุญาต</td><td>ยอมรับไม่ได้ / สูง / จำกัด / ต่ำ</td></tr><tr><td>ใครคุม</td><td>หน่วยงานของแต่ละวงการ</td><td>หน่วยงานแต่ละประเทศ ร่วมกับสำนักงาน AI ของสหภาพยุโรป</td></tr><tr><td>ค่าปรับสูงสุด</td><td>5 ล้านบาท</td><td>35 ล้านยูโร หรือร้อยละ 7 ของรายได้ทั้งโลก</td></tr></tbody></table></div>`},
+{k:'think',h:'ลองคิด 3',b:think('ถ้าโรงเรียนซื้อระบบ AI จากบริษัทมาใช้คัดนักเรียน ตามร่างกฎหมายนี้ โรงเรียนเป็น "ผู้ให้บริการ" หรือ "ผู้ประยุกต์ใช้" และต้องทำอะไรบ้าง','<p>เป็นผู้ประยุกต์ใช้ (Deployer) ต้องประเมินความเสี่ยง ใช้ตามคู่มือ มีผู้รับผิดชอบดูแล เก็บบันทึกการทำงาน และแจ้งเมื่อพบปัญหาที่ไม่คาดคิด</p>')},
+{i:'book',h:'คำศัพท์ในชุดที่ 2',b:`<div class="tw"><table><tbody><tr><td>Bias (อคติ)</td><td>ความลำเอียงของ AI ที่มักมาจากข้อมูลฝึก</td></tr><tr><td>Risk-based Approach</td><td>การควบคุมตามระดับความเสี่ยง</td></tr><tr><td>Social Scoring</td><td>การให้คะแนนความประพฤติประชาชน ถูกห้ามใน EU AI Act</td></tr><tr><td>Provider (ผู้ให้บริการ)</td><td>คนหรือบริษัทที่สร้าง AI</td></tr><tr><td>Deployer (ผู้ประยุกต์ใช้)</td><td>องค์กรที่นำ AI ไปใช้</td></tr><tr><td>Sandbox (สนามทดลอง)</td><td>พื้นที่ให้ทดสอบ AI ใหม่ภายใต้การดูแลของรัฐ</td></tr><tr><td>ETDA</td><td>สำนักงานพัฒนาธุรกรรมทางอิเล็กทรอนิกส์ ผู้ยกร่างกฎหมาย AI</td></tr></tbody></table></div>`},
+{h:'สรุปชุดที่ 2 และตรวจสอบตัวเอง',b:`<div class="g2"><ul><li>จริยธรรม = <b>ควรทำ</b> · กฎหมาย = <b>ต้องทำ</b></li><li>ปัญหาสำคัญ: อคติ ความเป็นส่วนตัว อธิบายไม่ได้ ใครรับผิดชอบ</li><li><b>ยิ่งทำพลาดแล้วกระทบคนมาก ยิ่งต้องคุมเข้ม</b></li><li>ร่าง พ.ร.บ. AI ยังไม่บังคับใช้</li></ul>${checks(['ยกตัวอย่างปัญหาจริยธรรมของ AI ได้ 3 ข้อ','อธิบายแนวคิดควบคุมตามความเสี่ยงด้วยการเปรียบเทียบของตัวเองได้','จัดระดับความเสี่ยงของ AI พร้อมเหตุผลได้','บอกหน้าที่ของผู้ให้บริการกับผู้ประยุกต์ใช้ได้'])}</div>`}
+]},
+set3:{set:3,name:'ชุดที่ 3 ข้อมูลส่วนบุคคล (PDPA) และ Deepfake',slides:[
+{k:'div',b:`<p class="num">ชุดที่ 3</p><h2>ข้อมูลส่วนบุคคล (PDPA) และ Deepfake</h2><div><h3>เป้าหมายของชุดนี้</h3><ul><li>ฉันบอกได้ว่าข้อมูลส่วนบุคคลและข้อมูลอ่อนไหวคืออะไร และ PDPA เกี่ยวกับ AI อย่างไร</li><li>ฉันสังเกต Deepfake ได้ และรู้ว่าการทำ Deepfake ทำร้ายผู้อื่นผิดกฎหมายข้อใด</li><li>ฉันรู้ขั้นตอนที่ต้องทำเมื่อตกเป็นผู้เสียหาย</li></ul></div>`},
+{k:'open',h:'เปิดเรื่อง',b:`<p class="q">เช้าวันจันทร์ "ต้น" พบภาพหน้าของเขาถูก AI ตัดต่อให้น่าอับอาย ส่งต่อในกลุ่มไลน์ห้อง<em>กว่า 40 ครั้ง</em> ตอนเย็นแม่ของต้นได้รับโทรศัพท์ เสียงเหมือนต้นทุกอย่าง ขอให้โอนเงินด่วน 5,000 บาท</p><p class="muted">เรื่องนี้ผิดกฎหมายไหม ใครผิด และถ้าเป็นต้น จะทำอะไรเป็นอย่างแรก</p>`},
+{h:'PDPA: กฎหมายปกป้องข้อมูลของเรา',b:`<p class="big"><b>พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</b> ใช้บังคับจริงแล้วตั้งแต่ 1 มิถุนายน 2565</p><div class="box"><span class="lbl">เกี่ยวกับ AI อย่างไร</span><p>AI ต้อง "กิน" ข้อมูลจำนวนมาก และข้อมูลส่วนใหญ่เป็นข้อมูลของคน ทุกครั้งที่ AI ใช้ข้อมูลของคน จึงต้องทำตาม PDPA</p></div>`},
+{h:'ข้อมูลส่วนบุคคล กับ ข้อมูลอ่อนไหว',b:`<div class="g2"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('user')}ข้อมูลส่วนบุคคล</span><p>ข้อมูลที่บอกได้ว่าเป็นใคร ทั้งโดยตรงหรือเอาไปรวมกับข้อมูลอื่นแล้วรู้</p><p class="sm muted">ชื่อ-นามสกุล เลขบัตรประชาชน เบอร์โทร อีเมล รูปถ่าย</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('finger')}ข้อมูลอ่อนไหว (มาตรา 26)</span><p>ถ้ารั่วไหลอาจถูกเลือกปฏิบัติ ต้องขอความยินยอมอย่างชัดเจนก่อน</p><p class="sm muted">ศาสนา เชื้อชาติ ความคิดเห็นทางการเมือง ประวัติสุขภาพ ความพิการ ข้อมูลพันธุกรรม ลายนิ้วมือ ข้อมูลใบหน้าที่ใช้ระบุตัวตน</p></div></div>`},
+{i:'users',h:'ใครเป็นใครใน PDPA',b:`<div class="g3"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('user')}เจ้าของข้อมูล</span><p class="sm">ตัวคนที่ข้อมูลเป็นของเขา</p><p class="sm muted">นักเรียนที่กรอกใบสมัคร</p></div><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('grad')}ผู้ควบคุมข้อมูล</span><p class="sm">ผู้ตัดสินใจว่าจะเก็บข้อมูลไปทำอะไร อย่างไร</p><p class="sm muted">โรงเรียน บริษัทเจ้าของแอป</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('db')}ผู้ประมวลผลข้อมูล</span><p class="sm">ทำงานกับข้อมูลตามคำสั่งของผู้ควบคุม</p><p class="sm muted">บริษัทคลาวด์ที่โรงเรียนจ้างเก็บข้อมูล</p></div></div><div class="box"><span class="lbl">ตัวอย่าง</span><p class="sm">โรงเรียน (ผู้ควบคุม) จ้างบริษัทคลาวด์ (ผู้ประมวลผล) เก็บคะแนนสอบของนักเรียน (เจ้าของข้อมูล) โรงเรียนต้องรับผิดชอบว่าบริษัทดูแลข้อมูลปลอดภัยและใช้ตามที่สั่งเท่านั้น</p></div>`},
+{h:'กติกาหลัก และสิทธิของเรา',b:`<div class="g2"><div class="card"><h3>${ic('check')}กติกาหลัก</h3><ul class="sm"><li>เก็บเท่าที่จำเป็น ใช้ตามจุดประสงค์ที่บอกไว้</li><li>ต้องมีเหตุผลที่กฎหมายยอมรับ เช่น เจ้าของยินยอม</li><li>ความยินยอมต้องชัดเจน ไม่บังคับ ถอนได้ทุกเมื่อ</li><li>เด็กอายุไม่เกิน 10 ปี ผู้ปกครองต้องยินยอมแทน</li></ul></div><div class="card"><h3>${ic('shield')}สิทธิของเรา</h3><ul class="chips sm"><li>ได้รับแจ้ง</li><li>ขอดู/ขอสำเนา</li><li>ขอให้แก้</li><li>ขอให้ลบ</li><li>ขอให้หยุดใช้</li><li>คัดค้าน</li><li>ขอย้ายข้อมูล</li></ul></div></div>`},
+{i:'check',h:'ความยินยอมที่ถูกต้อง',b:`<div class="g2"><div class="card k" style="--k:var(--good)"><span class="tag">${ic('check')}ถูกต้อง</span><ul class="sm"><li>บอกชัดว่าจะเก็บข้อมูลอะไร ไปใช้ทำอะไร</li><li>แยกออกจากข้อความอื่น อ่านเข้าใจง่าย</li><li>ไม่บังคับ ไม่ยินยอมก็ยังใช้บริการที่ไม่เกี่ยวข้องได้</li><li>ถอนความยินยอมได้ง่ายเท่ากับตอนให้</li></ul></div><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('ban')}ไม่ถูกต้อง</span><ul class="sm"><li>ซ่อนไว้ในตัวหนังสือเล็ก ๆ ท้ายเงื่อนไขยาว ๆ</li><li>ติ๊กถูกไว้ให้ล่วงหน้า</li><li>"ถ้าไม่ยินยอม ห้ามใช้แอปทั้งหมด" ทั้งที่ข้อมูลไม่จำเป็น</li><li>ขอข้อมูลมากเกินจุดประสงค์</li></ul></div></div><p class="sm muted">ความยินยอมเป็นเพียงหนึ่งในฐานทางกฎหมาย ฐานอื่น เช่น จำเป็นต่อการทำตามสัญญา หรือกฎหมายสั่งให้ทำ · เด็กอายุไม่เกิน 10 ปี ผู้ปกครองต้องยินยอมแทน (มาตรา 20)</p>`},
+{i:'shield',h:'สิทธิของเจ้าของข้อมูล 7 ข้อ',b:`<div class="tw"><table class="tsm"><thead><tr><th>สิทธิ</th><th>ใช้เมื่อไร</th></tr></thead><tbody><tr><td>ได้รับแจ้ง</td><td>รู้ว่าข้อมูลจะถูกเก็บไปใช้ทำอะไร นานเท่าไร</td></tr><tr><td>ขอเข้าถึง/ขอสำเนา</td><td>อยากรู้ว่าองค์กรเก็บข้อมูลอะไรของเราไว้บ้าง</td></tr><tr><td>ขอให้แก้ไข</td><td>ข้อมูลผิด เช่น สะกดชื่อผิด เบอร์โทรเก่า</td></tr><tr><td>ขอให้ลบหรือทำลาย</td><td>ไม่ได้ใช้บริการแล้ว หรือข้อมูลถูกเก็บโดยไม่ชอบ</td></tr><tr><td>ขอให้ระงับการใช้</td><td>ระหว่างรอตรวจสอบว่าข้อมูลถูกต้องหรือไม่</td></tr><tr><td>คัดค้าน</td><td>ไม่อยากให้ใช้ข้อมูลทำการตลาด</td></tr><tr><td>ขอโอนย้าย</td><td>ย้ายข้อมูลไปใช้กับผู้ให้บริการรายอื่น</td></tr></tbody></table></div>`},
+{h:'ถ้าฝ่าฝืน PDPA มีโทษ 3 แบบ',b:`<div class="tw"><table><tr><td>ทางแพ่ง</td><td>จ่ายค่าเสียหายตามจริง ศาลสั่งจ่ายเพิ่มได้อีกไม่เกิน 2 เท่า</td></tr><tr><td>ทางอาญา</td><td>เช่น เปิดเผยข้อมูลอ่อนไหวของคนอื่นโดยมิชอบ จำคุกไม่เกิน 6 เดือน หรือปรับไม่เกิน 500,000 บาท</td></tr><tr><td>ทางปกครอง</td><td>ปรับสูงสุด 1, 3 หรือ 5 ล้านบาท แล้วแต่ความผิด</td></tr></table></div><div class="box warn"><span class="lbl">ระวัง</span><p class="sm">แนวปฏิบัติของ สคส. (ต.ค. 2569) ชี้ว่า <b>ข้อความที่เราพิมพ์สั่ง AI และคำตอบที่ AI สร้าง ก็อาจเป็นข้อมูลส่วนบุคคลได้</b> อย่าพิมพ์ข้อมูลส่วนตัวลงแชตบอต</p></div>`},
+{i:'msg',h:'PDPA กับ AI: อะไรบ้างที่อาจเป็นข้อมูลส่วนบุคคล',b:`<div class="g4 sm"><div class="card"><b class="c">${ic('msg')}Prompt</b><p>ข้อความที่เราพิมพ์สั่ง AI ถ้ามีชื่อ เบอร์ หรือเรื่องส่วนตัว</p></div><div class="card"><b class="c">${ic('list')}บันทึกการใช้งาน</b><p>IP เวลาที่ใช้ พฤติกรรมการใช้</p></div><div class="card"><b class="c">${ic('cpu')}ข้อมูลเวกเตอร์</b><p>ข้อมูลที่แปลงเป็นตัวเลข ถ้าแปลงกลับหรือรวมกันแล้วระบุตัวได้</p></div><div class="card"><b class="c">${ic('sparkles')}ผลลัพธ์จาก AI</b><p>คำตอบหรือภาพที่ระบุตัวบุคคลได้</p></div></div><div class="box"><span class="lbl">ใช้แชตบอตอย่างปลอดภัย</span><ul class="sm"><li>ไม่พิมพ์เลขบัตรประชาชน ที่อยู่ เบอร์โทร รหัสผ่าน ข้อมูลสุขภาพ</li><li>ไม่อัปโหลดรูปเพื่อนโดยไม่ขออนุญาต</li><li>เปลี่ยนชื่อจริงเป็นชื่อสมมติเมื่อเล่าเรื่องให้ AI ช่วยคิด</li></ul></div><p class="sm muted">ที่มา: แนวปฏิบัติการคุ้มครองข้อมูลส่วนบุคคลในการพัฒนาและใช้งาน AI ของ สคส. (ตุลาคม 2569) เป็นคำแนะนำ ไม่ใช่กฎหมายบังคับ</p>`},
+{k:'think',h:'ลองคิด 1',b:think('โรงเรียนอยากใช้ระบบสแกนหน้าเช็กชื่อ ข้อมูลใบหน้าเป็นข้อมูลประเภทใด และก่อนเริ่มใช้ โรงเรียนต้องทำอะไร','<p>เป็นข้อมูลชีวภาพ จัดเป็นข้อมูลอ่อนไหว ต้องแจ้งวัตถุประสงค์ ขอความยินยอมโดยชัดแจ้ง ดูแลความปลอดภัยของข้อมูล และควรมีทางเลือกอื่นให้คนที่ไม่ยินยอม</p>')},
+{h:'Deepfake คืออะไร',b:`<p class="big"><b>Deep Learning + Fake</b> ภาพ เสียง หรือคลิปที่ AI สร้างหรือตัดต่อ ให้ดูเหมือนคนจริงพูดหรือทำสิ่งที่ไม่เคยทำ บางแอปใช้รูปไม่กี่รูปหรือเสียงไม่กี่วินาทีก็ปลอมได้</p><div class="g3"><div class="card"><b class="c">${ic('money')}หลอกโอนเงิน</b><p class="sm">ปลอมเสียงหรือวิดีโอคอลเป็นลูกหลานหรือเพื่อน</p></div><div class="card"><b class="c">${ic('image')}ทำให้อับอาย</b><p class="sm">ตัดต่อหน้าคนอื่นลงภาพน่าอับอาย ส่งต่อในกลุ่มแชต</p></div><div class="card"><b class="c">${ic('news')}ข่าวปลอม</b><p class="sm">คลิปปลอมของคนดังชวนลงทุนหลอกลวง</p></div></div>`},
+{i:'cpu',h:'Deepfake ทำได้อย่างไร (แนวคิด)',b:`<div class="g3"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('scan')}สลับใบหน้า</span><p class="sm">AI เรียนรู้ใบหน้าจากรูปหรือคลิปของคนนั้น แล้วนำไปวางแทนหน้าคนในคลิปอื่น ให้ขยับตามสีหน้าเดิม</p></div><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('ear')}ปลอมเสียง</span><p class="sm">AI เรียนรู้น้ำเสียง จังหวะ สำเนียง จากเสียงตัวอย่างสั้น ๆ แล้วพูดประโยคใหม่ด้วยเสียงนั้น</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('sparkles')}สร้างใหม่ทั้งหมด</span><p class="sm">Generative AI สร้างภาพหรือวิดีโอคนที่ไม่มีอยู่จริง หรือฉากที่ไม่เคยเกิดขึ้น จากข้อความสั่ง</p></div></div><div class="box warn"><span class="lbl">ทำไมยิ่งน่ากลัว</span><p class="sm">ใช้ข้อมูลตั้งต้นน้อยลงเรื่อย ๆ รูปโปรไฟล์และคลิปที่เราโพสต์สาธารณะจึงอาจถูกนำไปใช้ได้ ควรตั้งค่าความเป็นส่วนตัวของบัญชีโซเชียล</p></div>`},
+{h:'จับผิด Deepfake',b:`<div class="g4 sm"><div class="card"><b class="c">${ic('eye')}ดูหน้า</b><p>ปากไม่ตรงเสียง กะพริบตาแปลก ขอบหน้า ฟัน นิ้วมือเบลอ</p></div><div class="card"><b class="c">${ic('ear')}ฟังเสียง</b><p>เสียงแบน หายใจแปลก เร่งให้รีบโอนเงิน</p></div><div class="card"><b class="c">${ic('search')}เช็กที่มา</b><p>ใครโพสต์ก่อน สำนักข่าวรายงานไหม ค้นหาภาพย้อนกลับ</p></div><div class="card"><b class="c">${ic('phone')}โทรกลับยืนยัน</b><p>วางสาย แล้วโทรกลับเบอร์ที่รู้จัก</p></div></div><div class="box warn"><span class="lbl">ระวัง</span><p class="sm">Deepfake ยุคใหม่สมจริงจนตาเปล่าดูไม่ออก "เช็กที่มา" และ "โทรกลับยืนยัน" สำคัญกว่าการจ้องหาจุดผิด</p></div>`},
+{k:'think',h:'ลองคิด 2',b:think('ถ้าแม่ของต้นได้รับโทรศัพท์แบบในช่วงเปิดเรื่อง แม่ควรทำอะไรก่อนตัดสินใจโอนเงิน','<p>วางสาย แล้วโทรกลับหาต้นที่เบอร์เดิมที่รู้จัก หรือถามคำถามที่รู้กันในครอบครัว ไม่โอนเงินจนกว่าจะยืนยันได้</p>')},
+{h:'ทำ Deepfake ทำร้ายคนอื่น ผิดกฎหมายแล้วตอนนี้',b:`<div class="tw"><table><tr><td>พ.ร.บ.คอมพิวเตอร์ ม.16</td><td>โพสต์ภาพคนอื่นที่ตัดต่อ ทำให้เสียชื่อเสียง ถูกดูถูก หรืออับอาย</td><td>จำคุกไม่เกิน 3 ปี และปรับไม่เกิน 200,000 บาท</td></tr><tr><td>พ.ร.บ.คอมพิวเตอร์ ม.14(1)</td><td>ข้อมูลเท็จเพื่อโกงหรือหลอกลวง เช่น คลิปปลอมชวนลงทุน</td><td>จำคุกไม่เกิน 5 ปี หรือปรับไม่เกิน 100,000 บาท</td></tr><tr><td>ป.อาญา ม.328</td><td>หมิ่นประมาทผ่านภาพ คลิป ข้อความที่เผยแพร่</td><td>จำคุกไม่เกิน 2 ปี และปรับไม่เกิน 200,000 บาท</td></tr><tr><td>ป.อาญา ม.341, 343</td><td>ใช้ Deepfake หลอกจนได้เงิน (ฉ้อโกง)</td><td>ตามฐานฉ้อโกง</td></tr></table></div>`},
+{i:'clock',h:'แจ้งความต้องรีบ: ยอมความได้ กับ อาญาแผ่นดิน',b:`<div class="g2"><div class="card k" style="--k:var(--warn)"><span class="tag">${ic('clock')}ความผิดยอมความได้</span><p class="sm">เช่น ตัดต่อภาพตาม ม.16 หมิ่นประมาท ม.328</p><ul class="sm"><li>ผู้เสียหายต้องร้องทุกข์เอง</li><li><b>ภายใน 3 เดือน</b> นับแต่รู้เรื่องและรู้ตัวผู้ทำ</li><li>เลยกำหนดแล้วดำเนินคดีไม่ได้</li><li>ตกลงยอมความกันได้</li></ul></div><div class="card k" style="--k:var(--crit)"><span class="tag">${ic('gavel')}ความผิดอาญาแผ่นดิน</span><p class="sm">เช่น ข้อมูลเท็จหลอกลวงประชาชน ม.14(1) ฉ้อโกงประชาชน ม.343</p><ul class="sm"><li>รัฐดำเนินคดีได้เอง</li><li>ผู้เสียหายถอนแจ้งความ อัยการก็ยังฟ้องต่อได้</li></ul></div></div><div class="box"><span class="lbl">ข้อสำคัญ</span><p class="sm">เวลาแจ้งความ ขอให้ตำรวจลงบันทึกว่า "ร้องทุกข์เพื่อดำเนินคดี" การลงบันทึกประจำวันเฉย ๆ ยังไม่นับเป็นการร้องทุกข์</p></div>`},
+{h:'ร่างกฎหมาย AI จะเพิ่ม: รับมือ Deepfake 4 ชั้น',b:`<div class="g4 sm"><div class="card k" style="--k:var(--s1)"><span class="tag">${ic('cpu')}1 คนสร้าง AI</span><p>ฝังลายน้ำดิจิทัลที่คอมพิวเตอร์อ่านได้</p></div><div class="card k" style="--k:var(--s2)"><span class="tag">${ic('user')}2 คนทั่วไป</span><p>โพสต์เนื้อหา AI ในเรื่องเสี่ยง ต้องบอกว่าทำด้วย AI</p></div><div class="card k" style="--k:var(--s3)"><span class="tag">${ic('users')}3 องค์กรที่ใช้ AI</span><p>จัดการความเสี่ยงเพิ่มเติม</p></div><div class="card k" style="--k:var(--s4)"><span class="tag">${ic('globe')}4 แพลตฟอร์ม</span><p>ระบบตรวจจับ ช่องทางแจ้ง ติดป้ายเนื้อหา</p></div></div>`},
+{k:'think',h:'ลองคิด 3',b:think('ในเรื่องของต้น คนที่ตัดต่อภาพ กับคนที่ส่งต่อภาพในกลุ่มไลน์ อาจผิดกฎหมายข้อใด และคนที่ส่งต่อควรทำอย่างไรเมื่อรู้ว่าเป็นภาพปลอม','<p>คนตัดต่อและโพสต์อาจผิด พ.ร.บ.คอมพิวเตอร์ ม.16 และหมิ่นประมาท คนส่งต่อก็มีความเสี่ยงเพราะช่วยเผยแพร่ ควรหยุดส่งต่อ ลบ และบอกต้นหรือครู ส่วนการโทรหลอกโอนเงินเข้าข่ายฉ้อโกง</p>')},
+{h:'ถ้าเราตกเป็นผู้เสียหาย ทำ 4 ข้อนี้',b:`<ol class="big"><li><b>${ic('camera')} เก็บหลักฐานก่อน</b> แคปหน้าจอให้เห็นลิงก์ ชื่อบัญชี วันเวลา</li><li><b>${ic('msg')} บอกผู้ใหญ่ที่ไว้ใจ</b> พ่อแม่ ผู้ปกครอง หรือครู</li><li><b>${ic('flag')} รายงานแพลตฟอร์ม</b> ให้ลบเนื้อหา</li><li><b>${ic('gavel')} แจ้งความ</b> สถานีตำรวจ หรือตำรวจไซเบอร์ สายด่วน 1441 ภายใน 3 เดือน</li></ol>`},
+{i:'book',h:'คำศัพท์ในชุดที่ 3',b:`<div class="tw"><table><tbody><tr><td>PDPA</td><td>พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</td></tr><tr><td>สคส. (PDPC)</td><td>คณะกรรมการคุ้มครองข้อมูลส่วนบุคคล ผู้ดูแล PDPA</td></tr><tr><td>ข้อมูลอ่อนไหว</td><td>ข้อมูลที่ถ้ารั่วไหลอาจถูกเลือกปฏิบัติ เช่น สุขภาพ ศาสนา ลายนิ้วมือ</td></tr><tr><td>ความยินยอม</td><td>การอนุญาตให้ใช้ข้อมูล ต้องชัดเจน ไม่บังคับ ถอนได้</td></tr><tr><td>Deepfake</td><td>ภาพ เสียง หรือคลิปปลอมที่ AI สร้างให้เหมือนคนจริง</td></tr><tr><td>ลายน้ำดิจิทัล</td><td>เครื่องหมายที่ฝังในงานเพื่อบอกว่ามาจาก AI</td></tr><tr><td>ความผิดยอมความได้</td><td>ผู้เสียหายต้องแจ้งความเองภายใน 3 เดือน และตกลงยอมความได้</td></tr></tbody></table></div>`},
+{h:'สรุปชุดที่ 3 และตรวจสอบตัวเอง',b:`<div class="g2"><ul><li><b>PDPA ใช้บังคับแล้ว</b> ใบหน้า เสียง และสิ่งที่พิมพ์ใส่ AI อาจเป็นข้อมูลส่วนบุคคล</li><li>เช็กที่มาและโทรกลับยืนยัน ได้ผลกว่าจ้องหาจุดผิด</li><li><b>ทำหรือส่งต่อ Deepfake ที่ทำให้คนอื่นเสียหาย = ผิดกฎหมาย</b></li><li>เก็บหลักฐาน → บอกผู้ใหญ่ → รายงาน → แจ้งความ</li></ul>${checks(['ยกตัวอย่างข้อมูลส่วนบุคคลและข้อมูลอ่อนไหวได้','บอกได้ว่าทำไมไม่ควรพิมพ์ข้อมูลส่วนตัวลงแชตบอต','บอกวิธีสังเกต Deepfake ได้ 3 วิธี','เรียง 4 ขั้นตอนเมื่อตกเป็นผู้เสียหายได้'])}</div>`}
+]}};
+
+/* ---------- views & routing ---------- */
+let cur=null,idx=0;
+function show(view){
+  $('#home').hidden=view!=='home';$('#deck').hidden=!DECKS[view];$('#act').hidden=view!=='act';
+  if(DECKS[view]){openDeck(view)}
+  window.scrollTo(0,0);
+}
+function route(){const h=(location.hash||'').slice(1);const m=h.match(/^(set[123])(?:-(\d+))?$/);
+  if(m){idx=m[2]?Math.max(0,+m[2]-1):0;show(m[1])}else if(h==='act'){show('act')}else{show('home')}}
+function go(name){if(location.hash==='#'+name){route()}else{location.hash=name}}
+$$('[data-open]').forEach(b=>b.onclick=()=>go(b.dataset.open));
+$$('[data-home]').forEach(b=>b.onclick=()=>go('home'));
+function openDeck(name){
+  const d=DECKS[name];cur=name;const deck=$('#deck');deck.dataset.set=d.set;
+  $('#deck-ttl').innerHTML=`<b>ชุดที่ ${d.set}</b> · ${d.name.replace(/^ชุดที่ \d /,'')}`;
+  if(!d.iconed){const o=d.slides.filter(x=>!x.i);ICONS[name].forEach((v,j)=>{if(o[j])o[j].i=v});d.iconed=1}
+  const st=$('#stage');st.innerHTML=d.slides.map((s,i)=>{const ii=s.i,k=s.k||'std',main=Array.isArray(ii)?ii[0]:ii;
+    const hdr=k==='div'?'':`<header class="sh"><span class="hic">${ic(main)}</span><div class="sh-t"><p class="crumb">ชุดที่ ${d.set} · ${k==='think'?'ลองคิด':k==='open'?'เปิดเรื่อง':'เนื้อหา'}</p><h2>${s.h}</h2></div></header>`;
+    const body=Array.isArray(ii)?`<div class="split"><div class="split-t">${s.b}</div><div class="art" aria-hidden="true">${artIn(ii[0],ii[1])}</div></div>`:s.b;
+    return `<section class="slide k-${k}" aria-label="สไลด์ที่ ${i+1}" hidden>${hdr}<div class="sb">${body}</div>${k==='think'?`<span class="tbot" aria-hidden="true">${ic('bot')}</span>`:''}</section>`}).join('');
+  st.querySelectorAll('.showans').forEach(b=>b.onclick=()=>b.closest('.slide').classList.add('rev'));
+  $('#prog').innerHTML=d.slides.map(()=>'<span></span>').join('');
+  idx=Math.min(idx,d.slides.length-1);paint();
+}
+function paint(){
+  const sl=$$('#stage .slide');sl.forEach((s,i)=>{s.hidden=i!==idx;s.classList.toggle('on',i===idx)});
+  $('#count').textContent=`${idx+1} / ${sl.length}`;
+  $$('#prog span').forEach((p,i)=>p.classList.toggle('done',i<=idx));
+  $('#prev').disabled=idx===0;
+  $('#next').innerHTML=idx===sl.length-1?'กลับหน้าแรก':'ถัดไป<svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>';
+}
+function step(n){const len=DECKS[cur].slides.length;
+  if(n>0&&idx===len-1){go('home');return}
+  idx=Math.max(0,Math.min(len-1,idx+n));paint();
+  history.replaceState(null,'','#'+cur+(idx?'-'+(idx+1):''));}
+$('#prev').onclick=()=>step(-1);$('#next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{
+  if($('#deck').hidden||e.target.matches('input,textarea'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();step(1)}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();step(-1)}
+  else if(e.key==='Escape'){go('home')}
+});
+let tx=null;$('#stage').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+$('#stage').addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)step(dx<0?1:-1);tx=null});
+window.addEventListener('hashchange',route);
+
+/* ---------- tabs ---------- */
+$$('[data-tab]').forEach(b=>b.onclick=()=>{$$('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  ['quiz','risk','spy','case'].forEach(t=>$('#p-'+t).hidden=t!==b.dataset.tab)});
+
+/* ---------- quiz ---------- */
+const QZ=[
+['ข้อใดอธิบายความหมายของ AI ได้ถูกต้องที่สุด',['โปรแกรมที่ทำงานตามคำสั่งที่ตั้งไว้ทุกขั้นตอนเหมือนเครื่องคิดเลข','ระบบที่รับข้อมูลแล้วอนุมานผลลัพธ์ เช่น ทำนาย แนะนำ หรือสร้างเนื้อหา','หุ่นยนต์ที่มีความรู้สึกนึกคิดเหมือนมนุษย์','อินเทอร์เน็ตความเร็วสูง'],1,'AI รับข้อมูลแล้ว "คิดเอง" ว่าจะตอบอะไรออกมา ตามนิยามของ OECD'],
+['ความสัมพันธ์ข้อใดถูกต้อง',['ML ⊃ AI ⊃ DL','DL ⊃ ML ⊃ AI','AI ⊃ ML ⊃ DL ⊃ Generative AI','Generative AI ⊃ AI'],2,'ซ้อนกันเหมือนตุ๊กตาแม่ลูกดก AI ใหญ่สุด Generative AI อยู่ในสุด'],
+['คำว่า "Artificial Intelligence" ถูกตั้งขึ้นในเหตุการณ์ใด',['การทดสอบทัวริง ปี 1950','การประชุมดาร์ตมัธ ปี 1956','Deep Blue ชนะคาสปารอฟ ปี 1997','ChatGPT เปิดตัว ปี 2022'],1,'จอห์น แมคคาร์ธี ตั้งชื่อในการประชุมดาร์ตมัธ ปี 1956'],
+['"ฤดูหนาวของ AI" หมายถึงข้อใด',['ช่วงที่ AI ใช้ไฟฟ้ามากในฤดูหนาว','ช่วงที่ AI ทำไม่ได้ตามที่สัญญา จนทุนวิจัยถูกตัด','ช่วงที่ AI ชนะมนุษย์ในเกม','ช่วงที่กฎหมาย AI ใช้บังคับ'],1,'เกิด 2 ครั้ง ในทศวรรษ 1970 และปลายทศวรรษ 1980'],
+['แชตบอตที่ตอบได้แทบทุกเรื่องในปัจจุบันจัดเป็น AI ประเภทใด',['AI แบบแคบ (ANI)','AI ทั่วไป (AGI)','AI เหนือมนุษย์ (ASI)','AI ที่รู้จักตัวเอง'],0,'ยังทำงานจากรูปแบบในข้อมูลที่ฝึกมา และเกิดภาวะหลอนได้ จึงเป็น ANI'],
+['ระบบคัดใบสมัครงานให้คะแนนผู้หญิงต่ำกว่า เพราะในอดีตบริษัทรับผู้ชายมากกว่า เป็นปัญหาจริยธรรมเรื่องใด',['ลิขสิทธิ์','อคติ (Bias)','ภาวะหลอน','ความปลอดภัยไซเบอร์'],1,'ข้อมูลที่ใช้สอนลำเอียง AI ก็ลำเอียงตาม'],
+['ตาม EU AI Act กล้อง AI ในห้องเรียนที่จับอารมณ์นักเรียนแล้วรายงานครู อยู่ระดับใด',['ความเสี่ยงต่ำ','ความเสี่ยงจำกัด','ความเสี่ยงสูง','ยอมรับไม่ได้ (ห้ามใช้)'],3,'EU AI Act ห้ามระบบจดจำอารมณ์ในสถานศึกษาและที่ทำงาน'],
+['AI ตรวจข้อสอบเพื่อคัดเลือกเข้ามหาวิทยาลัย ควรอยู่ระดับความเสี่ยงใด',['ความเสี่ยงต่ำ','ความเสี่ยงจำกัด','ความเสี่ยงสูง','ยอมรับไม่ได้'],2,'กระทบโอกาสทางการศึกษา ใช้ได้แต่ต้องคุมเข้มและมีคนตรวจ'],
+['ข้อใดถูกต้องเกี่ยวกับร่าง พ.ร.บ.ว่าด้วยปัญญาประดิษฐ์ พ.ศ. .... (ณ ต.ค. 2569)',['ใช้บังคับแล้วตั้งแต่ปี 2565','ยังเป็นร่าง ยังไม่บังคับใช้','ใช้เฉพาะบริษัทต่างประเทศ','ไม่มีบทลงโทษ'],1,'ETDA เปิดรับฟังความเห็นเมื่อ 2 ก.ค. 2569 ยังไม่ประกาศใช้'],
+['ข้อมูลใดเป็น "ข้อมูลอ่อนไหว" ตาม PDPA มาตรา 26',['อีเมล','เบอร์โทรศัพท์','ข้อมูลใบหน้าที่ใช้ระบุตัวตน','ชื่อเล่น'],2,'ข้อมูลชีวภาพ เช่น ใบหน้า ลายนิ้วมือ เป็นข้อมูลอ่อนไหว ต้องขอความยินยอมโดยชัดแจ้ง'],
+['แม่ได้รับโทรศัพท์เสียงเหมือนลูก ขอให้โอนเงินด่วน ควรทำอย่างไรเป็นอย่างแรก',['โอนเงินทันทีเพราะเสียงเหมือนลูก','วางสาย แล้วโทรกลับเบอร์ลูกที่รู้จัก','ส่งเลขบัญชีให้ปลายสาย','โพสต์เตือนในโซเชียลก่อน'],1,'Deepfake เสียงสมจริงมาก การโทรกลับยืนยันสำคัญที่สุด'],
+['เพื่อนนำภาพของนักเรียนไปให้ AI ตัดต่อให้น่าอับอายแล้วโพสต์ในกลุ่มไลน์ห้อง อาจผิดกฎหมายข้อใด',['พ.ร.บ.คอมพิวเตอร์ มาตรา 16','กฎหมายจราจร','ยังไม่ผิด เพราะกฎหมาย AI ยังเป็นร่าง','กฎหมายลิขสิทธิ์อย่างเดียว'],0,'มาตรา 16 จำคุกไม่เกิน 3 ปี และปรับไม่เกิน 200,000 บาท ใช้บังคับอยู่แล้ว']];
+let qi=0,qa=[];
+function qRender(){const p=$('#p-quiz');
+  if(qi>=QZ.length){const sc=qa.filter((a,i)=>a===QZ[i][2]).length;
+    p.innerHTML=`<div><h2>${ic('trophy')}ผลแบบทดสอบ</h2><p class="sub">${sc>=10?'เยี่ยมมาก เข้าใจหน่วยที่ 1 ครบถ้วน':sc>=7?'ดีมาก ทบทวนข้อที่ผิดอีกนิด':'ลองกลับไปอ่านสไลด์ชุดที่เกี่ยวข้อง แล้วทำใหม่'}</p></div><p class="score">${sc} / ${QZ.length}</p><ul class="review">${QZ.map((q,i)=>`<li><span class="${qa[i]===q[2]?'y':'n'}">${qa[i]===q[2]?'✓':'✗'} ${i+1}</span><span>${q[0]} <b>ตอบที่ถูก:</b> ${q[1][q[2]]}</span></li>`).join('')}</ul><div class="row"><button class="pill pri" id="qagain">ทำใหม่</button></div>`;
+    $('#qagain').onclick=()=>{qi=0;qa=[];qRender()};return}
+  const q=QZ[qi],ans=qa[qi];
+  p.innerHTML=`<div class="qhead"><span>ข้อ ${qi+1} จาก ${QZ.length}</span><span>ตอบถูก ${qa.filter((a,i)=>a===QZ[i][2]).length} ข้อ</span></div><div class="qbar"><i style="width:${qi/QZ.length*100}%"></i></div><p class="qq">${q[0]}</p><div class="opts">${q[1].map((o,i)=>`<button class="opt${ans===undefined?'':i===q[2]?' ok':i===ans?' no':''}" data-i="${i}" ${ans===undefined?'':'disabled'}><i>${'กขคง'[i]}</i><span>${o}</span></button>`).join('')}</div>${ans===undefined?'':`<div class="fb ${ans===q[2]?'ok':'no'}"><b>${ans===q[2]?'ถูกต้อง':'ยังไม่ถูก'}</b> ${q[3]}</div><div class="row"><button class="pill pri" id="qnext">${qi===QZ.length-1?'ดูผลคะแนน':'ข้อต่อไป'}</button></div>`}`;
+  p.querySelectorAll('.opt:not(:disabled)').forEach(b=>b.onclick=()=>{qa[qi]=+b.dataset.i;qRender()});
+  const n=$('#qnext');if(n){n.onclick=()=>{qi++;qRender()};n.focus()}
+}
+qRender();
+
+/* ---------- risk cards ---------- */
+const LV=[['ต่ำ','var(--good)'],['จำกัด','var(--info)'],['สูง','var(--warn)'],['ห้ามใช้','var(--crit)']];
+const RC=[['แอปฟังเพลงที่ AI แนะนำเพลงให้ฟังต่อ',0,'พลาดแล้วแค่ได้เพลงไม่ถูกใจ'],['AI ตรวจข้อสอบเขียนตอบเพื่อคัดเลือกเข้ามหาวิทยาลัย',2,'กระทบโอกาสทางการศึกษา'],['แชตบอตตอบคำถามลูกค้าของร้านออนไลน์',1,'ต้องบอกลูกค้าว่ากำลังคุยกับ AI'],['กล้อง AI ในห้องเรียนที่จับอารมณ์นักเรียนแล้วรายงานครูว่าใครเบื่อ',3,'ห้ามระบบจดจำอารมณ์ในสถานศึกษา'],['AI ช่วยแพทย์อ่านฟิล์มเอกซเรย์ปอด',2,'เกี่ยวกับสุขภาพและชีวิต'],['ตัวกรองอีเมลขยะ',0,'ผลกระทบน้อย'],['ระบบรัฐให้คะแนนความประพฤติประชาชน แล้วใช้จัดลำดับการได้รับบริการ',3,'Social Scoring ถูกห้าม'],['แอปที่ใช้ AI เปลี่ยนหน้าในคลิปให้เป็นหน้าคนอื่น',1,'ต้องติดป้ายว่าเป็นเนื้อหาจาก AI ถ้าใช้ทำร้ายคนอื่นจะผิดกฎหมายอื่นด้วย']];
+const rpick=[];
+function rRender(){$('#rcards').innerHTML=RC.map((c,i)=>`<div class="rc"><p><i>${i+1}</i>${c[0]}</p><div class="lv">${LV.map((l,j)=>`<button style="--p:${l[1]}" data-c="${i}" data-l="${j}" aria-pressed="${rpick[i]===j}">${l[0]}</button>`).join('')}</div><p class="res ${rpick[i]===c[1]?'y':'n'}"><b>${rpick[i]===c[1]?'ถูก':'เฉลย'}: ${LV[c[1]][0]}</b> · ${c[2]}</p></div>`).join('');
+  $$('#rcards .lv button').forEach(b=>b.onclick=()=>{rpick[+b.dataset.c]=+b.dataset.l;rRender()})}
+rRender();
+$('#rcheck').onclick=()=>{$('#p-risk').classList.add('checked');const s=RC.filter((c,i)=>rpick[i]===c[1]).length;$('#rscore').textContent=`ถูก ${s} จาก ${RC.length} การ์ด · การ์ด 2, 5 และ 8 มักถกเถียงกันมาก ลองคุยกันว่าทำไม`};
+$('#rreset').onclick=()=>{rpick.length=0;$('#p-risk').classList.remove('checked');$('#rscore').textContent='';rRender()};
+
+/* ---------- spy table (kept in this browser only) ---------- */
+let spy=[];try{spy=JSON.parse(localStorage.getItem('u1-spy')||'[]')}catch(e){}
+$('#spybody').innerHTML=Array.from({length:5},(_,r)=>`<tr>${[0,1,2,3].map(c=>`<td><input id="spy-${r}-${c}" aria-label="แถว ${r+1} ช่อง ${c+1}" value="${(spy[r]&&spy[r][c]||'').replace(/"/g,'&quot;')}"></td>`).join('')}</tr>`).join('');
+$('#spybody').addEventListener('input',()=>{const v=Array.from({length:5},(_,r)=>[0,1,2,3].map(c=>$(`#spy-${r}-${c}`).value));try{localStorage.setItem('u1-spy',JSON.stringify(v))}catch(e){}});
+
+$('#homeart').innerHTML=artIn('bot',['brain','scale','lock','sparkles']);
+const TIC={quiz:'check',risk:'layers',spy:'search',case:'users'};
+$$('[data-tab]').forEach(b=>b.insertAdjacentHTML('afterbegin',ic(TIC[b.dataset.tab])));
+$('#act h1').insertAdjacentHTML('afterbegin',`<span class="h1ic">${ic('trophy')}</span>`);
+[['#p-risk','layers'],['#p-spy','search'],['#p-case','users']].forEach(([p,n])=>$(p+' h2').insertAdjacentHTML('afterbegin',ic(n)));
+route();
+</script>
+
+
+<style>.slmode #krunok-home,#krunok-home.slmode{display:none!important}@media print{#krunok-home{display:none!important}}</style>
+<a href="../index.html" id="krunok-home" aria-label="กลับหน้าหลัก KruNok AI Academy" title="กลับหน้าหลัก" style="position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2147483000;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2A2365;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35);opacity:.85;text-decoration:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></a>
+</body></html>
