@@ -1,0 +1,523 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>KruNok AI Mission Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky section nav → hero with number lookup beside it → groups board (3 cols) → topic cards → two assignment cards → timeline → rubric table → checklist + big Classroom CTA. Single dark world by design. */
+:root{
+  --navy:#0B1026; --plum:#161336; --lav:#9B87F5; --cyan:#57CCF2; --neon:#00E5FF; --ink:#F8FAFC; --body:#E2E8F0; --muted:#A3ACC6;
+  --line:rgba(155,135,245,.24); --line2:rgba(87,204,242,.3); --glass:rgba(22,19,54,.68); --glass-2:rgba(255,255,255,.035); --field:rgba(11,16,38,.72);
+  --t1:#2FA36B; --t1-deep:#145A3A; --t2:#E8B931; --t2-deep:#6B5210; --t3:#9AAE3F; --t3-deep:#4A5520;
+  --ok:#5BE3A8; --warn:#FFD66D;
+  --f-head:'Prompt','Sarabun','Noto Sans Thai',system-ui,sans-serif;
+  --f-body:'Sarabun','Noto Sans Thai','Leelawadee UI',system-ui,sans-serif;
+  --r:20px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--navy);scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--navy);color:var(--body);font-family:var(--f-body);font-size:17.5px;line-height:1.75;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+.glow-bg{position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(900px 520px at 85% -10%,rgba(155,135,245,.22),transparent 60%),radial-gradient(800px 500px at -10% 35%,rgba(0,229,255,.09),transparent 60%),linear-gradient(180deg,var(--navy),#0E0D2C 70%,var(--navy))}
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+h1,h2,h3,h4{font-family:var(--f-head);color:var(--ink);text-wrap:balance;margin:0;line-height:1.3}
+h2{font-size:clamp(23px,3vw,28px);font-weight:600}
+h3{font-size:19px;font-weight:600}
+p{margin:0}
+a{color:var(--cyan)}
+.wrap{max-width:1180px;margin:0 auto}
+:focus-visible{outline:2px solid var(--neon);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
+ padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:rgba(11,16,38,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none}
+.brand b{font-family:var(--f-head);font-weight:600;color:var(--ink);font-size:15.5px;display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:12.5px;display:block;line-height:1.2}
+.links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-left:auto;min-width:0}
+.links::-webkit-scrollbar{display:none}
+.links a{font-family:var(--f-head);font-size:14px;color:var(--body);text-decoration:none;padding:6px 11px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.links a.on{color:var(--neon);border-color:var(--line2);background:rgba(0,229,255,.06)}
+.mypill{flex:none;font-family:var(--f-head);font-size:13.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--ink);background:var(--glass-2);cursor:pointer}
+@media (max-width:860px){.brand small{display:none}.nav .wrap{flex-wrap:wrap;gap:8px}.links{order:3;width:100%;margin-left:0}.mypill{margin-left:auto}}
+
+section{padding-top:56px}
+.sec-head{display:flex;flex-direction:column;gap:6px;margin-bottom:22px;max-width:760px}
+.eyebrow{font-family:var(--f-head);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan)}
+.sub{color:var(--muted)}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);padding:24px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-width:0}
+@media (max-width:520px){.card{padding:18px}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.muted{color:var(--muted)}.small{font-size:15px;line-height:1.65}
+.note{border:1px dashed rgba(255,214,109,.45);background:rgba(255,214,109,.06);border-radius:14px;padding:12px 16px;font-size:16px;line-height:1.7}
+.note b{color:var(--warn);font-family:var(--f-head);font-weight:600}
+.note.cy{border-color:var(--line2);background:rgba(0,229,255,.05)}.note.cy b{color:var(--neon)}
+
+.btn{font-family:var(--f-head);font-size:15.5px;font-weight:500;border-radius:12px;padding:11px 18px;border:1px solid var(--line);background:var(--glass-2);color:var(--ink);cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1.3;text-decoration:none}
+.btn:hover{border-color:var(--cyan);box-shadow:0 0 16px rgba(87,204,242,.25)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,var(--lav),var(--cyan));color:#0B1026;border-color:transparent;font-weight:600}
+.btn.primary:hover{box-shadow:0 0 24px rgba(0,229,255,.45)}
+.btn.sm{font-size:14px;padding:7px 12px;border-radius:10px}
+.btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed;box-shadow:none}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:start;padding-top:36px}
+@media (max-width:940px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(34px,5.6vw,56px);line-height:1.08;letter-spacing:-.01em;margin:10px 0 12px}
+.hero h1 span{background:linear-gradient(90deg,var(--lav),var(--neon));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{font-size:19px;max-width:44ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-family:var(--f-head);font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:var(--glass-2);color:var(--body)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(160deg,rgba(155,135,245,.12),rgba(0,229,255,.04))}
+.stat b{display:block;font-family:var(--f-head);font-size:34px;font-weight:700;color:var(--ink);line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-family:var(--f-head);font-size:14px;color:var(--muted)}
+.aira{display:flex;gap:14px;align-items:flex-start}
+.aira svg{flex:none;width:76px;height:86px;animation:floaty 4s ease-in-out infinite}
+.bubble{background:rgba(155,135,245,.12);border:1px solid var(--line);border-radius:18px 18px 18px 4px;padding:12px 16px;font-size:16.5px;line-height:1.7;min-width:0}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.blink{animation:pulse 3s ease-in-out infinite}
+
+/* lookup */
+.lookup h2{font-size:22px}
+.pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.pad button{font-family:var(--f-head);font-size:16px;font-weight:600;aspect-ratio:1/1;max-height:54px;border-radius:12px;border:1px solid var(--line);background:var(--field);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums;transition:border-color .15s,box-shadow .15s,background .15s}
+.pad button:hover{border-color:var(--cyan)}
+.pad button[aria-pressed="true"]{background:var(--neon);color:var(--navy);border-color:var(--neon);box-shadow:0 0 18px rgba(0,229,255,.5)}
+select{font:inherit;font-family:var(--f-head);font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+select:focus{outline:none;border-color:var(--neon)}
+.reveal{perspective:1000px;margin-top:16px}
+.rcard{border-radius:18px;padding:20px;border:1.5px solid var(--tc,var(--line));background:linear-gradient(150deg,color-mix(in srgb,var(--tc,#9B87F5) 22%,transparent),rgba(22,19,54,.85) 60%);transform-origin:50% 0;animation:flipin .6s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 0 34px color-mix(in srgb,var(--tc,#9B87F5) 30%,transparent)}
+@keyframes flipin{from{opacity:0;transform:rotateX(-70deg) translateY(-10px)}to{opacity:1;transform:none}}
+.rcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.num-big{font-family:var(--f-head);font-weight:700;font-size:40px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.num-big small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
+.team-tag{font-family:var(--f-head);font-size:13px;font-weight:600;padding:4px 12px;border-radius:999px;background:var(--tc);color:#0B1026;white-space:nowrap}
+.rcard h3{font-size:21px;margin:12px 0 4px}
+.rcard ol{margin:6px 0 0;padding-left:22px;font-size:16px;line-height:1.65}
+.q{margin-top:12px;padding:10px 14px;border-radius:12px;background:rgba(11,16,38,.55);border-left:3px solid var(--tc);font-size:16px}
+.q b{font-family:var(--f-head);font-weight:500;color:var(--muted);font-size:13px;display:block}
+.empty{border:1.5px dashed var(--line);border-radius:18px;padding:22px;text-align:center;color:var(--muted);margin-top:16px}
+
+/* groups board */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:900px){.board{grid-template-columns:minmax(0,1fr)}}
+.team{border-radius:var(--r);overflow:hidden;border:1.5px solid color-mix(in srgb,var(--tc) 55%,transparent);background:var(--glass);display:flex;flex-direction:column;transition:box-shadow .3s,transform .3s}
+.team.mine{box-shadow:0 0 34px color-mix(in srgb,var(--tc) 50%,transparent);transform:translateY(-3px)}
+.team-head{min-height:96px;padding:18px 20px;background:linear-gradient(140deg,var(--td),color-mix(in srgb,var(--tc) 70%,var(--td)));color:#fff;display:flex;gap:14px;align-items:center}
+.team-head svg{flex:none;width:46px;height:46px}
+.team-head .tn{font-family:var(--f-head);font-size:13px;letter-spacing:.1em;opacity:.9}
+.team-head h3{color:#fff;font-size:19px}
+.team-body{padding:18px 20px;display:flex;flex-direction:column;gap:14px;flex:1}
+.count{font-family:var(--f-head);font-size:14px;color:var(--muted)}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.badges button{font-family:var(--f-head);font-weight:600;font-size:17px;padding:8px 0;border-radius:12px;border:1px solid color-mix(in srgb,var(--tc) 45%,transparent);background:color-mix(in srgb,var(--tc) 12%,transparent);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums;transition:.2s}
+.badges button:hover{background:color-mix(in srgb,var(--tc) 25%,transparent)}
+.badges button.me{background:var(--tc);color:#0B1026;box-shadow:0 0 0 3px rgba(248,250,252,.85),0 0 20px var(--tc);transform:scale(1.06)}
+.team-body .btn{margin-top:auto}
+
+/* topic detail */
+.topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+@media (max-width:1000px){.topics{grid-template-columns:minmax(0,1fr)}}
+.tcard{border-radius:var(--r);border:1px solid var(--line);background:var(--glass);padding:22px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;transition:box-shadow .4s,border-color .4s}
+.tcard::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--tc)}
+.tcard .code{font-family:var(--f-head);font-size:13px;letter-spacing:.08em;color:var(--tc)}
+.tcard h3{font-size:21px}
+.tcard h4{font-size:15px;color:var(--muted);font-weight:500}
+.tcard ol{margin:0;padding-left:22px;font-size:16.5px;line-height:1.65}
+.tcard ol li+li{margin-top:4px}
+.tcard.flash{border-color:var(--tc);box-shadow:0 0 0 2px var(--tc),0 0 40px color-mix(in srgb,var(--tc) 45%,transparent)}
+.tcard.mine .mine-tag{display:inline-flex}
+.mine-tag{display:none;font-family:var(--f-head);font-size:12.5px;padding:2px 10px;border-radius:999px;background:var(--tc);color:#0B1026;width:max-content}
+
+/* assignments */
+.assign{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.assign{grid-template-columns:minmax(0,1fr)}}
+.acard{display:flex;flex-direction:column;gap:14px}
+.ahead{display:flex;gap:16px;align-items:center}
+.paper{flex:none;width:58px;height:82px;border-radius:5px;background:#F8FAFC;position:relative;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.paper i{position:absolute;left:9px;right:9px;height:3px;border-radius:2px;background:#C9CDDA}
+.paper.poster{background:linear-gradient(160deg,#9B87F5,#00E5FF)}
+.paper.poster i{background:rgba(255,255,255,.7)}
+.paper span{position:absolute;bottom:-9px;right:-9px;font-family:var(--f-head);font-size:11px;font-weight:700;background:var(--plum);color:var(--neon);border:1px solid var(--line2);padding:1px 6px;border-radius:6px}
+.ahead .n{font-family:var(--f-head);font-size:13px;letter-spacing:.08em;color:var(--cyan)}
+.reqs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:16.5px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--neon);margin-top:11px;box-shadow:0 0 8px var(--neon)}
+.fmt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-family:var(--f-head);font-size:14px;color:var(--muted)}
+.fmt code{font-family:var(--f-head);font-weight:600;font-size:13px;padding:2px 10px;border-radius:8px;background:rgba(0,229,255,.1);border:1px solid var(--line2);color:var(--neon)}
+pre.prompt{white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--f-body);font-size:15.5px;line-height:1.7;background:var(--field);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;color:var(--ink)}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;position:relative}
+.tl::before{content:"";position:absolute;left:10%;right:10%;top:31px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--lav),var(--cyan),var(--neon))}
+.tl .st{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:0 8px;position:relative}
+.tl .ic{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--plum);border:2px solid var(--cyan);box-shadow:0 0 18px rgba(0,229,255,.3);position:relative;z-index:1}
+.tl .ic svg{width:28px;height:28px}
+.tl .mins{font-family:var(--f-head);font-weight:700;font-size:20px;color:var(--ink);line-height:1}
+.tl .mins small{font-size:13px;color:var(--muted);font-weight:500}
+.tl .at{font-family:var(--f-head);font-size:12.5px;color:var(--cyan)}
+.tl p{font-size:15px;line-height:1.6}
+.tlbar{display:flex;height:12px;border-radius:12px;overflow:hidden;margin-top:26px;gap:3px}
+.tlbar i{display:block;background:linear-gradient(90deg,var(--lav),var(--cyan))}
+.tlbar i:nth-child(even){background:linear-gradient(90deg,var(--cyan),var(--neon))}
+.tlscale{display:flex;justify-content:space-between;font-family:var(--f-head);font-size:12.5px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums}
+@media (max-width:820px){.tl{grid-template-columns:minmax(0,1fr);gap:18px}.tl::before{left:31px;right:auto;top:20px;bottom:20px;width:3px;height:auto;background:linear-gradient(180deg,var(--lav),var(--cyan),var(--neon))}
+ .tl .st{flex-direction:row;text-align:left;align-items:flex-start;gap:14px;padding:0}.tl .st>div{display:flex;flex-direction:column;gap:2px}.tlbar,.tlscale{display:none}}
+
+/* rubric */
+.rub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.rub{grid-template-columns:minmax(0,1fr)}}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid rgba(155,135,245,.16);vertical-align:top}
+th{font-family:var(--f-head);font-weight:500;font-size:13.5px;color:var(--muted)}
+td.p{font-family:var(--f-head);font-weight:600;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.p{text-align:right}
+tfoot td{font-family:var(--f-head);font-weight:600;color:var(--neon);border-bottom:0}
+.grand{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;padding:16px 22px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(120deg,rgba(155,135,245,.16),rgba(0,229,255,.08))}
+.grand b{font-family:var(--f-head);font-size:34px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* checklist + submit */
+.chk{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:18px;align-items:start}
+@media (max-width:900px){.chk{grid-template-columns:minmax(0,1fr)}}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.checks label{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px dashed rgba(155,135,245,.18);cursor:pointer;font-size:16.5px;line-height:1.55}
+.checks input{width:20px;height:20px;accent-color:var(--neon);flex:none;margin-top:3px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(163,172,198,.5)}
+.meter{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;flex:1;min-width:120px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--ok));transition:width .3s}
+.fname{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line2);border-radius:12px;background:var(--field)}
+.fname code{font-family:var(--f-head);font-size:15px;color:var(--ink);overflow-wrap:anywhere;min-width:0}
+.submit{margin-top:56px;border-radius:26px;padding:36px clamp(20px,4vw,48px);border:1px solid var(--line2);background:radial-gradient(600px 260px at 90% 0%,rgba(0,229,255,.18),transparent 70%),linear-gradient(140deg,#1b1650,#0f1a3d);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:24px;align-items:center}
+@media (max-width:820px){.submit{grid-template-columns:minmax(0,1fr)}}
+.submit h2{font-size:clamp(26px,3.6vw,36px)}
+.submit p{font-size:17.5px;margin-top:10px;max-width:58ch}
+.cta{font-size:19px!important;padding:18px 26px!important;border-radius:16px!important;width:100%;background:linear-gradient(135deg,#2FE6A6,var(--neon))!important;color:#06231a!important}
+.cta[aria-disabled="true"]{background:rgba(255,255,255,.08)!important;color:var(--muted)!important;border:1px dashed var(--line)!important}
+footer{margin-top:40px;text-align:center;color:var(--muted);font-size:14px;font-family:var(--f-head)}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--plum);border:1px solid var(--line2);color:var(--ink);font-family:var(--f-head);font-size:15px;padding:10px 18px;border-radius:12px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+
+<div class="glow-bg"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+
+<nav class="nav" aria-label="เมนูหลัก">
+ <div class="wrap">
+  <a class="brand" href="#hero" data-jump="hero">
+   <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9B87F5"/><stop offset="1" stop-color="#00E5FF"/></linearGradient></defs><rect x="1" y="1" width="32" height="32" rx="10" fill="#161336" stroke="url(#lg)" stroke-width="1.5"/><path d="M10 23V11l7 6 7-6v12" fill="none" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+   <div><b>KruNok AI Mission Board</b><small>ว32281 · หน่วยที่ 1</small></div>
+  </a>
+  <div class="links" id="links">
+   <a href="#hero" data-jump="hero">ประกาศ</a>
+   <a href="#mytopic" data-jump="mytopic">หัวข้อของฉัน</a>
+   <a href="#groups" data-jump="groups">กลุ่ม</a>
+   <a href="#research" data-jump="research">เนื้อหาค้นคว้า</a>
+   <a href="#tasks" data-jump="tasks">ชิ้นงาน</a>
+   <a href="#rubric" data-jump="rubric">เกณฑ์คะแนน</a>
+   <a href="#submit" data-jump="submit">ส่งงาน</a>
+  </div>
+  <button class="mypill" id="mypill" type="button" hidden></button>
+ </div>
+</nav>
+
+<main class="wrap">
+ <!-- 1 HERO + 2 MY TOPIC -->
+ <section id="hero" class="hero">
+  <div>
+   <div class="eyebrow">KruNok AI Academy · ว32281 ปัญญาประดิษฐ์เบื้องต้น · ม.5</div>
+   <h1>กิจกรรมที่ 1.1<br>AI Research &amp; <span>Infographic Sprint</span></h1>
+   <p class="tagline">ภารกิจค้นคว้าปัญญาประดิษฐ์ สรุปเป็นรายงาน และสร้างสรรค์อินโฟกราฟิกด้วย AI</p>
+   <div class="meta"><span class="chip">หน่วยที่ 1 แนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์</span><span class="chip">งานรายบุคคล</span><span class="chip" id="roomchip"></span></div>
+   <div class="stats">
+    <div class="stat"><b>3</b><span>หัวข้อค้นคว้า</span></div>
+    <div class="stat"><b>2</b><span>ชิ้นงาน</span></div>
+    <div class="stat"><b>100</b><span>นาที</span></div>
+    <div class="stat"><b>20</b><span>คะแนน</span></div>
+   </div>
+   <div class="aira" style="margin-bottom:20px">
+    <svg viewBox="0 0 74 84" aria-hidden="true"><line x1="37" y1="4" x2="37" y2="14" stroke="#9B87F5" stroke-width="2"/><circle class="blink" cx="37" cy="4" r="3.5" fill="#00E5FF"/><rect x="9" y="14" width="56" height="40" rx="16" fill="#1d1946" stroke="#9B87F5" stroke-width="2"/><rect x="16" y="22" width="42" height="24" rx="11" fill="#0B1026"/><ellipse class="blink" cx="29" cy="34" rx="4.5" ry="5.5" fill="#00E5FF"/><ellipse class="blink" cx="45" cy="34" rx="4.5" ry="5.5" fill="#00E5FF"/><path d="M31 41q6 4 12 0" stroke="#57CCF2" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="5" y="28" width="5" height="12" rx="2.5" fill="#9B87F5"/><rect x="64" y="28" width="5" height="12" rx="2.5" fill="#9B87F5"/><rect x="18" y="58" width="38" height="22" rx="10" fill="#1d1946" stroke="#57CCF2" stroke-width="2"/><circle cx="37" cy="69" r="4" fill="#FFD66D"/></svg>
+    <div class="bubble"><b style="font-family:var(--f-head);color:var(--ink)">AIra:</b> สวัสดี! วันนี้นักเรียนทุกคนจะได้รับภารกิจค้นคว้า AI คนละ 1 หัวข้อ ตรวจสอบเลขที่ของตนเอง แล้วเริ่มทำรายงานและโปสเตอร์กันเลย!</div>
+   </div>
+   <div class="row">
+    <button class="btn primary" type="button" data-jump="mytopic">ตรวจสอบหัวข้อของฉัน</button>
+    <button class="btn" type="button" data-jump="tasks">ดูรายละเอียดใบงาน</button>
+    <button class="btn" type="button" data-jump="submit">ส่งงาน Google Classroom</button>
+   </div>
+  </div>
+
+  <div id="mytopic" class="card lookup" style="scroll-margin-top:84px">
+   <div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px">
+    <div><div class="eyebrow">My Assigned Topic</div><h2>ตรวจสอบหัวข้อของฉัน</h2></div>
+    <label class="row small" style="gap:8px"><span class="muted">เลขที่</span>
+     <select id="numsel" aria-label="เลือกเลขที่"><option value="">เลือก</option></select></label>
+   </div>
+   <p class="small muted" style="margin-bottom:12px">กดเลขที่ของตนเอง ไม่ต้องเข้าสู่ระบบ ครูแบ่งหัวข้อไว้แล้ว</p>
+   <div class="pad" id="pad" role="group" aria-label="ปุ่มเลขที่ 1 ถึง 24"></div>
+   <div class="reveal" id="reveal" aria-live="polite"></div>
+  </div>
+ </section>
+
+ <!-- 3 GROUPS BOARD -->
+ <section id="groups">
+  <div class="sec-head"><div class="eyebrow">Groups Board</div><h2>การแบ่งกลุ่มตามหัวข้อค้นคว้า</h2>
+   <p class="sub" id="groupsub"></p></div>
+  <div class="board" id="board"></div>
+  <div class="note cy" style="margin-top:18px"><b>ชี้แจง</b> การแบ่งกลุ่มเป็นการแบ่งตามหัวข้อค้นคว้า นักเรียนทุกคนต้องทำผลงานรายบุคคล สามารถแลกเปลี่ยนความรู้กับเพื่อนที่ได้หัวข้อเดียวกันได้ แต่ต้องจัดทำชิ้นงานด้วยตนเอง</div>
+ </section>
+
+ <!-- 4 RESEARCH -->
+ <section id="research">
+  <div class="sec-head"><div class="eyebrow">Research Requirements</div><h2>เนื้อหาที่ต้องค้นคว้า</h2><p class="sub">ค้นคว้าจากแหล่งข้อมูลที่น่าเชื่อถืออย่างน้อย 2 แหล่ง และตอบคำถามชวนคิดในรายงาน</p></div>
+  <div class="topics" id="topics"></div>
+ </section>
+
+ <!-- 5 TASKS + TIMELINE -->
+ <section id="tasks">
+  <div class="sec-head"><div class="eyebrow">Assignment Instructions</div><h2>ชิ้นงานที่ต้องส่ง 2 ชิ้น</h2><p class="sub">ทำชิ้นละ 1 หน้า A4 ด้วยตนเอง</p></div>
+  <div class="assign">
+   <article class="card acard">
+    <div class="ahead"><div class="paper"><i style="top:12px;width:60%"></i><i style="top:22px"></i><i style="top:30px"></i><i style="top:38px"></i><i style="top:46px;width:70%"></i><i style="top:58px"></i><i style="top:66px;width:50%"></i><span>A4</span></div>
+     <div><div class="n">ชิ้นงานที่ 1 · Research Report</div><h3>รายงาน 1 หน้า A4</h3></div></div>
+    <ul class="reqs"><li>ชื่อเรื่อง</li><li>ชื่อผู้จัดทำ / ชั้น / เลขที่</li><li>เนื้อหาสรุปด้วยภาษาของตนเอง</li><li>ตัวอย่างหรือข้อคิดจากหัวข้อที่ศึกษา</li><li>แหล่งอ้างอิงอย่างน้อย 2 แหล่ง</li></ul>
+    <div class="fmt">รูปแบบการส่ง <code>PDF</code> หรือ <code>DOCX</code></div>
+   </article>
+   <article class="card acard">
+    <div class="ahead"><div class="paper poster"><i style="top:12px;width:70%;height:5px"></i><i style="top:26px;left:9px;right:auto;width:16px;height:16px;border-radius:50%"></i><i style="top:30px;left:30px"></i><i style="top:48px;left:9px;right:auto;width:16px;height:16px;border-radius:50%"></i><i style="top:52px;left:30px"></i><i style="top:70px;width:55%"></i><span>A4</span></div>
+     <div><div class="n">ชิ้นงานที่ 2 · AI Infographic Poster</div><h3>โปสเตอร์อินโฟกราฟิก 1 หน้า A4</h3></div></div>
+    <ul class="reqs"><li>ชื่อหัวข้อ</li><li>ประเด็นสำคัญ 3–5 ประเด็น</li><li>ภาพหรือไอคอนประกอบ</li><li>สรุปสาระสำคัญ</li><li>เนื้อหาสอดคล้องกับรายงาน</li><li>ตรวจสอบภาษาไทยและข้อเท็จจริง</li><li>ระบุเครื่องมือ AI ที่ใช้</li></ul>
+    <div class="row small"><span class="muted">ใช้ AI ช่วยออกแบบได้ เช่น</span><span class="tools"><span class="chip">ChatGPT</span><span class="chip">Claude</span><span class="chip">Canva</span><span class="chip">เครื่องมืออื่นที่เหมาะสม</span></span></div>
+    <div class="fmt">รูปแบบการส่ง <code>PDF</code> หรือ <code>PNG</code></div>
+   </article>
+  </div>
+  <div class="note" style="margin-top:18px"><b>หมายเหตุ</b> หาก AI สร้างข้อความภาษาไทยผิดพลาด นักเรียนต้องตรวจแก้ก่อนส่ง ไม่ควรนำโปสเตอร์ที่มีข้อเท็จจริงผิดหรือแหล่งอ้างอิงที่ไม่มีอยู่จริงไปส่ง</div>
+  <div class="card stack" style="margin-top:18px">
+   <div class="row" style="justify-content:space-between"><div><h3>Prompt สำหรับสร้างอินโฟกราฟิก</h3><p class="small muted" id="prompthint">เลือกเลขที่ด้านบนก่อน ระบบจะใส่หัวข้อของคุณให้อัตโนมัติ</p></div>
+    <button class="btn primary" type="button" id="copyprompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>คัดลอก Prompt สำหรับสร้างอินโฟกราฟิก</button></div>
+   <pre class="prompt" id="prompt"></pre>
+   <p class="small muted">แทนที่ข้อความในวงเล็บ [ ] ด้วยเนื้อหาสรุป 3–5 ประเด็นจากรายงานที่ตรวจสอบแล้ว</p>
+   <div class="note cy"><b>Prompt นี้เป็นเพียงตัวอย่าง</b> นักเรียนสามารถเขียน Prompt สำหรับสร้างอินโฟกราฟิกเองและปรับแก้ไขได้ตามต้องการ เช่น เปลี่ยนโทนสี สไตล์ภาพ หรือรูปแบบการจัดวาง แต่ต้องใช้เนื้อหาที่ตรวจสอบแล้วเท่านั้น</div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+   <div class="row" style="justify-content:space-between;margin-bottom:22px"><div><div class="eyebrow">Time Management</div><h3>แผนเวลา 100 นาที (2 คาบ)</h3></div><span class="chip">คาบละ 50 นาที</span></div>
+   <div class="tl" id="tl"></div>
+   <div class="tlbar" id="tlbar"></div>
+   <div class="tlscale"><span>0</span><span>คาบที่ 1 จบ · 50</span><span>100 นาที</span></div>
+  </div>
+ </section>
+
+ <!-- 6 RUBRIC -->
+ <section id="rubric">
+  <div class="sec-head"><div class="eyebrow">Assessment Rubric</div><h2>เกณฑ์การให้คะแนน 20 คะแนน</h2></div>
+  <div class="rub" id="rub"></div>
+  <div class="grand"><span class="head" style="font-family:var(--f-head);font-size:18px;color:var(--ink)">คะแนนรวม (รายงาน 10 + โปสเตอร์ 10)</span><b id="grand">20</b></div>
+ </section>
+
+ <!-- 7 SUBMISSION -->
+ <section id="checklist">
+  <div class="sec-head"><div class="eyebrow">Submission Checklist</div><h2>ตรวจงานก่อนส่ง</h2></div>
+  <div class="chk">
+   <div class="card stack">
+    <div class="row"><b style="font-family:var(--f-head);color:var(--ink)" id="chkcount">0/8</b><div class="meter"><i id="chkbar"></i></div><button class="btn sm" type="button" id="chkreset">ล้างเครื่องหมาย</button></div>
+    <ul class="checks" id="checks"></ul>
+    <p class="small muted" id="chkmsg">ติ๊กครบทั้ง 8 ข้อก่อนส่งงาน เครื่องหมายเก็บไว้ในเบราว์เซอร์นี้เท่านั้น</p>
+   </div>
+   <div class="card stack">
+    <h3>ตั้งชื่อไฟล์</h3>
+    <p class="small">รูปแบบ <b style="font-family:var(--f-head);color:var(--ink)">ห้อง_เลขที่_หัวข้อ_Report / Poster</b></p>
+    <div class="stack" style="gap:8px" id="fnames"></div>
+    <p class="small muted" id="fnhint"></p>
+    <div class="small"><span class="muted">ชื่อหัวข้อในชื่อไฟล์</span><br><span style="font-family:var(--f-head)">หัวข้อ 1 = <code style="color:var(--t1)">AI-Foundations</code> · หัวข้อ 2 = <code style="color:var(--t2)">AI-History</code> · หัวข้อ 3 = <code style="color:var(--t3)">AI-Ethics</code></span></div>
+   </div>
+  </div>
+
+  <div class="submit" id="submit" style="scroll-margin-top:84px">
+   <div>
+    <div class="eyebrow">Google Classroom</div>
+    <h2>ส่งงานผ่าน Google Classroom</h2>
+    <p>เมื่อจัดทำรายงานและโปสเตอร์เสร็จเรียบร้อยแล้ว ให้นักเรียนอัปโหลดไฟล์ทั้ง 2 ชิ้นในงานที่ได้รับมอบหมายบน Google Classroom และกดส่งงาน (Turn in) ให้เรียบร้อยภายในคาบเรียน</p>
+   </div>
+   <div class="stack" style="gap:10px">
+    <a class="btn cta" id="cta" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>เปิด Google Classroom เพื่อส่งงาน</a>
+    <p class="small" id="ctamsg" style="text-align:center"></p>
+   </div>
+  </div>
+ </section>
+ <footer>KruNok AI Academy · ครูผู้สอน นางมนัสชนก ตามวงค์ (Kru Nok) · โรงเรียนวิทยาศาสตร์จุฬาภรณราชวิทยาลัย เชียงราย</footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+/* ================= TEACHER SETTINGS ================= */
+// ลิงก์งานที่มอบหมายใน Google Classroom (ครูใส่ภายหลัง) — ปล่อยว่างไว้จนกว่าจะมีลิงก์จริง
+const GOOGLE_CLASSROOM_ASSIGNMENT_URL = "";
+// ห้องเรียนที่ใช้การแบ่งกลุ่มชุดนี้ เช่น "5/1" — ปล่อยว่างถ้ายังไม่ระบุ (ชื่อไฟล์จะแสดงรูปแบบทั่วไป)
+const CLASSROOM = "";
+
+/* ================= ASSIGNMENT DATA (ครูแบ่งไว้แล้ว ห้ามสุ่มใหม่) ================= */
+const TEAMS = [
+ {team:1, numbers:[8,9,1,10,3,5,18,13],  topic:'T1'},
+ {team:2, numbers:[22,16,2,12,23,4,17,7], topic:'T2'},
+ {team:3, numbers:[15,14,24,11,6,20,21,19],topic:'T3'}
+];
+const TOPICS = {
+ T1:{code:'TOPIC 01',en:'AI Foundations',slug:'AI-Foundations',th:'ความหมายและแนวคิดเกี่ยวกับ AI',color:'var(--t1)',deep:'var(--t1-deep)',
+  items:['ความหมายของปัญญาประดิษฐ์','นิยาม AI ของ John McCarthy','แนวคิด AI 4 แนวทาง ได้แก่ Thinking Humanly, Thinking Rationally, Acting Humanly และ Acting Rationally','ตัวอย่าง AI ในชีวิตประจำวันอย่างน้อย 2 ตัวอย่าง'],
+  q:'AI แตกต่างจากโปรแกรมคอมพิวเตอร์ทั่วไปอย่างไร?',
+  icon:'<circle cx="23" cy="23" r="8" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="23" cy="23" r="2.5" fill="#fff"/><path d="M23 6v6M23 34v6M6 23h6M34 23h6M11 11l4 4M31 31l4 4M35 11l-4 4M11 35l4-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'},
+ T2:{code:'TOPIC 02',en:'AI History',slug:'AI-History',th:'ประวัติและพัฒนาการของ AI',color:'var(--t2)',deep:'var(--t2-deep)',
+  items:['เหตุการณ์สำคัญเกี่ยวกับ AI อย่างน้อย 5 เหตุการณ์ ตั้งแต่ ค.ศ. 1950 ถึงปัจจุบัน','Dartmouth Conference ค.ศ. 1956','ความหมายของ AI Winter','ปัจจัยที่ทำให้ AI พัฒนาก้าวกระโดด 3 ประการ ได้แก่ Big Data, Computing Power และ Advanced Algorithms'],
+  q:'เหตุใดเทคโนโลยี AI จึงพัฒนาอย่างรวดเร็วในช่วงหลัง?',
+  icon:'<circle cx="23" cy="23" r="16" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M23 13v10l7 5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9l4 4M41 9l-4 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'},
+ T3:{code:'TOPIC 03',en:'AI Ethics',slug:'AI-Ethics',th:'จริยธรรมและการใช้ AI อย่างรับผิดชอบ',color:'var(--t3)',deep:'var(--t3-deep)',
+  items:['หลักจริยธรรม AI อย่างน้อย 3 ประการ','Data Bias','AI Hallucination','Deepfake','แนวทางใช้ AI อย่างปลอดภัยและเคารพข้อมูลส่วนบุคคล'],
+  q:'นักเรียนควรตรวจสอบอะไรบ้างก่อนเชื่อหรือแชร์ผลลัพธ์จาก AI?',
+  icon:'<path d="M23 5l15 5.5v11c0 9.5-6.4 16.8-15 19.5-8.6-2.7-15-10-15-19.5v-11z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><path d="M16.5 23l5 5 8.5-9.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'}
+};
+// Mapping เลขที่ → กลุ่ม สร้างจาก TEAMS พร้อมตรวจว่าครบ 1–24 ไม่ซ้ำ
+const NUM_TO_TEAM = {};
+TEAMS.forEach(t=>t.numbers.forEach(n=>{ if(NUM_TO_TEAM[n]) console.error('เลขที่ซ้ำ',n); NUM_TO_TEAM[n]=t; }));
+const MAX_NO = 24;
+const missing=[...Array(MAX_NO)].map((_,i)=>i+1).filter(n=>!NUM_TO_TEAM[n]);
+if(missing.length) console.error('ไม่พบเลขที่',missing);
+
+const RUBRIC=[
+ {name:'รายงาน',items:[['ความถูกต้องและครบถ้วนของเนื้อหา',4],['อธิบายด้วยความเข้าใจและยกตัวอย่าง',3],['แหล่งอ้างอิงอย่างน้อย 2 แหล่ง ตรวจสอบได้',2],['ความเป็นระเบียบและการเรียบเรียง',1]]},
+ {name:'โปสเตอร์อินโฟกราฟิก',items:[['เนื้อหาถูกต้องและสอดคล้องกับรายงาน',4],['การสื่อสารด้วยภาพ ลำดับข้อมูล และความสวยงาม',3],['ความอ่านง่ายและภาษาไทยถูกต้อง',2],['การใช้ AI อย่างรับผิดชอบและระบุเครื่องมือที่ใช้',1]]}
+];
+const TIMELINE=[
+ [10,'รับหัวข้อ อ่านคำชี้แจง และวางแผน','<path d="M9 4h6v3H9zM6 6h12v15H6z" fill="none" stroke="#57CCF2" stroke-width="2" stroke-linejoin="round"/><path d="M9 12h6M9 16h4" stroke="#57CCF2" stroke-width="2" stroke-linecap="round"/>'],
+ [25,'ค้นคว้าข้อมูลจากอย่างน้อย 2 แหล่ง และตรวจสอบข้อเท็จจริง','<circle cx="10.5" cy="10.5" r="6" fill="none" stroke="#57CCF2" stroke-width="2"/><path d="M15 15l5 5" stroke="#57CCF2" stroke-width="2.2" stroke-linecap="round"/>'],
+ [25,'เขียนรายงาน 1 หน้า A4 ด้วยภาษาของตนเอง','<path d="M4 20l4-1 11-11-3-3L5 16z" fill="none" stroke="#57CCF2" stroke-width="2" stroke-linejoin="round"/><path d="M14 6l3 3" stroke="#57CCF2" stroke-width="2"/>'],
+ [30,'ใช้ AI ช่วยออกแบบโปสเตอร์อินโฟกราฟิก และตรวจแก้ข้อความ','<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="none" stroke="#57CCF2" stroke-width="2" stroke-linejoin="round"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" fill="#57CCF2"/>'],
+ [10,'ตรวจสอบผลงานทั้ง 2 ชิ้น และส่งผ่าน Google Classroom','<path d="M5 12l4.5 4.5L19 7" fill="none" stroke="#57CCF2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>']
+];
+const CHECKS=['รายงาน A4 จำนวน 1 หน้า','โปสเตอร์ A4 จำนวน 1 หน้า','มีแหล่งอ้างอิงอย่างน้อย 2 แหล่ง','ตรวจสอบข้อเท็จจริงแล้ว','ตรวจภาษาไทยแล้ว','ระบุ AI Tool ที่ใช้','ใส่ชื่อ ชั้น และเลขที่ครบ','ตั้งชื่อไฟล์ถูกต้อง'];
+
+/* ================= UTIL ================= */
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400)}
+function jump(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
+const roomCode=CLASSROOM?CLASSROOM.replace(/[^\d]/g,'').replace(/^(\d)(\d)$/,'$10$2'):'';
+
+/* ================= RENDER STATIC ================= */
+$('#roomchip').textContent=CLASSROOM?`การแบ่งกลุ่มสำหรับ ม.${CLASSROOM}`:'การแบ่งกลุ่มสำหรับห้องที่ครูกำหนด';
+$('#groupsub').textContent=(CLASSROOM?`ห้อง ม.${CLASSROOM} · `:'')+`นักเรียน ${Object.keys(NUM_TO_TEAM).length} คน แบ่งเป็น 3 กลุ่ม กลุ่มละ 8 คน กดเลขที่เพื่อดูหัวข้อได้`;
+$('#numsel').insertAdjacentHTML('beforeend',[...Array(MAX_NO)].map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join(''));
+$('#pad').innerHTML=[...Array(MAX_NO)].map((_,i)=>`<button type="button" data-no="${i+1}" aria-pressed="false" aria-label="เลขที่ ${i+1}">${i+1}</button>`).join('');
+$('#board').innerHTML=TEAMS.map(t=>{const v=TOPICS[t.topic];return `<article class="team" id="team-${t.team}" style="--tc:${v.color};--td:${v.deep}">
+ <div class="team-head"><svg viewBox="0 0 46 46" aria-hidden="true">${v.icon}</svg><div><div class="tn">TEAM ${t.team}</div><h3>${esc(v.th)}</h3></div></div>
+ <div class="team-body"><div class="count">สมาชิก ${t.numbers.length} คน · เลขที่</div>
+  <div class="badges">${t.numbers.map(n=>`<button type="button" data-no="${n}" aria-label="เลขที่ ${n}">${n}</button>`).join('')}</div>
+  <button class="btn" type="button" data-detail="${t.topic}">ดูรายละเอียดหัวข้อ</button></div></article>`}).join('');
+$('#topics').innerHTML=TEAMS.map(t=>{const v=TOPICS[t.topic];return `<article class="tcard" id="topic-${t.topic}" style="--tc:${v.color}">
+ <div class="row" style="justify-content:space-between"><span class="code">${v.code} · TEAM ${t.team}</span><span class="mine-tag">หัวข้อของฉัน</span></div>
+ <div><h3>${v.en}</h3><p class="muted">${esc(v.th)}</p></div>
+ <h4>เนื้อหาที่ต้องค้นคว้า</h4><ol>${v.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+ <div class="q"><b>คำถามชวนคิด</b>${esc(v.q)}</div></article>`}).join('');
+let acc=0;$('#tl').innerHTML=TIMELINE.map(([m,t,ic])=>{const from=acc;acc+=m;return `<div class="st"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></div><div><span class="mins">${m} <small>นาที</small></span><span class="at">นาทีที่ ${from}–${acc}</span><p>${esc(t)}</p></div></div>`}).join('');
+$('#tlbar').innerHTML=TIMELINE.map(([m])=>`<i style="flex:${m}"></i>`).join('');
+let grand=0;$('#rub').innerHTML=RUBRIC.map(g=>{const sum=g.items.reduce((a,x)=>a+x[1],0);grand+=sum;return `<div class="card"><h3 style="margin-bottom:6px">${g.name} <span style="color:var(--neon)">${sum} คะแนน</span></h3><div class="tbl"><table><thead><tr><th>เกณฑ์</th><th class="p">คะแนน</th></tr></thead>
+ <tbody>${g.items.map(([t,p])=>`<tr><td>${esc(t)}</td><td class="p">${p}</td></tr>`).join('')}</tbody><tfoot><tr><td>รวม</td><td class="p" style="color:var(--neon)">${sum}</td></tr></tfoot></table></div></div>`}).join('');
+$('#grand').textContent=grand;
+
+/* ================= LOOKUP ================= */
+const NKEY='krunok_board_no';
+let current=null;
+function select(n,scroll){n=+n||null;current=n;lsSet(NKEY,n?String(n):'');
+ document.querySelectorAll('#pad button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.no===n)));
+ $('#numsel').value=n?String(n):'';
+ document.querySelectorAll('.badges button').forEach(b=>b.classList.toggle('me',+b.dataset.no===n));
+ const t=n?NUM_TO_TEAM[n]:null;
+ document.querySelectorAll('.team').forEach(el=>el.classList.toggle('mine',!!t&&el.id==='team-'+t.team));
+ document.querySelectorAll('.tcard').forEach(el=>el.classList.toggle('mine',!!t&&el.id==='topic-'+t.topic));
+ const pill=$('#mypill');
+ if(!n){$('#reveal').innerHTML=`<div class="empty">เลือกเลขที่เพื่อดูหัวข้อค้นคว้าของคุณ</div>`;pill.hidden=true;renderPrompt();renderFiles();return}
+ if(!t){$('#reveal').innerHTML=`<div class="empty">ไม่พบเลขที่ ${n} ในรายชื่อ กรุณาติดต่อครูผู้สอน (Kru Nok)</div>`;pill.hidden=true;renderPrompt();renderFiles();return}
+ const v=TOPICS[t.topic];
+ $('#reveal').innerHTML=`<div class="rcard" style="--tc:${v.color}">
+  <div class="top"><div class="num-big"><small>เลขที่</small>${n}</div><span class="team-tag">TEAM ${t.team}</span></div>
+  <div class="muted small" style="margin-top:10px;font-family:var(--f-head)">${v.code} · ${v.en}</div>
+  <h3 style="margin-top:2px">${esc(v.th)}</h3>
+  <ol>${v.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+  <div class="q"><b>คำถามชวนคิด</b>${esc(v.q)}</div>
+  <div class="row" style="margin-top:14px;justify-content:space-between"><span class="small" style="font-family:var(--f-head)">ส่ง <b style="color:var(--ink)">2 ชิ้น</b> · รายงาน 1 หน้า A4 + โปสเตอร์ 1 หน้า A4</span><button class="btn sm" type="button" data-detail="${t.topic}">ดูรายละเอียดหัวข้อ</button></div></div>`;
+ pill.hidden=false;pill.textContent=`เลขที่ ${n} · TEAM ${t.team}`;
+ renderPrompt();renderFiles();
+ if(scroll)jump('mytopic');}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-no]');if(b){select(b.dataset.no,!!b.closest('.badges'));return}
+ const d=e.target.closest('[data-detail]');if(d){const el=$('#topic-'+d.dataset.detail);jump('topic-'+d.dataset.detail);el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800);return}
+ const j=e.target.closest('[data-jump]');if(j){e.preventDefault();jump(j.dataset.jump)}});
+$('#numsel').addEventListener('change',e=>select(e.target.value));
+$('#mypill').addEventListener('click',()=>jump('mytopic'));
+
+/* ================= PROMPT ================= */
+function promptText(){const t=current&&NUM_TO_TEAM[current];const topic=t?TOPICS[t.topic].th:'[หัวข้อที่ได้รับ]';
+ return `ฉันเป็นนักเรียนชั้นมัธยมศึกษาปีที่ 5 ต้องการสร้างโปสเตอร์อินโฟกราฟิกภาษาไทย ขนาด A4 แนวตั้ง เรื่อง ${topic} โดยใช้เนื้อหาที่ตรวจสอบแล้ว [เนื้อหาสรุป 3–5 ประเด็น] ออกแบบให้สวยงาม ทันสมัย อ่านง่าย มีหัวเรื่อง ภาพประกอบ ไอคอน และสรุปสำคัญ ห้ามเพิ่มข้อเท็จจริงหรือแหล่งอ้างอิงที่ไม่ได้ให้`}
+function renderPrompt(){$('#prompt').textContent=promptText();const t=current&&NUM_TO_TEAM[current];
+ $('#prompthint').textContent=t?`ใส่หัวข้อของเลขที่ ${current} ให้แล้ว`:'เลือกเลขที่ด้านบนก่อน ระบบจะใส่หัวข้อของคุณให้อัตโนมัติ'}
+$('#copyprompt').addEventListener('click',()=>{const text=promptText();
+ const fb=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();
+  if(ok)toast('คัดลอก Prompt แล้ว');else{const r=document.createRange();r.selectNodeContents($('#prompt'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('เลือกข้อความให้แล้ว กด Ctrl+C เพื่อคัดลอก')}};
+ try{navigator.clipboard.writeText(text).then(()=>toast('คัดลอก Prompt แล้ว'),fb)}catch(e){fb()}});
+
+/* ================= FILE NAMES ================= */
+function renderFiles(){const t=current&&NUM_TO_TEAM[current];const room=roomCode||'ห้อง';const no=current?String(current).padStart(2,'0'):'เลขที่';const slug=t?TOPICS[t.topic].slug:'หัวข้อ';
+ const names=[`${room}_${no}_${slug}_Report.pdf`,`${room}_${no}_${slug}_Poster.png`];
+ $('#fnames').innerHTML=names.map(n=>`<div class="fname"><code>${esc(n)}</code><button class="btn sm" type="button" data-copy="${esc(n)}">คัดลอก</button></div>`).join('');
+ $('#fnhint').textContent=(roomCode?'':'แทนคำว่า "ห้อง" ด้วยรหัสห้องของตนเอง เช่น ม.5/1 = 501 ')+(current?'':'· เลือกเลขที่ด้านบนเพื่อเติมเลขที่และหัวข้อให้อัตโนมัติ ')+'· รายงานส่งเป็น .docx ได้ และโปสเตอร์ส่งเป็น .pdf ได้ โดยใช้ชื่อเดียวกัน'}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-copy]');if(!c)return;const v=c.dataset.copy;try{navigator.clipboard.writeText(v).then(()=>toast('คัดลอกชื่อไฟล์แล้ว'),()=>toast('คัดลอกไม่ได้ ให้พิมพ์ชื่อไฟล์ตามตัวอย่าง'))}catch(err){toast('คัดลอกไม่ได้ ให้พิมพ์ชื่อไฟล์ตามตัวอย่าง')}});
+
+/* ================= CHECKLIST ================= */
+const CKEY='krunok_board_checks';
+let checks=(()=>{try{return JSON.parse(lsGet(CKEY)||'[]')}catch(e){return[]}})();
+$('#checks').innerHTML=CHECKS.map((c,i)=>`<li><label><input type="checkbox" id="ck-${i}" ${checks[i]?'checked':''}><span>${esc(c)}</span></label></li>`).join('');
+function paintChecks(){const n=CHECKS.filter((_,i)=>checks[i]).length;$('#chkcount').textContent=`${n}/${CHECKS.length}`;$('#chkbar').style.width=(n/CHECKS.length*100)+'%';
+ $('#chkmsg').textContent=n===CHECKS.length?'ตรวจครบแล้ว พร้อมอัปโหลดไฟล์และกดส่งงานใน Google Classroom':'ติ๊กครบทั้ง 8 ข้อก่อนส่งงาน เครื่องหมายเก็บไว้ในเบราว์เซอร์นี้เท่านั้น';
+ $('#chkmsg').style.color=n===CHECKS.length?'var(--ok)':''}
+$('#checks').addEventListener('change',e=>{const i=+e.target.id.split('-')[1];checks[i]=e.target.checked;lsSet(CKEY,JSON.stringify(checks));paintChecks()});
+$('#chkreset').addEventListener('click',()=>{checks=[];lsSet(CKEY,'[]');document.querySelectorAll('#checks input').forEach(x=>x.checked=false);paintChecks()});
+paintChecks();
+
+/* ================= CLASSROOM CTA ================= */
+(function(){const a=$('#cta'),m=$('#ctamsg');const url=String(GOOGLE_CLASSROOM_ASSIGNMENT_URL||'').trim();
+ if(/^https:\/\/classroom\.google\.com\//.test(url)){a.href=url;m.textContent='เปิดในแท็บใหม่ อย่าลืมกด "ส่งงาน (Turn in)" ใน Google Classroom'}
+ else{a.hidden=true;m.textContent='ส่งงานผ่าน Google Classroom';m.className='';m.style.cssText='text-align:center;font-family:var(--f-head);font-size:22px;font-weight:600;color:var(--ink);padding:18px;border:1px solid var(--line2);border-radius:16px;background:rgba(0,229,255,.06)'}})();
+
+/* ================= NAV HIGHLIGHT ================= */
+const secIds=['hero','mytopic','groups','research','tasks','rubric','submit'];
+const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){document.querySelectorAll('#links a').forEach(a=>a.classList.toggle('on',a.dataset.jump===en.target.id))}})},{rootMargin:'-40% 0px -55% 0px'});
+['hero','groups','research','tasks','rubric','submit'].forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el)});
+const mt=document.getElementById('mytopic');if(mt)io.observe(mt);
+
+/* ================= PARTICLES ================= */
+(function(){const c=$('#particles');const x=c.getContext('2d');let W,H,P=[];const dpr=Math.min(2,devicePixelRatio||1);
+ function size(){W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';x.setTransform(dpr,0,0,dpr,0,0);
+  P=Array.from({length:Math.round(Math.min(40,W*H/28000))},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.14,vy:-Math.random()*.18-.03,c:Math.random()<.6?'0,229,255':'155,135,245',a:Math.random()*.5+.15}))}
+ function draw(){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-5){p.y=H+5;p.x=Math.random()*W}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fillStyle=`rgba(${p.c},${p.a})`;x.fill()});if(!reduce&&!document.hidden)requestAnimationFrame(draw)}
+ size();addEventListener('resize',size);draw();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!reduce)draw()})})();
+
+/* boot */
+select(lsGet(NKEY)||null,false);
+})();
+</script>
+
+</body></html>
