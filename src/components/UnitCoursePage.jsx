@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { UnitHeroBg, UnitObjectives } from './UnitHero.jsx';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
@@ -105,7 +106,7 @@ function UnitCoursePage({
   }), React.createElement("section", {
     className: "glass u1-hero hero-" + unitId,
     "aria-labelledby": unitId + "-title"
-  }, React.createElement("div", {
+  }, React.createElement(UnitHeroBg, null), React.createElement("div", {
     style: {
       display: "grid",
       gap: 14,
@@ -118,20 +119,6 @@ function UnitCoursePage({
   }, "UNIT ", pad2(cfg.no)), React.createElement(Badge, null, cfg.en), React.createElement(DemoBadge, null)), React.createElement("h1", {
     id: unitId + "-title"
   }, cfg.titleNode), React.createElement("div", {
-    style: {
-      display: "grid",
-      gap: 8
-    }
-  }, React.createElement("span", {
-    className: "eyebrow"
-  }, "\u0E08\u0E38\u0E14\u0E1B\u0E23\u0E30\u0E2A\u0E07\u0E04\u0E4C\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E23\u0E39\u0E49"), React.createElement("ul", {
-    className: "objectives"
-  }, cfg.objectives.map(o => React.createElement("li", {
-    key: o
-  }, React.createElement(Icon, {
-    name: "target",
-    size: 16
-  }), o)))), React.createElement("div", {
     className: "u1-progress"
   }, React.createElement(ProgressRing, {
     value: su.percent,
@@ -186,7 +173,7 @@ function UnitCoursePage({
     variant: "ghost",
     icon: "grid",
     onClick: () => navigate("home")
-  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), cfg.art ? cfg.art(su) : React.createElement(HoloStage, { mood: su.completed ? "cheer" : "happy" })), su.completed && React.createElement("div", {
+  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), cfg.art ? cfg.art(su) : React.createElement(HoloStage, { mood: su.completed ? "cheer" : "happy" })), React.createElement(UnitObjectives, { items: cfg.objectives }), su.completed && React.createElement("div", {
     className: "glass unit-done",
     role: "status"
   }, React.createElement("span", {

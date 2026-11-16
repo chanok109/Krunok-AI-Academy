@@ -1486,3 +1486,102 @@ html body .rt-hero .rt-aira-bot { filter: drop-shadow(0 0 26px rgba(170, 235, 25
 html body .btn-primary { background: #6061B6 !important; border-color: #6061B6 !important; box-shadow: 0 4px 0 #2A2F86 !important; }
 html body .btn-primary:hover:not(:disabled) { background: #3D3F96 !important; box-shadow: 0 4px 0 #2A2F86 !important; }
 html body .btn-primary:active:not(:disabled) { box-shadow: 0 1px 0 #2A2F86 !important; }
+
+/* ==========================================================================
+   Unit headers: compact navy banner matching the home header, tinted with the
+   unit's own line color. Objectives live on a light card below (.u-objectives).
+   ========================================================================== */
+html body .u1-hero.hero-unit1 { --hc: #FF6F91; }
+html body .u1-hero.hero-unit2 { --hc: #7DB8FF; }
+html body .u1-hero.hero-unit3 { --hc: #5FE0B5; }
+html body .u1-hero.hero-unit4 { --hc: #FFC266; }
+html body .glass.u1-hero[class] {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate;
+  border: 0 !important;
+  border-radius: 20px !important;
+  color: #FFFFFF !important;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0) 0 0 / 24px 24px,
+    radial-gradient(560px 300px at 85% 0%, color-mix(in srgb, var(--hc) 30%, transparent), transparent 70%),
+    linear-gradient(150deg, #00105B 0%, #121F70 55%, #00105B 100%) !important;
+  box-shadow: 0 24px 50px -24px rgba(0, 16, 91, 0.55) !important;
+  padding-top: clamp(20px, 2.6vw, 32px) !important;
+  padding-bottom: clamp(20px, 2.6vw, 32px) !important;
+}
+html body .glass.u1-hero[class]::before, html body .glass.u1-hero[class]::after { display: none !important; }
+html body .glass.u1-hero[class] .u-hero-aurora {
+  background:
+    radial-gradient(30% 35% at 70% 30%, color-mix(in srgb, var(--hc) 32%, transparent), transparent 70%),
+    radial-gradient(28% 32% at 25% 75%, rgba(201, 181, 224, .22), transparent 70%);
+}
+html body .glass.u1-hero[class] .rt-net { opacity: .7; }
+
+/* type on navy */
+html body .glass.u1-hero[class] h1,
+html body .glass.u1-hero[class] .u1-hero-title { color: #FFFFFF !important; }
+html body .glass.u1-hero[class] .grad-text { color: var(--hc) !important; -webkit-text-fill-color: var(--hc) !important; }
+html body .glass.u1-hero[class] .u1-hero-lead,
+html body .glass.u1-hero[class] p { color: #DCD3EC !important; }
+html body .glass.u1-hero[class] .badge {
+  background: rgba(255, 255, 255, .08) !important;
+  border-color: rgba(255, 255, 255, .22) !important;
+  color: #FFFFFF !important;
+}
+html body .glass.u1-hero[class] .badge.cyan,
+html body .glass.u1-hero[class] .hero-meta .badge:first-child,
+html body .glass.u1-hero[class] .u1-hero-meta-row .badge:first-child {
+  background: var(--hc) !important;
+  border-color: var(--hc) !important;
+  color: #00105B !important;
+}
+html body .glass.u1-hero[class] .badge.ok { background: rgba(95, 224, 181, .16) !important; color: #5FE0B5 !important; border-color: rgba(95, 224, 181, .4) !important; }
+html body .glass.u1-hero[class] .badge.demo { background: #FEF3C7 !important; color: #92400E !important; }
+
+/* progress on navy */
+html body .glass.u1-hero[class] .u1-progress,
+html body .glass.u1-hero[class] .u1-hero-progress-box {
+  background: rgba(255, 255, 255, .06) !important;
+  border: 1px solid rgba(255, 255, 255, .14) !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+}
+html body .glass.u1-hero[class] .u1-hero-progress-title,
+html body .glass.u1-hero[class] .u1-hero-progress-pct,
+html body .glass.u1-hero[class] .ring-label { color: #FFFFFF !important; }
+html body .glass.u1-hero[class] [role="img"] > svg > circle:nth-of-type(1) { stroke: rgba(255, 255, 255, .18) !important; }
+html body .glass.u1-hero[class] [role="img"] > svg > circle:nth-of-type(2) { stroke: var(--hc) !important; }
+
+/* buttons invert on navy, like the home header */
+html body .glass.u1-hero[class] .btn-primary {
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 4px 0 var(--hc) !important;
+}
+html body .glass.u1-hero[class] .btn-primary:hover:not(:disabled) { background: #F4F0FA !important; }
+html body .glass.u1-hero[class] .btn-ghost,
+html body .glass.u1-hero[class] .btn-secondary {
+  background: rgba(255, 255, 255, .06) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, .35) !important;
+  box-shadow: none !important;
+}
+html body .glass.u1-hero[class] .btn-ghost:hover:not(:disabled),
+html body .glass.u1-hero[class] .btn-secondary:hover { background: rgba(255, 255, 255, .12) !important; border-color: #FFFFFF !important; }
+html body .glass.u1-hero[class] a:focus-visible,
+html body .glass.u1-hero[class] button:focus-visible { outline-color: var(--hc) !important; }
+
+/* objectives card under the banner */
+html body .u-objectives {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 24px;
+  padding: clamp(16px, 2vw, 24px);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--line-c, var(--accent));
+  border-radius: 16px;
+}
+html body .u-objectives .objectives { margin: 0; }

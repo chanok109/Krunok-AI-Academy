@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { UnitHeroBg, UnitObjectives } from '../components/UnitHero.jsx';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
@@ -302,6 +303,7 @@ function Unit1Page() {
             className="glass u1-hero hero-unit1 u1-hero-enhanced"
             aria-labelledby="unit1-title"
           >
+            <UnitHeroBg />
             <div className="u1-hero-left">
               <div className="u1-hero-meta-row">
                 <Badge tone="cyan">
@@ -323,18 +325,6 @@ function Unit1Page() {
                 <p className="u1-hero-lead" style={{ marginTop: 6 }}>
                   ปูพื้นฐานความเข้าใจตั้งแต่ความหมายและวิวัฒนาการของ AI จริยธรรมและการควบคุมตามระดับความเสี่ยง ไปจนถึงการคุ้มครองข้อมูลส่วนบุคคล (PDPA) และการรู้เท่าทันภัย Deepfake
                 </p>
-              </div>
-
-              <div style={{ display: "grid", gap: 8 }}>
-                <span className="eyebrow">จุดประสงค์การเรียนรู้</span>
-                <ul className="objectives">
-                  {U1_OBJECTIVES.map(o => (
-                    <li key={o}>
-                      <Icon name="target" size={16} />
-                      {o}
-                    </li>
-                  ))}
-                </ul>
               </div>
 
               <div className="u1-hero-progress-box">
@@ -371,6 +361,7 @@ function Unit1Page() {
 
             <AIFoundationStage completed={su.completed} />
           </section>
+          <UnitObjectives items={U1_OBJECTIVES} />
 
           {/* 1.2 Unit Completed Medal Banner */}
           {su.completed && (

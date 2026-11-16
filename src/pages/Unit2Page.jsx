@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { UnitHeroBg, UnitObjectives } from '../components/UnitHero.jsx';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
@@ -863,6 +864,7 @@ export default function Unit2Page() {
     <div className="unit2-container">
       {/* 1. Unit 2 Hero Banner */}
       <section className="glass u1-hero hero-unit2" aria-labelledby="unit2-title">
+        <UnitHeroBg />
         <div style={{ display: 'grid', gap: 14, minWidth: 0 }}>
           <div className="hero-meta">
             <Badge tone="cyan">UNIT 02</Badge>
@@ -874,18 +876,6 @@ export default function Unit2Page() {
             พื้นฐาน<br />
             <span className="grad-text">คอมพิวเตอร์วิทัศน์</span>
           </h1>
-
-          <div style={{ display: 'grid', gap: 8 }}>
-            <span className="eyebrow">จุดประสงค์การเรียนรู้</span>
-            <ul className="objectives">
-              {U2_OBJECTIVES.map(o => (
-                <li key={o}>
-                  <Icon name="target" size={16} />
-                  {o}
-                </li>
-              ))}
-            </ul>
-          </div>
 
           <div className="u1-progress">
             <ProgressRing
@@ -944,6 +934,7 @@ export default function Unit2Page() {
 
         <VisionStage mood={su.completed ? 'cheer' : 'happy'} />
       </section>
+      <UnitObjectives items={U2_OBJECTIVES} />
 
       {/* 2. Curriculum Progress Card & Numbered Step Timeline */}
       <div className="u1-set-selector" ref={curriculumRef} style={{ marginTop: 28 }}>

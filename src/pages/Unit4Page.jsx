@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { UnitHeroBg, UnitObjectives } from '../components/UnitHero.jsx';
 import { COURSE } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
@@ -728,7 +729,7 @@ function Unit4Page() {
   return React.createElement(React.Fragment, null, React.createElement("section", {
     className: "glass u1-hero hero-unit4",
     "aria-labelledby": "u4-title"
-  }, React.createElement("div", {
+  }, React.createElement(UnitHeroBg, null), React.createElement("div", {
     style: {
       display: "grid",
       gap: 14,
@@ -743,20 +744,6 @@ function Unit4Page() {
   }, "\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49 AI \u0E40\u0E1E\u0E37\u0E48\u0E2D", React.createElement("br"), React.createElement("span", {
     className: "grad-text"
   }, "\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E0A\u0E34\u0E49\u0E19\u0E07\u0E32\u0E19")), React.createElement("div", {
-    style: {
-      display: "grid",
-      gap: 8
-    }
-  }, React.createElement("span", {
-    className: "eyebrow"
-  }, "\u0E08\u0E38\u0E14\u0E1B\u0E23\u0E30\u0E2A\u0E07\u0E04\u0E4C\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E23\u0E39\u0E49"), React.createElement("ul", {
-    className: "objectives"
-  }, U4_OBJECTIVES.map(o => React.createElement("li", {
-    key: o
-  }, React.createElement(Icon, {
-    name: "target",
-    size: 16
-  }), o)))), React.createElement("div", {
     className: "u1-progress"
   }, React.createElement(ProgressRing, {
     value: overall,
@@ -806,7 +793,7 @@ function Unit4Page() {
     onClick: () => navigate("home")
   }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), React.createElement(HoloStage, {
     mood: su.completed ? "cheer" : "happy"
-  })), su.completed && React.createElement("div", {
+  })), React.createElement(UnitObjectives, { items: U4_OBJECTIVES }), su.completed && React.createElement("div", {
     className: "glass unit-done",
     role: "status"
   }, React.createElement("span", {
