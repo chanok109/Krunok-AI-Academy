@@ -163,6 +163,12 @@
       "skillPath": "skills/theme-factory/SKILL.md",
       "computedHash": "25bc45d0b408a2c0d4844f691ac860fb4063c08bb245358c23fa6069fe610a9f"
     },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "8b86db90b5a2a1dd1fb529180fa92408da7804d81fdc8ed5ee0ae9978d2ba9e6"
+    },
     "using-agent-skills": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
