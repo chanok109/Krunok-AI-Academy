@@ -2,26 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { COURSE } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
-import { Icon, AIraBot, GlassCard, Button, Badge, ProgressRing } from '../components/UIPrimitives.jsx';
+import { Icon, AIraBot, GlassCard, Button } from '../components/UIPrimitives.jsx';
 import { HoloStage } from '../components/BackgroundEffects.jsx';
 import { HeroNetwork } from '../components/HeroNetwork.jsx';
 import { HeroOrb } from '../components/HeroOrb.jsx';
 
-const thaiDate = iso => {
-  try {
-    return new Date(iso).toLocaleDateString("th-TH", {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
-  } catch (e) {
-    return "";
-  }
-};
-
-
 function LoginPage() {
-  const { user, summary, login, resume, forgetUser, notify } = useApp();
+  const { login, notify } = useApp();
   const { navigate } = useRoute();
 
   const [form, setForm] = useState({
@@ -32,7 +19,6 @@ function LoginPage() {
   const [errors, setErrors] = useState({});
   const [phase, setPhase] = useState("idle");
   const [welcome, setWelcome] = useState(null);
-  const [confirmForget, setConfirmForget] = useState(false);
 
   const refs = {
     username: useRef(null),
@@ -110,33 +96,6 @@ function LoginPage() {
     }
   };
 
-  const doResume = async () => {
-    setPhase("saving");
-    try {
-      const loggedUser = await resume();
-      finish(loggedUser, true);
-    } catch (err) {
-      setPhase("idle");
-      setErrors({
-        form: "เข้าเรียนต่อไม่สำเร็จ เบราว์เซอร์นี้อาจปิดการเก็บข้อมูลไว้"
-      });
-    }
-  };
-
-  const doForget = async () => {
-    const old = user && user.displayName;
-    await forgetUser();
-    setConfirmForget(false);
-    setForm({ username: "", password: "" });
-    setErrors({});
-    notify({
-      type: "info",
-      title: "ออกจากระบบแล้ว",
-      message: old ? `ออกจากระบบบัญชี ${old} เรียบร้อยแล้ว` : undefined
-    });
-    setTimeout(() => refs.username.current && refs.username.current.focus(), 50);
-  };
-
   let card;
   if (phase === "success" && welcome) {
     card = (
@@ -151,83 +110,6 @@ function LoginPage() {
         </p>
         <div className="spinner" aria-hidden="true" style={{ marginTop: 20 }} />
       </div>
-    );
-  } else if (user) {
-    const isTeacher = user.role === 'TEACHER';
-    card = (
-      <>
-        <div className="card-head">
-          <h2 id="login-title">เรียนต่อจากครั้งก่อน</h2>
-          <Badge tone={isTeacher ? "neon" : "ok"}>
-            {isTeacher ? "👩‍🏫 ครูผู้สอน" : "👨‍🎓 บัญชีนักเรียน"}
-          </Badge>
-        </div>
-
-        <div className="returning">
-          <span className="avatar-lg" aria-hidden="true">
-            {user.displayName.charAt(0)}
-          </span>
-          <div style={{ minWidth: 0 }}>
-            <strong>{user.displayName}</strong>
-            <span>
-              {user.classroom} {user.no ? `· เลขที่ ${user.no}` : ''} {user.joinedAt ? `· เริ่มเรียน ${thaiDate(user.joinedAt)}` : ''}
-            </span>
-          </div>
-          {!isTeacher && (
-            <span style={{ marginLeft: "auto" }}>
-              <ProgressRing
-                value={summary.overall}
-                size={52}
-                stroke={6}
-                label="ความก้าวหน้ารวม"
-              />
-            </span>
-          )}
-        </div>
-
-        {errors.form && (
-          <div className="form-err" role="alert">
-            <Icon name="alert" size={18} />
-            {errors.form}
-          </div>
-        )}
-
-        <Button
-          className="btn-glow"
-          icon="login"
-          onClick={doResume}
-          disabled={phase !== "idle"}
-          autoFocus
-        >
-          {phase === "saving" ? "กำลังเข้าสู่บทเรียน…" : `เรียนต่อในชื่อ ${user.displayName}`}
-        </Button>
-
-        {!confirmForget ? (
-          <Button
-            variant="ghost"
-            icon="user"
-            onClick={() => setConfirmForget(true)}
-            disabled={phase !== "idle"}
-          >
-            เปลี่ยนผู้เรียน / ออกจากระบบ
-          </Button>
-        ) : (
-          <div className="confirm" role="alertdialog" aria-labelledby="cf-title" aria-describedby="cf-desc">
-            <strong id="cf-title">ยืนยันการออกจากระบบ?</strong>
-            <p id="cf-desc">
-              ออกจากระบบของ <b>{user.displayName}</b> เพื่อเข้าสู่ระบบด้วยรหัสอื่น
-            </p>
-            <div className="btn-row">
-              <Button variant="danger" icon="logout" onClick={doForget}>
-                ออกจากระบบ
-              </Button>
-              <Button variant="ghost" onClick={() => setConfirmForget(false)} autoFocus>
-                ยกเลิก
-              </Button>
-            </div>
-          </div>
-        )}
-      </>
     );
   } else {
     card = (
