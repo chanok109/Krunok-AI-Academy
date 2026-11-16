@@ -91,6 +91,12 @@
       "skillPath": "skills/idea-refine/SKILL.md",
       "computedHash": "f4400771e231aeaa6d954cc41ea5845b71d96d8f4d1df5e312849cd75bff97dd"
     },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "7cc0910c6e46974168d5233026c7199d7d0684e2dd52ecb272cf2826baa489b3"
+    },
     "incremental-implementation": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
@@ -150,6 +156,12 @@
       "sourceType": "github",
       "skillPath": "skills/test-driven-development/SKILL.md",
       "computedHash": "c77933271bb4bd64ce499c65fe37664c05387f9f9c8c704f440ef96da75711b8"
+    },
+    "theme-factory": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/theme-factory/SKILL.md",
+      "computedHash": "25bc45d0b408a2c0d4844f691ac860fb4063c08bb245358c23fa6069fe610a9f"
     },
     "using-agent-skills": {
       "source": "addyosmani/agent-skills",
