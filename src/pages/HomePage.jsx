@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ACHIEVEMENTS, COURSE, QUIZ_PASS_PERCENT, UNITS, COURSE_RESOURCES } from '../data/courseData.js';
+import { ACHIEVEMENTS, COURSE, QUIZ_PASS_PERCENT, UNITS } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from '../components/UIPrimitives.jsx';
@@ -930,7 +930,7 @@ function HomePage() {
           </div>
         </section>
 
-        {/* สรุปความก้าวหน้า & คลังไฟล์เอกสาร */}
+        {/* สรุปความก้าวหน้า */}
         <div className="classroom-bottom-side">
           {/* การ์ด: สรุปความก้าวหน้า (Progress Summary) */}
           <section className="classroom-card summary-card" aria-label="สรุปความก้าวหน้า">
@@ -989,42 +989,6 @@ function HomePage() {
             </div>
           </section>
 
-          {/* การ์ด: คลังไฟล์และเอกสารประกอบการเรียน */}
-          <section className="classroom-card resources-card" aria-label="คลังไฟล์และเอกสารประกอบการเรียน">
-            <div className="side-card-header">
-              <div className="side-card-title-group">
-                <Icon name="sparkle" size={16} />
-                <h2 className="side-card-title">คลังไฟล์และเอกสาร</h2>
-              </div>
-              <span className="task-summary-badge all-done">
-                {COURSE_RESOURCES.length} ไฟล์
-              </span>
-            </div>
-            <p className="side-card-desc">ไฟล์ตัวอย่างโค้ด ใบกิจกรรม และคู่มือติดตั้งสำหรับนักเรียน</p>
-
-            <div className="classroom-res-list">
-              {COURSE_RESOURCES.map(r => (
-                <a
-                  key={r.id}
-                  href={r.url}
-                  target={r.type === 'zip' ? '_self' : '_blank'}
-                  download={r.type === 'zip' ? true : undefined}
-                  rel="noopener noreferrer"
-                  className="res-list-item"
-                >
-                  <div className="res-item-top">
-                    <span className={`res-badge-pill res-${r.type}`}>{r.badge}</span>
-                    <span className="res-unit-tag">หน่วยที่ {r.unitNo}</span>
-                  </div>
-                  <strong className="res-item-title">{r.title}</strong>
-                  <p className="res-item-desc">{r.desc}</p>
-                  <span className="res-action-hint">
-                    {r.type === 'zip' ? 'ดาวน์โหลดไฟล์ .zip ↓' : 'เปิดดูในแท็บใหม่ ↗'}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
     </div>
