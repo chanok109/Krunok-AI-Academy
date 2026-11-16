@@ -157,6 +157,12 @@
       "skillPath": "skills/spec-driven-development/SKILL.md",
       "computedHash": "830bc9de1511284ec28a3c5aea63b545bd7ff405da619100f628e2787a3c71d7"
     },
+    "systematic-debugging": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/systematic-debugging/SKILL.md",
+      "computedHash": "b7b6e98c3bffe371893bdb69845ec61124a65b6a96313dc8d6a2bce4437b13eb"
+    },
     "test-driven-development": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
