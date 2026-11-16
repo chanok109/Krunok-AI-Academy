@@ -31,7 +31,6 @@ function QuizRunner({
   const [startAt, setStartAt] = useState(0);
   const [result, setResult] = useState(null);
   const [warn, setWarn] = useState(false);
-  const [onlyWrong, setOnlyWrong] = useState(true);
   const topRef = useRef(null);
   const passPct = quizPassPercent(unitId);
   const need = Math.ceil(passPct / 100 * questions.length);
@@ -47,7 +46,6 @@ function QuizRunner({
     setStartAt(Date.now());
     setResult(null);
     setWarn(false);
-    setOnlyWrong(true);
     setPhase("run");
     toTop();
   };
@@ -225,150 +223,83 @@ function QuizRunner({
       }
     }, "\u0E02\u0E49\u0E2D ", k + 1)), " \u0E15\u0E2D\u0E1A\u0E43\u0E2B\u0E49\u0E04\u0E23\u0E1A\u0E01\u0E48\u0E2D\u0E19\u0E2A\u0E48\u0E07")));
   }
-  const wrongQs = order.filter(q => result.answers[q.id] !== q.answer);
-  const reviewLessons = [...new Set(wrongQs.map(q => q.lesson))];
-  const shown = onlyWrong ? wrongQs : order;
-  return React.createElement("div", {
-    className: "act",
-    ref: topRef
-  }, React.createElement("div", {
-    className: "quiz-result " + (result.passed ? "pass" : "fail")
-  }, React.createElement(ProgressRing, {
-    value: result.percent,
-    size: 96,
-    stroke: 9,
-    label: "\u0E04\u0E30\u0E41\u0E19\u0E19\u0E41\u0E1A\u0E1A\u0E17\u0E14\u0E2A\u0E2D\u0E1A"
-  }), React.createElement("div", {
-    style: {
-      display: "grid",
-      gap: 6,
-      minWidth: 0,
-      flex: "1 1 240px"
-    }
-  }, React.createElement("span", {
-    className: "eyebrow"
-  }, "\u0E1C\u0E25\u0E41\u0E1A\u0E1A\u0E17\u0E14\u0E2A\u0E2D\u0E1A"), React.createElement("strong", {
-    style: {
-      fontSize: 26
-    },
-    className: "mono"
-  }, result.correct, " / ", result.total, " \u0E04\u0E30\u0E41\u0E19\u0E19"), React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      flexWrap: "wrap"
-    }
-  }, result.passed ? React.createElement(Badge, {
-    tone: "ok",
-    dot: true
-  }, "\u0E1C\u0E48\u0E32\u0E19\u0E40\u0E01\u0E13\u0E11\u0E4C ", passPct, "%") : React.createElement(Badge, {
-    tone: "demo",
-    dot: true
-  }, "\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E1C\u0E48\u0E32\u0E19 \u0E15\u0E49\u0E2D\u0E07\u0E44\u0E14\u0E49 ", need, " \u0E02\u0E49\u0E2D\u0E02\u0E36\u0E49\u0E19\u0E44\u0E1B"), React.createElement(Badge, null, React.createElement(Icon, {
-    name: "clock",
-    size: 12
-  }), "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 ", fmtDuration(result.durationSec), " \u0E19\u0E32\u0E17\u0E35"))), React.createElement("div", {
-    className: "bot",
-    style: {
-      width: 90
-    }
-  }, React.createElement(AIraBot, {
-    mood: result.passed ? "cheer" : "think",
-    float: false,
-    title: ""
-  }))), React.createElement("div", {
-    className: "q-card",
-    role: "status"
-  }, result.passed ? React.createElement(React.Fragment, null, React.createElement("strong", null, "พี่ AIra ขอแสดงความยินดีด้วย! ได้ ", result.correct, "/", result.total, " คะแนน"), React.createElement("span", null, "เธอเข้าใจเนื้อหาหน่วยนี้ดีมาก พี่ภูมิใจในตัวเธอนะ")) : React.createElement(React.Fragment, null, React.createElement("strong", null, "ได้ ", result.correct, "/", result.total, " คะแนน พี่ AIra เป็นกำลังใจให้นะ"), React.createElement("span", null, "อีกแค่ ", Math.max(need - result.correct, 1), " คะแนนก็ผ่านแล้ว ลองอ่านคำอธิบายข้อที่ผิดด้านล่าง แล้วทำใหม่ได้เลย"), React.createElement("span", null, "ข้อที่ตอบผิด: ", wrongQs.map(q => "ข้อ " + (order.indexOf(q) + 1)).join(", ")))), reviewLessons.length > 0 && React.createElement("div", {
-    className: "q-card"
-  }, React.createElement("strong", null, "\u0E2B\u0E31\u0E27\u0E02\u0E49\u0E2D\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19"), React.createElement("span", {
-    className: "hint"
-  }, "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E17\u0E35\u0E48\u0E15\u0E2D\u0E1A\u0E1C\u0E34\u0E14 ", wrongQs.length, " \u0E02\u0E49\u0E2D"), React.createElement("div", {
-    className: "opts"
-  }, reviewLessons.map(l => React.createElement("button", {
-    key: l,
-    type: "button",
-    className: "opt",
-    onClick: () => onGoLesson(l)
-  }, React.createElement(Icon, {
-    name: "book",
-    size: 16
-  }), lessonTitle(l))))), React.createElement("div", {
-    className: "act-head"
-  }, React.createElement("h3", {
-    className: "sub"
-  }, "\u0E40\u0E09\u0E25\u0E22\u0E41\u0E25\u0E30\u0E04\u0E33\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22"), React.createElement("div", {
-    className: "seg",
-    role: "tablist",
-    "aria-label": "\u0E15\u0E31\u0E27\u0E01\u0E23\u0E2D\u0E07\u0E40\u0E09\u0E25\u0E22"
-  }, React.createElement("button", {
-    type: "button",
-    role: "tab",
-    "aria-selected": onlyWrong,
-    onClick: () => setOnlyWrong(true)
-  }, "\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E02\u0E49\u0E2D\u0E17\u0E35\u0E48\u0E1C\u0E34\u0E14 (", wrongQs.length, ")"), React.createElement("button", {
-    type: "button",
-    role: "tab",
-    "aria-selected": !onlyWrong,
-    onClick: () => setOnlyWrong(false)
-  }, "\u0E17\u0E38\u0E01\u0E02\u0E49\u0E2D (", order.length, ")"))), shown.length === 0 && React.createElement(Feedback, {
-    tone: "good",
-    title: "\u0E15\u0E2D\u0E1A\u0E16\u0E39\u0E01\u0E17\u0E38\u0E01\u0E02\u0E49\u0E2D!"
-  }, "\u0E40\u0E22\u0E35\u0E48\u0E22\u0E21\u0E21\u0E32\u0E01 \u0E25\u0E2D\u0E07\u0E40\u0E25\u0E37\u0E2D\u0E01 \"\u0E17\u0E38\u0E01\u0E02\u0E49\u0E2D\" \u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E2D\u0E48\u0E32\u0E19\u0E04\u0E33\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21"), shown.map(q => {
-    const k = order.indexOf(q);
-    const mine = result.answers[q.id];
-    const ok = mine === q.answer;
-    return React.createElement("div", {
-      key: q.id,
-      className: "q-card " + (ok ? "correct" : "wrong")
-    }, React.createElement("div", {
-      className: "quiz-top"
-    }, React.createElement("span", {
-      className: "qnum"
-    }, "\u0E02\u0E49\u0E2D ", k + 1), React.createElement(Badge, {
-      tone: ok ? "ok" : "",
-      dot: true
-    }, ok ? "ถูก" : "ผิด")), React.createElement("div", {
-      className: "q-title"
-    }, q.q), q.code && React.createElement(CodeBlock, {
-      code: q.code
-    }), React.createElement("div", {
-      className: "opts col"
-    }, q.opts.map((o, n) => React.createElement("div", {
-      key: o.id,
-      className: "opt static " + (o.id === q.answer ? "is-correct" : o.id === mine ? "is-wrong" : "")
-    }, React.createElement("span", {
-      className: "opt-letter"
-    }, LETTERS[n]), React.createElement("span", {
-      style: {
-        flex: 1
-      }
-    }, o.text), o.id === q.answer && React.createElement("span", {
-      className: "q-tag best"
-    }, "\u0E40\u0E09\u0E25\u0E22"), o.id === mine && o.id !== q.answer && React.createElement("span", {
-      className: "q-tag poor"
-    }, "\u0E04\u0E33\u0E15\u0E2D\u0E1A\u0E02\u0E2D\u0E07\u0E40\u0E18\u0E2D")))), React.createElement(Feedback, {
-      tone: ok ? "good" : "mid",
-      title: "\u0E04\u0E33\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22"
-    }, q.explain), !ok && React.createElement("button", {
-      type: "button",
-      className: "link-btn",
-      onClick: () => onGoLesson(q.lesson)
-    }, "\u0E17\u0E1A\u0E17\u0E27\u0E19: ", lessonTitle(q.lesson)));
-  }), React.createElement("div", {
-    className: "step-nav"
-  }, React.createElement(Button, {
-    className: "btn-glow",
-    icon: "refresh",
-    onClick: start
-  }, "\u0E17\u0E33\u0E41\u0E1A\u0E1A\u0E17\u0E14\u0E2A\u0E2D\u0E1A\u0E43\u0E2B\u0E21\u0E48"), React.createElement(Button, {
-    variant: "ghost",
-    icon: "clock",
-    onClick: () => {
-      setPhase("intro");
-      toTop();
-    }
-  }, "\u0E14\u0E39\u0E1B\u0E23\u0E30\u0E27\u0E31\u0E15\u0E34\u0E01\u0E32\u0E23\u0E17\u0E33\u0E41\u0E1A\u0E1A\u0E17\u0E14\u0E2A\u0E2D\u0E1A")));
+  const wrongNums = order.map((q, k) => result.answers[q.id] !== q.answer ? k + 1 : 0).filter(Boolean);
+  // หลายบทอาจชี้ไปใบความรู้เดียวกัน: แสดงปุ่มละหนึ่งหัวข้อ
+  const reviewTopics = [];
+  order.filter(q => result.answers[q.id] !== q.answer).forEach(q => {
+    const title = lessonTitle(q.lesson);
+    if (!reviewTopics.some(t => t.title === title)) reviewTopics.push({ lesson: q.lesson, title });
+  });
+  const missing = Math.max(need - result.correct, 1);
+  return (
+    <div className="act" ref={topRef}>
+      <div className={"quiz-result qr-hero " + (result.passed ? "pass" : "fail")}>
+        <ProgressRing value={result.percent} size={104} stroke={10} label="คะแนนแบบทดสอบ" />
+        <div className="qr-hero-main">
+          <span className="eyebrow">ผลแบบทดสอบ</span>
+          <strong className="qr-score mono">
+            {result.correct}<span> / {result.total} คะแนน</span>
+          </strong>
+          <div className="qr-badges">
+            {result.passed
+              ? <Badge tone="ok" dot>ผ่านเกณฑ์ {passPct}%</Badge>
+              : <Badge tone="demo" dot>ยังไม่ผ่าน ต้องได้ {need} ข้อขึ้นไป</Badge>}
+            <Badge><Icon name="clock" size={12} />ใช้เวลา {fmtDuration(result.durationSec)} นาที</Badge>
+          </div>
+        </div>
+      </div>
+
+      <div className={"qr-aira " + (result.passed ? "pass" : "fail")} role="status">
+        <div className="qr-aira-bot">
+          <AIraBot mood={result.passed ? "cheer" : "think"} float={false} title="" />
+        </div>
+        <div className="qr-bubble">
+          <span className="qr-bubble-name">พี่ AIra</span>
+          {result.passed ? (
+            <>
+              <strong>ยินดีด้วยนะ! ได้ {result.correct}/{result.total} คะแนน</strong>
+              <p>เธอเข้าใจเนื้อหาหน่วยนี้ดีมาก พี่ภูมิใจในตัวเธอนะ</p>
+            </>
+          ) : (
+            <>
+              <strong>ได้ {result.correct}/{result.total} คะแนน พี่เป็นกำลังใจให้นะ</strong>
+              <p>อีกแค่ {missing} คะแนนก็ผ่านแล้ว ลองทบทวนหัวข้อด้านล่าง แล้วกลับมาทำใหม่ได้เลย</p>
+              {wrongNums.length > 0 && (
+                <div className="qr-wrong">
+                  <span>ข้อที่ตอบผิด</span>
+                  <ul className="qr-chips" aria-label="ข้อที่ตอบผิด">
+                    {wrongNums.map(n => <li key={n}>ข้อ {n}</li>)}
+                  </ul>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {reviewTopics.length > 0 && (
+        <div className="qr-review">
+          <div className="qr-review-head">
+            <Icon name="book" size={18} />
+            <strong>หัวข้อที่ควรทบทวน</strong>
+          </div>
+          <div className="qr-review-list">
+            {reviewTopics.map(t => (
+              <button key={t.lesson} type="button" className="qr-review-item" onClick={() => onGoLesson(t.lesson)}>
+                <span>{t.title}</span>
+                <Icon name="chevR" size={16} />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="step-nav">
+        <Button className="btn-glow" icon="refresh" onClick={start}>ทำแบบทดสอบใหม่</Button>
+        <Button variant="ghost" icon="clock" onClick={() => { setPhase("intro"); toTop(); }}>ดูประวัติการทำแบบทดสอบ</Button>
+      </div>
+    </div>
+  );
 }
 function QuizHistory({
   attempts,
