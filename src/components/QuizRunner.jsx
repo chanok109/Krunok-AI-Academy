@@ -248,15 +248,15 @@ function QuizRunner({
             <>
               <strong>ได้ {result.correct}/{result.total} คะแนน พี่เป็นกำลังใจให้นะ</strong>
               <p>อีกแค่ {missing} คะแนนก็ผ่านแล้ว ลองทบทวนหัวข้อด้านล่าง แล้วกลับมาทำใหม่ได้เลย</p>
-              {wrongNums.length > 0 && (
-                <div className="qr-wrong">
-                  <span>ข้อที่ตอบผิด</span>
-                  <ul className="qr-chips" aria-label="ข้อที่ตอบผิด">
-                    {wrongNums.map(n => <li key={n}>ข้อ {n}</li>)}
-                  </ul>
-                </div>
-              )}
             </>
+          )}
+          {wrongNums.length > 0 && (
+            <div className="qr-wrong">
+              <span>ข้อที่ตอบผิด</span>
+              <ul className="qr-chips" aria-label="ข้อที่ตอบผิด">
+                {wrongNums.map(n => <li key={n}>ข้อ {n}</li>)}
+              </ul>
+            </div>
           )}
         </div>
       </div>
