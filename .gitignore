@@ -5,3 +5,6 @@ dist-ssr/
 .vscode/
 .idea/
 .DS_Store
+
+# ไฟล์ zip สำหรับอัปโหลดขึ้น server (สร้างจาก dist/)
+release/

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRoute } from '../context/RouteContext.jsx';
-import { Icon, AIraBot, GlassCard, Button } from '../components/UIPrimitives.jsx';
+import { Icon, AIraBot, GlassCard, Button, ErrorState } from '../components/UIPrimitives.jsx';
 
 function NotFoundPage() {
   const {

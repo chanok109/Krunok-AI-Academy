@@ -55,9 +55,15 @@ KruNok-AI-Academy/
 ├── public/                   # Static Assets สำหรับการเข้าถึงแบบออฟไลน์
 │   ├── models/
 │   │   └── coco-ssd/         # โมเดล COCO-SSD (model.json + 5 WASM shards)
-│   └── samples/              # ภาพตัวอย่างทดสอบ (cat, coffee, horse, rocket)
+│   ├── samples/              # ภาพตัวอย่างทดสอบ (cat, coffee, horse, rocket)
+│   ├── assets/               # ภาพประกอบที่เรียกผ่าน URL
+│   ├── code/                 # ไฟล์ zip โค้ดตัวอย่างให้นักเรียนดาวน์โหลด
+│   ├── unit2/ unit3/ unit5/  # หน้ากิจกรรม HTML แยกของแต่ละหน่วย
+│   ├── .htaccess / web.config # ตั้งค่า server (Apache / IIS)
 ├── src/                      # Source Code ที่จัดสถาปัตยกรรมใหม่
+│   ├── assets/               # ภาพที่ import ในโค้ด (aira-mascot.png, images/unit1/)
 │   ├── components/           # Reusable UI & Feature Components
+│   │   ├── unit1/            # ใบความรู้ (knowledge/) และสไลด์ (slides/) หน่วยที่ 1
 │   │   ├── ActivityCard.jsx  # Card & Engine Wrapper
 │   │   ├── ActivityEngines.jsx # Interactive Lab Engines (Classify, Order, Reasoning)
 │   │   ├── AIraAssistant.jsx # AIra Mascot Drawer & Chat Assistant
@@ -96,17 +102,23 @@ KruNok-AI-Academy/
 │   │   └── storageService.js # LocalStorage sync (`aira_v32281_*`)
 │   ├── styles/               # Stylesheets
 │   │   ├── components.css    # สไตล์ UI Primitives และ Component เฉพาะ
+│   │   ├── lightTheme.css    # ธีมสว่าง
+│   │   ├── unit1Page.css / unit1KnowledgeSheet.css # สไตล์หน่วยที่ 1
 │   │   └── global.css        # Design tokens, Typography, Responsive layout
 │   ├── App.jsx               # Root Route Switcher & Error Boundary
 │   └── main.jsx              # React Entry Point & Global Bindings
 ├── dist/                     # Production Build Output
+├── docs/                     # เอกสารประกอบโปรเจกต์
+│   ├── BACKEND_SETUP_GUIDE.md   # คู่มือตั้งค่า Backend
+│   ├── DEPLOY_SCHOOL_SERVER.md  # คู่มืออัปโหลดขึ้น server โรงเรียน
+│   ├── PROJECT_AUDIT.md         # รายงานการวิเคราะห์ระบบเดิม (Phase 1)
+│   ├── MIGRATION_REPORT.md      # รายงานการย้ายระบบสู่ React+Vite (Phase 2)
+│   ├── TEST_REPORT.md           # บันทึกผลการทดสอบ
+│   └── archive/index.original.html # ต้นฉบับเดิมสำรอง (16,147 lines)
+├── release/                  # ไฟล์ zip สำหรับอัปโหลด (ไม่เก็บใน git)
 ├── index.html                # Single Page Host HTML
-├── index.original.html       # ต้นฉบับเดิมสำรอง (Pristine 16,147 lines backup)
 ├── package.json              # Dependencies & Scripts
-├── vite.config.js            # Vite Configuration
-├── PROJECT_AUDIT.md          # รายงานการวิเคราะห์ระบบเดิมและปัญหาที่พบ (Phase 1)
-├── MIGRATION_REPORT.md       # รายงานรายละเอียดการย้ายระบบสู่ React+Vite (Phase 2)
-└── TEST_REPORT.md            # บันทึกผลการทดสอบระบบและ UI ครบทุกมิติ
+└── vite.config.js            # Vite Configuration
 ```
 
 ---

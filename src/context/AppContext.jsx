@@ -120,11 +120,14 @@ export function AppProvider({ children }) {
     [commit]
   );
 
-  const login = useCallback(async ({ displayName, classroom, role = 'STUDENT' }) => {
-    const u = await auth.signIn({ displayName, classroom, role });
-    const fresh = emptyProgress();
-    await api.saveProgress(fresh);
-    setProgress(fresh);
+  const login = useCallback(async (credentials) => {
+    const u = await auth.signIn(credentials);
+    let p = await api.loadProgress();
+    if (!p || !p.units) {
+      p = emptyProgress();
+      await api.saveProgress(p);
+    }
+    setProgress(p);
     setUser(u);
     return u;
   }, []);

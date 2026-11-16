@@ -102,12 +102,176 @@ export const googleAuth = {
   }
 };
 
+export const sheetsAuth = {
+  async getUser() {
+    LEGACY_KEYS.forEach(k => storage.remove(k));
+    const u = storage.get(KEYS.user, null);
+    if (!isValidUser(u)) return null;
+    if (u) {
+      const cleanName = u.name ? u.name.trim() : (u.displayName || '').replace(/^(นาย|นางสาว|นาง|เด็กชาย|เด็กหญิง|ด\.ช\.|ด\.ญ\.|ครู)\s*/, '').split(/\s+/)[0];
+      if (cleanName && u.displayName !== cleanName) {
+        u.displayName = cleanName;
+        storage.set(KEYS.user, u);
+      }
+    }
+    return u;
+  },
+
+  async signIn({ username, password }) {
+    const uClean = String(username || '').trim();
+    const pClean = String(password || '').trim();
+
+    if (!uClean || !pClean) {
+      throw new Error('กรุณากรอกรหัสประจำตัว (Username) และรหัสผ่าน (Password)');
+    }
+
+    let loggedUser = null;
+
+    // 1. Try Apps Script Web App
+    if (API_CONFIG.gasEndpoint) {
+      try {
+        const res = await fetch(API_CONFIG.gasEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'login',
+            username: uClean,
+            password: pClean
+          })
+        });
+
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            const data = JSON.parse(text);
+            if (data && data.success && data.user) {
+              loggedUser = data.user;
+            } else if (data && data.error && !data.error.includes('Unknown API action')) {
+              throw new Error(data.error);
+            }
+          } catch (jsonErr) {
+            // Not JSON (e.g. unupdated script returning HTML error page)
+          }
+        }
+      } catch (gasErr) {
+        if (gasErr.message && gasErr.message.includes('รหัสประจำตัวหรือรหัสผ่าน')) {
+          throw gasErr;
+        }
+      }
+    }
+
+    // 2. Direct Google Sheets Fallback (Ultra-resilient)
+    if (!loggedUser) {
+      try {
+        const sheetId = API_CONFIG.sheetId || '19TFaVI3mof8KipcstjbtgfYL7Qmywo4xk7vxdnt9oNw';
+        const sheetName = API_CONFIG.sheetUsersName || 'Users';
+        const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+
+        const resp = await fetch(sheetUrl);
+        if (!resp.ok) {
+          throw new Error('ไม่สามารถเชื่อมต่อฐานข้อมูล Google Sheets ได้');
+        }
+        const raw = await resp.text();
+        const start = raw.indexOf('{');
+        const end = raw.lastIndexOf('}');
+        if (start === -1 || end === -1) {
+          throw new Error('โครงสร้างข้อมูล Google Sheets ไม่ถูกต้อง');
+        }
+        const json = JSON.parse(raw.substring(start, end + 1));
+        const rows = json.table?.rows || [];
+
+        for (const row of rows) {
+          const cells = row.c || [];
+          const getVal = idx => {
+            const c = cells[idx];
+            return c && c.v != null ? String(c.v).trim() : '';
+          };
+          const rowClass = getVal(0);
+          const rowNo = getVal(1);
+          const rowUser = getVal(2);
+          const rowPass = getVal(3);
+          const rowTitle = getVal(4);
+          const rowName = getVal(5);
+          const rowLastname = getVal(6);
+
+          if (rowUser === uClean && rowPass === pClean) {
+            const isTeacher = rowClass === '0' || rowTitle.includes('ครู');
+            const role = isTeacher ? 'TEACHER' : 'STUDENT';
+            const classroom = isTeacher ? 'ครูผู้สอน' : (rowClass.startsWith('ม.') ? rowClass : `ม.5/${rowClass}`);
+            const firstName = rowName.trim() || rowUser;
+            const fullName = `${rowTitle}${rowName} ${rowLastname}`.trim() || rowUser;
+            const displayName = firstName; // แสดงเฉพาะชื่อจริง
+
+            loggedUser = {
+              id: rowUser,
+              userId: rowUser,
+              username: rowUser,
+              title: rowTitle,
+              name: rowName,
+              lastname: rowLastname,
+              fullName,
+              displayName,
+              classroom,
+              no: Number(rowNo) || 1,
+              role,
+              email: isTeacher ? 'krunok@pcccr.ac.th' : `${rowUser}@student.pcccr.ac.th`,
+              status: 'ACTIVE',
+              mode: 'sheets',
+              joinedAt: new Date().toISOString(),
+              signedIn: true
+            };
+            break;
+          }
+        }
+      } catch (fallbackErr) {
+        if (fallbackErr.message && !fallbackErr.message.includes('fetch')) {
+          throw fallbackErr;
+        }
+        throw new Error('เกิดข้อผิดพลาดในการดึงข้อมูลจาก Google Sheets');
+      }
+    }
+
+    if (!loggedUser) {
+      throw new Error('รหัสประจำตัว (Username) หรือรหัสผ่าน (Password) ไม่ถูกต้อง');
+    }
+
+    if (!storage.set(KEYS.user, loggedUser)) {
+      throw new Error('STORAGE_BLOCKED');
+    }
+    return loggedUser;
+  },
+
+  async resume(user) {
+    const next = {
+      ...user,
+      signedIn: true
+    };
+    if (!storage.set(KEYS.user, next)) throw new Error('STORAGE_BLOCKED');
+    return next;
+  },
+
+  async signOut(user) {
+    const next = {
+      ...user,
+      signedIn: false
+    };
+    storage.set(KEYS.user, next);
+    return next;
+  },
+
+  async forget() {
+    storage.remove(KEYS.user);
+    storage.remove(KEYS.progress);
+  }
+};
+
 export const AUTH_ADAPTERS = {
+  sheets: sheetsAuth,
   demo: demoAuth,
   google: googleAuth
 };
 
-export const auth = AUTH_ADAPTERS[API_CONFIG.authProvider] || demoAuth;
+export const auth = AUTH_ADAPTERS[API_CONFIG.authProvider] || sheetsAuth;
 
 export const api = {
   isDemo: () => API_CONFIG.dataMode === 'demo' || !API_CONFIG.gasEndpoint,

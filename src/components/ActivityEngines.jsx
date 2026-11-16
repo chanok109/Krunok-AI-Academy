@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useApp } from '../context/AppContext.jsx';
 import { Icon, GlassCard, Button, Badge } from './UIPrimitives.jsx';
-import { Callout, Feedback, Celebrate, ActScore, ActResult, shuffle, pad2 } from './UIHelpers.jsx';
+import { Callout, Feedback, Celebrate, ActScore, ActResult, scrollToEl, shuffle, pad2 } from './UIHelpers.jsx';
 
 function ClassifyActivity({
   unitId,

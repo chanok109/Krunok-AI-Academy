@@ -591,7 +591,7 @@ export function TeacherDashboard() {
                       key={s.id}
                       style={{
                         borderBottom: '1px solid rgba(155,135,245,.1)',
-                        background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.015)'
+                        background: idx % 2 === 0 ? 'transparent' : '#F8FAFC'
                       }}
                     >
                       <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--dim)' }}>
@@ -786,7 +786,7 @@ export function TeacherDashboard() {
                 <div key={sheet} style={{
                   padding: '10px 14px',
                   borderRadius: 8,
-                  background: 'rgba(255,255,255,0.03)',
+                  background: '#F8FAFC',
                   border: '1px solid var(--line)',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -809,7 +809,7 @@ export function TeacherDashboard() {
         >
           <div style={{ display: 'grid', gap: 16 }}>
             {/* Project Overview */}
-            <div style={{ padding: 14, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--line)' }}>
+            <div style={{ padding: 14, borderRadius: 10, background: '#F8FAFC', border: '1px solid var(--line)' }}>
               <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 2 }}>ชื่อโครงงาน:</div>
               <strong style={{ fontSize: 16, color: 'var(--cyan)' }}>
                 {evaluatingStudent.projectTitle || 'ยังไม่ได้ระบุชื่อโครงงาน'}
@@ -843,7 +843,7 @@ export function TeacherDashboard() {
                 { key: 'model', label: '3. การเลือกและฝึกโมเดล AI (Model & Evaluation)', desc: 'ความถูกต้องของโมเดล การทดสอบด้วยชุดข้อมูลทดสอบ และค่าความแม่นยำ' },
                 { key: 'ethics', label: '4. จริยธรรมและความปลอดภัย (Ethics & Safety)', desc: 'การปฏิบัติตาม PDPA การคำนึงถึงความเป็นธรรม และการจัดการความเสี่ยง' },
               ].map(crit => (
-                <div key={crit.key} style={{ padding: 10, borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div key={crit.key} style={{ padding: 10, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                     <strong style={{ fontSize: 13 }}>{crit.label}</strong>
                     <Badge tone="cyan">{rubricScores[crit.key]} / 4 คะแนน</Badge>

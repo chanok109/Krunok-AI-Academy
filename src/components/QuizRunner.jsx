@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useApp } from '../context/AppContext.jsx';
 import { QUIZ_PASS_PERCENT } from '../data/courseData.js';
 import { scoreQuiz } from '../services/quizService.js';
 import { api } from '../services/apiService.js';
-import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar } from './UIPrimitives.jsx';
-import { Celebrate, thaiDateTime, shuffle } from './UIHelpers.jsx';
+import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar, ProgressRing } from './UIPrimitives.jsx';
+import { Celebrate, Feedback, CodeBlock, fmtDuration, scrollToEl, thaiDateTime, shuffle } from './UIHelpers.jsx';
 
 const LETTERS = ["ก", "ข", "ค", "ง"];
 const LEVEL_TONE = {

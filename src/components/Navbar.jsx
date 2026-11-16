@@ -1,2 +1,3 @@
-export { Navbar } from './Navigation.jsx';
-export default function(props) { return <Navbar {...props} />; }
+import { Navbar } from './Navigation.jsx';
+export { Navbar };
+export default Navbar;

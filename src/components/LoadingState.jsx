@@ -1,2 +1,3 @@
-export { LoadingState } from './UIPrimitives.jsx';
-export default function(props) { return <LoadingState {...props} />; }
+import { LoadingState } from './UIPrimitives.jsx';
+export { LoadingState };
+export default LoadingState;

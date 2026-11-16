@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
-import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar } from '../components/UIPrimitives.jsx';
+import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar, ProgressRing } from '../components/UIPrimitives.jsx';
 import { AiraTip, Callout, Feedback, FlipCard, Accordion, Celebrate, Modal, ActScore, ActResult, CodeBlock } from '../components/UIHelpers.jsx';
 import { UnitCoursePage } from '../components/UnitCoursePage.jsx';
+import { HoloStage } from '../components/BackgroundEffects.jsx';
+import { SAMPLES, RECORDED, ROBOT_ART, ROBOT_PAL } from '../data/unit2Data.js';
 import {
   FRUIT_FEATURES,
   FRUIT_CLASSES,
@@ -24,6 +26,229 @@ import {
   PREP_ERRORS,
   U3_QUIZ
 } from '../data/unit3Data.js';
+
+function ProcessingBadge({ text }) {
+  return React.createElement(
+    "span",
+    { className: "badge cyan" },
+    React.createElement("span", { className: "dot" }),
+    text
+  );
+}
+
+const u3ImgCache = {};
+function loadImageEl(url) {
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = () => rej(new Error("โหลดภาพไม่สำเร็จ"));
+    im.src = url;
+  });
+}
+function elToData(im, maxDim) {
+  const w = im.naturalWidth || im.width;
+  const h = im.naturalHeight || im.height;
+  const s = maxDim && Math.max(w, h) > maxDim ? maxDim / Math.max(w, h) : 1;
+  const cw = Math.max(1, Math.round(w * s));
+  const ch = Math.max(1, Math.round(h * s));
+  const c = document.createElement("canvas");
+  c.width = cw;
+  c.height = ch;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(im, 0, 0, cw, ch);
+  const d = ctx.getImageData(0, 0, cw, ch);
+  return {
+    img: { width: cw, height: ch, data: new Uint8ClampedArray(d.data) },
+    orig: { w, h },
+    scaled: s < 1
+  };
+}
+function makeRobotImg() {
+  const img = { width: 16, height: 16, data: new Uint8ClampedArray(16 * 16 * 4) };
+  ROBOT_ART.forEach((row, y) => [...row].forEach((ch, x) => {
+    const [r, g, b] = ROBOT_PAL[ch];
+    const o = (y * 16 + x) * 4;
+    img.data[o] = r;
+    img.data[o + 1] = g;
+    img.data[o + 2] = b;
+    img.data[o + 3] = 255;
+  }));
+  return img;
+}
+async function loadSample(id, maxDim) {
+  const key = id + ":" + (maxDim || 0);
+  if (u3ImgCache[key]) return u3ImgCache[key];
+  if (id === "robot") {
+    return (u3ImgCache[key] = { img: makeRobotImg(), orig: { w: 16, h: 16 }, scaled: false });
+  }
+  const s = SAMPLES.find(x => x.id === id);
+  const el = await loadImageEl(s.url);
+  return (u3ImgCache[key] = { ...elToData(el, maxDim), el });
+}
+async function loadFile(file, maxDim) {
+  if (!file || !/^image\/(png|jpe?g|webp|gif|bmp)$/.test(file.type)) {
+    throw new Error("รองรับเฉพาะไฟล์ภาพ PNG, JPG, WEBP, GIF หรือ BMP");
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error("ไฟล์ใหญ่เกิน 10 MB ลองย่อภาพก่อน");
+  }
+  const url = URL.createObjectURL(file);
+  try {
+    const el = await loadImageEl(url);
+    return { ...elToData(el, maxDim), el };
+  } finally {
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+}
+
+const TFJS_URL = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
+const COCO_URL = "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js";
+const COCO_MODEL_URL = "models/coco-ssd/model.json";
+function loadExtScript(src) {
+  return new Promise((res, rej) => {
+    const ex = document.querySelector(`script[data-src="${src}"]`);
+    if (ex) {
+      if (ex.dataset.ok) return res();
+      ex.addEventListener("load", () => res());
+      ex.addEventListener("error", () => rej(new Error("โหลดไลบรารีไม่สำเร็จ")));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = src;
+    s.dataset.src = src;
+    s.async = true;
+    s.onload = () => { s.dataset.ok = "1"; res(); };
+    s.onerror = () => rej(new Error("โหลดไลบรารีไม่สำเร็จ"));
+    document.head.appendChild(s);
+  });
+}
+let u3DetectorPromise = null;
+function getDetector() {
+  if (!u3DetectorPromise) {
+    u3DetectorPromise = (async () => {
+      await loadExtScript(TFJS_URL);
+      await loadExtScript(COCO_URL);
+      await window.tf.ready();
+      const model = await window.cocoSsd.load({ modelUrl: COCO_MODEL_URL });
+      return { model, backend: window.tf.getBackend() };
+    })();
+    u3DetectorPromise.catch(() => { u3DetectorPromise = null; });
+  }
+  return u3DetectorPromise;
+}
+
+function LabShell({ unitId, labId, objective, steps: baseSteps, children, question, reflection }) {
+  const { saveActivity, saveReflection, progress } = useApp();
+  const [refl, setRefl] = useState(() => (progress[unitId].reflections || {})[labId] || "");
+  const steps = reflection
+    ? [...baseSteps, { id: "refl", text: "ตอบคำถาม Reflection ด้วยความคิดของตัวเอง (อย่างน้อย 1 ประโยค)", done: refl.trim().length >= 15 }]
+    : baseSteps;
+  const done = progress[unitId].completedActivities.includes(labId);
+  const best = progress[unitId].activityScores[labId];
+  const [pick, setPick] = useState(null);
+  const [checked, setChecked] = useState(false);
+  const [firstTry, setFirstTry] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const stepsDone = steps.filter(s => s.done).length;
+  const qOk = checked && pick === question.answer;
+  const allDone = stepsDone === steps.length && qOk;
+  const max = steps.length + 1;
+  useEffect(() => {
+    if (allDone && !saved) {
+      setSaved(true);
+      if (reflection) saveReflection(unitId, labId, refl);
+      saveActivity(unitId, labId, steps.length + (firstTry ? 1 : 0), max);
+    }
+  }, [allDone]);
+  const check = () => {
+    setChecked(true);
+    if (firstTry === null) setFirstTry(pick === question.answer);
+  };
+  return React.createElement(
+    "div",
+    { className: "act lab" },
+    React.createElement(
+      "div",
+      { className: "lab-meta" },
+      React.createElement("div", { className: "lab-obj" }, React.createElement("span", { className: "eyebrow" }, "วัตถุประสงค์"), React.createElement("p", null, objective)),
+      done && React.createElement(Badge, { tone: "ok", dot: true }, "ทำ Lab นี้สำเร็จแล้ว", best ? ` · ${best.best}/${best.max}` : "")
+    ),
+    React.createElement(
+      "div",
+      { className: "q-card" },
+      React.createElement("div", { className: "act-head" }, React.createElement("strong", null, "คำสั่ง"), React.createElement("span", { className: "mono hint" }, stepsDone, "/", steps.length, " ขั้นตอน")),
+      React.createElement(
+        "ol",
+        { className: "steps" },
+        steps.map((s, i) =>
+          React.createElement(
+            "li",
+            { key: s.id, className: s.done ? "done" : "" },
+            React.createElement("span", { className: "step-ic" }, s.done ? React.createElement(Icon, { name: "check", size: 14 }) : i + 1),
+            React.createElement("span", null, s.text, s.status && React.createElement("span", { className: "hint", style: { display: "block" } }, s.status))
+          )
+        )
+      )
+    ),
+    children,
+    reflection &&
+      React.createElement(
+        "div",
+        { className: "q-card refl" },
+        React.createElement("label", { htmlFor: labId + "-refl", className: "q-title" }, "Reflection: ", reflection),
+        React.createElement("textarea", {
+          id: labId + "-refl",
+          className: "input ta",
+          rows: "3",
+          maxLength: 2000,
+          value: refl,
+          onChange: e => setRefl(e.target.value),
+          onBlur: () => saveReflection(unitId, labId, refl),
+          placeholder: "เขียนสิ่งที่สังเกตและเหตุผลของเธอ"
+        }),
+        React.createElement("span", { className: "hint" }, "บันทึกไว้ในเบราว์เซอร์นี้ · ", refl.trim().length, " ตัวอักษร")
+      ),
+    React.createElement(
+      "fieldset",
+      { className: "q-card part" },
+      React.createElement("legend", { className: "q-title" }, "คำถามท้าย Lab: ", question.q),
+      question.code && React.createElement(CodeBlock, { code: question.code }),
+      React.createElement(
+        "div",
+        { className: "opts col" },
+        question.options.map(o =>
+          React.createElement(
+            "button",
+            {
+              key: o.id,
+              type: "button",
+              className: "opt " + (checked ? (o.id === question.answer && pick === o.id ? "is-correct" : pick === o.id ? "is-wrong" : "") : ""),
+              "aria-pressed": pick === o.id,
+              disabled: qOk,
+              onClick: () => { setPick(o.id); setChecked(false); }
+            },
+            o.text
+          )
+        )
+      ),
+      !qOk && React.createElement(Button, { size: "sm", icon: "check", disabled: !pick, onClick: check, style: { justifySelf: "start" } }, "ตรวจคำตอบ"),
+      checked && React.createElement(Feedback, { tone: qOk ? "good" : "bad", title: qOk ? "ถูกต้อง" : "ยังไม่ถูก ลองเลือกใหม่อีกครั้ง" }, qOk ? question.explain : question.hint)
+    ),
+    allDone
+      ? React.createElement(
+          "div",
+          { className: "result", role: "status" },
+          React.createElement("div", { className: "bot" }, React.createElement(AIraBot, { mood: "cheer", float: false, title: "" })),
+          React.createElement(
+            "div",
+            { style: { flex: "1 1 220px", display: "grid", gap: 4 } },
+            React.createElement("strong", { style: { fontSize: 18 } }, "Lab สำเร็จ! บันทึกความก้าวหน้าแล้ว"),
+            React.createElement("span", { style: { color: "var(--muted)", fontSize: 14 } }, "ได้ ", steps.length + (firstTry ? 1 : 0), "/", max, " คะแนน")
+          )
+        )
+      : React.createElement("span", { className: "hint" }, "ทำขั้นตอนให้ครบและตอบคำถามท้าย Lab ให้ถูก ระบบจะบันทึกว่า Lab สำเร็จ")
+  );
+}
 
 const ML = {
   rng(seed) {
@@ -475,8 +700,8 @@ function ScatterPlot({
     y: "10",
     width: W - P - 10,
     height: H - P - 10,
-    fill: "#0B1026",
-    stroke: "rgba(155,135,245,.3)"
+    fill: "#F8FAFC",
+    stroke: "#CBD5E1"
   }), cells.map((c, i) => React.createElement("rect", {
     key: i,
     x: c.x,
@@ -492,13 +717,13 @@ function ScatterPlot({
     x2: sx(v),
     y1: "10",
     y2: H - P,
-    stroke: "rgba(155,135,245,.12)"
+    stroke: "#E2E8F0"
   }), React.createElement("text", {
     x: sx(v),
     y: H - P + 14,
     textAnchor: "middle",
     fontSize: "10",
-    fill: "#A9AEC9"
+    fill: "#475569"
   }, fmt(fx, v)))), ticks(fy).map(v => React.createElement("g", {
     key: "y" + v
   }, React.createElement("line", {
@@ -506,25 +731,25 @@ function ScatterPlot({
     x2: W - 10,
     y1: sy(v),
     y2: sy(v),
-    stroke: "rgba(155,135,245,.12)"
+    stroke: "#E2E8F0"
   }), React.createElement("text", {
     x: P - 5,
     y: sy(v) + 3,
     textAnchor: "end",
     fontSize: "10",
-    fill: "#A9AEC9"
+    fill: "#475569"
   }, fmt(fy, v)))), React.createElement("text", {
     x: (W + P) / 2,
     y: H - 4,
     textAnchor: "middle",
     fontSize: "11",
-    fill: "#F4F6FB"
+    fill: "#0F172A"
   }, fx.name, fx.unit ? ` (${fx.unit})` : ""), React.createElement("text", {
     x: "10",
     y: (H - P) / 2,
     textAnchor: "middle",
     fontSize: "11",
-    fill: "#F4F6FB",
+    fill: "#0F172A",
     transform: `rotate(-90 10 ${(H - P) / 2})`
   }, fy.name.replace(/ \(.+\)/, ""), fy.unit ? ` (${fy.unit})` : ""), pred && query && model && pred.neighbors.map((n, i) => {
     const e = model.ex[n.i];
@@ -534,7 +759,7 @@ function ScatterPlot({
       y1: sy(query[1]),
       x2: sx(e.x[0]),
       y2: sy(e.x[1]),
-      stroke: "#F4F6FB",
+      stroke: "#334155",
       strokeDasharray: "3 3",
       opacity: ".7"
     });
@@ -564,7 +789,7 @@ function ScatterPlot({
       cy: y,
       r: hl ? 7 : 4.5,
       fill: clsColor(classes, it.label),
-      stroke: hl ? "#fff" : "#0B1026",
+      stroke: hl ? "#0F172A" : "#FFFFFF",
       strokeWidth: hl ? 2.5 : 1
     }));
   }), query && React.createElement("g", null, React.createElement("circle", {
@@ -572,13 +797,13 @@ function ScatterPlot({
     cy: sy(query[1]),
     r: "9",
     fill: "none",
-    stroke: "#fff",
+    stroke: "#0F172A",
     strokeWidth: "2.5"
   }), React.createElement("circle", {
     cx: sx(query[0]),
     cy: sy(query[1]),
     r: "3",
-    fill: "#fff"
+    fill: "#0F172A"
   })));
 }
 function ConfBars({
@@ -1534,7 +1759,7 @@ function Manikin({
     cx: x,
     cy: i === 0 ? y : y,
     r: i === 0 ? 3.5 : 4,
-    fill: "#F4F6FB"
+    fill: "#0F172A"
   })));
 }
 
@@ -1867,7 +2092,7 @@ function HandView({
       cx: q[0],
       cy: q[1],
       r: i === 0 ? 5 : 3,
-      fill: "#F4F6FB"
+      fill: "#0F172A"
     });
   }));
 }
@@ -3197,10 +3422,9 @@ const U3_CFG = {
   unitId: "unit3",
   no: 3,
   en: "Machine Learning Applications",
-  eyebrow: "AI Machine Learning Studio",
-  titleNode: React.createElement(React.Fragment, null, "\u0E1E\u0E37\u0E49\u0E19\u0E10\u0E32\u0E19", React.createElement("span", {
+  titleNode: React.createElement(React.Fragment, null, "พื้นฐาน", React.createElement("br"), React.createElement("span", {
     className: "grad-text"
-  }, "\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E23\u0E39\u0E49\u0E02\u0E2D\u0E07\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07")),
+  }, "การเรียนรู้ของเครื่อง")),
   objectives: U3_OBJECTIVES,
   items: U3_ITEMS,
   seq: U3_SEQ,
@@ -3212,7 +3436,7 @@ const U3_CFG = {
   quiz: U3_QUIZ,
   viewKey: "aira_u3_view",
   tipTitle: "AIra ผู้ช่วยฝึกโมเดล",
-  art: () => React.createElement(MLStage, null),
+  art: su => React.createElement(HoloStage, { mood: su?.completed ? "cheer" : "happy" }),
   renderActivity: view => {
     const L = U3_LABS[view];
     return L ? React.createElement(L, null) : null;
@@ -3224,6 +3448,8 @@ const U3_CFG = {
     name: "ML Engineer",
     icon: "cpu"
   },
+  slidesUrl: "/unit3/index.html",
+  codeUrl: "/code/code-unit3.zip",
   next: {
     id: "unit4",
     label: "ไปหน่วยที่ 4"

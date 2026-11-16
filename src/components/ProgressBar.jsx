@@ -1,2 +1,3 @@
-export { ProgressBar } from './UIPrimitives.jsx';
-export default function(props) { return <ProgressBar {...props} />; }
+import { ProgressBar } from './UIPrimitives.jsx';
+export { ProgressBar };
+export default ProgressBar;

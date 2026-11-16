@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ICONS } from '../data/courseData.js';
+import airaMascotUrl from '../assets/aira-mascot.png';
 
 function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function (target) {
@@ -39,225 +40,40 @@ function Icon({
 function AIraBot({
   mood = "happy",
   float = true,
+  size,
   className = "",
-  title = "AIra หุ่นยนต์ผู้ช่วย"
+  style,
+  title = "AIra (ไอร่า) หุ่นยนต์ผู้ช่วย"
 }) {
-  const uid = useMemo(() => "b" + Math.random().toString(36).slice(2, 7), []);
-  const eye = (cx, wink) => wink ? React.createElement("path", {
-    d: `M${cx - 9} 101 q9 -8 18 0`,
-    stroke: "#00E5FF",
-    strokeWidth: "5",
-    strokeLinecap: "round",
-    fill: "none"
-  }) : React.createElement("g", {
-    className: "bot-eye"
-  }, React.createElement("rect", {
-    x: cx - 9,
-    y: 89,
-    width: "18",
-    height: "24",
-    rx: "9",
-    fill: "#00E5FF"
-  }), React.createElement("rect", {
-    x: cx - 4,
-    y: 93,
-    width: "6",
-    height: "7",
-    rx: "3",
-    fill: "#E9FDFF"
-  }));
   return React.createElement("svg", _extends({
-    viewBox: "0 0 200 220",
-    className: className
+    viewBox: "0 0 220 220",
+    width: size || undefined,
+    height: size || undefined,
+    style: size ? _extends({ width: size, height: size, flexShrink: 0 }, style) : style,
+    className: `aira-mascot-svg mood-${mood} ${className}`.trim()
   }, title ? {
     role: "img",
     "aria-label": title
   } : {
     "aria-hidden": "true",
     focusable: "false"
-  }), React.createElement("defs", null, React.createElement("radialGradient", {
-    id: uid + "pearl",
-    cx: "35%",
-    cy: "28%",
-    r: "80%"
-  }, React.createElement("stop", {
-    offset: "0",
-    stopColor: "#FFFFFF"
-  }), React.createElement("stop", {
-    offset: ".55",
-    stopColor: "#EEF0FA"
-  }), React.createElement("stop", {
-    offset: "1",
-    stopColor: "#C9C3EE"
-  })), React.createElement("linearGradient", {
-    id: uid + "lav",
-    x1: "0",
-    y1: "0",
-    x2: "1",
-    y2: "1"
-  }, React.createElement("stop", {
-    offset: "0",
-    stopColor: "#B7A8FF"
-  }), React.createElement("stop", {
-    offset: "1",
-    stopColor: "#7C67E8"
-  })), React.createElement("linearGradient", {
-    id: uid + "visor",
-    x1: "0",
-    y1: "0",
-    x2: "0",
-    y2: "1"
-  }, React.createElement("stop", {
-    offset: "0",
-    stopColor: "#1B1846"
-  }), React.createElement("stop", {
-    offset: "1",
-    stopColor: "#0B1026"
-  })), React.createElement("radialGradient", {
-    id: uid + "glow",
-    cx: "50%",
-    cy: "50%",
-    r: "50%"
-  }, React.createElement("stop", {
-    offset: "0",
-    stopColor: "#00E5FF",
-    stopOpacity: ".45"
-  }), React.createElement("stop", {
-    offset: "1",
-    stopColor: "#00E5FF",
-    stopOpacity: "0"
-  }))), React.createElement("ellipse", {
-    cx: "100",
-    cy: "208",
-    rx: "46",
+  }), React.createElement("ellipse", {
+    cx: "106",
+    cy: "210",
+    rx: "48",
     ry: "7",
-    fill: "#00E5FF",
-    opacity: ".18"
+    fill: "#6366F1",
+    opacity: ".16"
   }), React.createElement("g", {
     className: float ? "bot-float" : ""
-  }, React.createElement("path", {
-    d: "M100 42 V22",
-    stroke: "#B7A8FF",
-    strokeWidth: "5",
-    strokeLinecap: "round"
-  }), React.createElement("path", {
-    className: "bot-star",
-    d: "M100 4 l4.2 8.6 9.4 1.4 -6.8 6.6 1.6 9.4 -8.4-4.4 -8.4 4.4 1.6-9.4 -6.8-6.6 9.4-1.4z",
-    fill: "#FFD66D",
-    stroke: "#FFF1C2",
-    strokeWidth: "1.2"
-  }), React.createElement("rect", {
-    x: "22",
-    y: "80",
-    width: "18",
-    height: "40",
-    rx: "9",
-    fill: `url(#${uid}lav)`
-  }), React.createElement("rect", {
-    x: "160",
-    y: "80",
-    width: "18",
-    height: "40",
-    rx: "9",
-    fill: `url(#${uid}lav)`
-  }), React.createElement("rect", {
-    x: "32",
-    y: "40",
-    width: "136",
-    height: "112",
-    rx: "52",
-    fill: `url(#${uid}pearl)`
-  }), React.createElement("path", {
-    d: "M58 50 q42 -18 84 0",
-    stroke: "#FFFFFF",
-    strokeWidth: "6",
-    strokeLinecap: "round",
-    opacity: ".85",
-    fill: "none"
-  }), React.createElement("rect", {
-    x: "48",
-    y: "70",
-    width: "104",
-    height: "64",
-    rx: "30",
-    fill: `url(#${uid}visor)`
-  }), React.createElement("ellipse", {
-    cx: "100",
-    cy: "101",
-    rx: "52",
-    ry: "34",
-    fill: `url(#${uid}glow)`
-  }), eye(78, false), eye(122, mood === "wink"), mood === "think" ? React.createElement("path", {
-    d: "M92 124 h16",
-    stroke: "#57CCF2",
-    strokeWidth: "4",
-    strokeLinecap: "round"
-  }) : React.createElement("path", {
-    d: "M88 120 q12 10 24 0",
-    stroke: "#57CCF2",
-    strokeWidth: "4",
-    strokeLinecap: "round",
-    fill: "none"
-  }), React.createElement("circle", {
-    cx: "62",
-    cy: "122",
-    r: "5",
-    fill: "#9B87F5",
-    opacity: ".7"
-  }), React.createElement("circle", {
-    cx: "138",
-    cy: "122",
-    r: "5",
-    fill: "#9B87F5",
-    opacity: ".7"
-  }), React.createElement("rect", {
-    x: "64",
-    y: "150",
-    width: "72",
-    height: "50",
-    rx: "24",
-    fill: `url(#${uid}pearl)`
-  }), React.createElement("circle", {
-    cx: "100",
-    cy: "174",
-    r: "11",
-    fill: "#161336"
-  }), React.createElement("path", {
-    d: "M100 166 l2.4 5 5.4.8 -3.9 3.8.9 5.4 -4.8-2.6 -4.8 2.6.9-5.4 -3.9-3.8 5.4-.8z",
-    fill: "#00E5FF"
-  }), mood === "cheer" ? React.createElement(React.Fragment, null, React.createElement("rect", {
-    x: "34",
-    y: "128",
-    width: "16",
-    height: "40",
-    rx: "8",
-    transform: "rotate(35 42 148)",
-    fill: `url(#${uid}lav)`
-  }), React.createElement("rect", {
-    x: "150",
-    y: "128",
-    width: "16",
-    height: "40",
-    rx: "8",
-    transform: "rotate(-35 158 148)",
-    fill: `url(#${uid}lav)`
-  })) : React.createElement(React.Fragment, null, React.createElement("rect", {
-    x: "46",
-    y: "156",
-    width: "16",
-    height: "36",
-    rx: "8",
-    transform: "rotate(16 54 174)",
-    fill: `url(#${uid}lav)`
-  }), React.createElement("rect", {
-    x: "138",
-    y: "156",
-    width: "16",
-    height: "36",
-    rx: "8",
-    transform: "rotate(-16 146 174)",
-    fill: `url(#${uid}lav)`
-  }))));
+  }, React.createElement("image", {
+    href: airaMascotUrl,
+    x: "2",
+    y: "0",
+    width: "216",
+    height: "214",
+    preserveAspectRatio: "xMidYMid meet"
+  })));
 }
 function GlassCard({
   as: Tag = "div",
@@ -355,15 +171,15 @@ function ProgressRing({
     y2: "1"
   }, React.createElement("stop", {
     offset: "0",
-    stopColor: "#9B87F5"
+    stopColor: "#6D4DD3"
   }), React.createElement("stop", {
     offset: "1",
-    stopColor: "#00E5FF"
+    stopColor: "#9B87F5"
   }))), React.createElement("circle", {
     cx: size / 2,
     cy: size / 2,
     r: r,
-    stroke: "rgba(155,135,245,.18)",
+    stroke: "var(--color-primary-soft, #EEE9FF)",
     strokeWidth: stroke,
     fill: "none"
   }), React.createElement("circle", {

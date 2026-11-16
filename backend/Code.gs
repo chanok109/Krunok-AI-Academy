@@ -1010,6 +1010,15 @@ function doGet(e) {
     }
   }
 
+  if (action === 'login') {
+    try {
+      const user = loginWithUsernamePassword_(p.username, p.password);
+      return jsonResponse_({ success: true, user: user });
+    } catch (err) {
+      return jsonResponse_({ success: false, error: err.message });
+    }
+  }
+
   return jsonResponse_({ success: false, error: 'Unknown GET action: ' + action });
 }
 
@@ -1043,8 +1052,14 @@ function doPost(e) {
 
     let responseData = null;
 
+    // 0. Auth: Login with Username & Password (Google Sheets Users sheet)
+    if (action === 'login') {
+      const user = loginWithUsernamePassword_(payload.username, payload.password);
+      responseData = { success: true, user: user };
+    }
+
     // 1. Auth: Verify / Register / Get Profile
-    if (action === 'auth/verify') {
+    else if (action === 'auth/verify') {
       const user = authenticateAndResolveUser_(payload);
       responseData = {
         success: true,
@@ -1307,3 +1322,82 @@ function jsonResponse_(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+/**
+ * ฟังก์ชันตรวจสอบการเข้าสู่ระบบด้วย Username & Password จากแผ่นงาน Users
+ */
+function loginWithUsernamePassword_(username, password) {
+  const uClean = String(username || '').trim();
+  const pClean = String(password || '').trim();
+  if (!uClean || !pClean) {
+    throw new Error('กรุณากรอกรหัสประจำตัว (Username) และรหัสผ่าน (Password)');
+  }
+
+  // กำหนด Spreadsheet ID ของ KruNok AI Academy
+  const targetId = '19TFaVI3mof8KipcstjbtgfYL7Qmywo4xk7vxdnt9oNw';
+  let ss = null;
+  try {
+    ss = SpreadsheetApp.openById(targetId);
+  } catch (e) {
+    try {
+      ss = getDb_();
+    } catch (dbErr) {
+      throw new Error('ไม่สามารถเข้าถึง Google Sheets ได้: ' + e.message);
+    }
+  }
+
+  if (!ss) {
+    throw new Error('ไม่พบฐานข้อมูล Google Sheets');
+  }
+
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet) {
+    throw new Error('ไม่พบแผ่นงานชื่อ Users ใน Google Sheet');
+  }
+
+  const data = sheet.getDataRange().getValues();
+  if (!data || data.length < 2) {
+    throw new Error('ไม่พบข้อมูลผู้ใช้ในตาราง Users');
+  }
+
+  // Row 0 is header: ["class","no","username","psssword","title","name","lastname"]
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const rowClass = String(row[0] != null ? row[0] : '').trim();
+    const rowNo = String(row[1] != null ? row[1] : '').trim();
+    const rowUser = String(row[2] != null ? row[2] : '').trim();
+    const rowPass = String(row[3] != null ? row[3] : '').trim();
+    const rowTitle = String(row[4] != null ? row[4] : '').trim();
+    const rowName = String(row[5] != null ? row[5] : '').trim();
+    const rowLastname = String(row[6] != null ? row[6] : '').trim();
+
+    if (rowUser === uClean && rowPass === pClean) {
+      const isTeacher = rowClass === '0' || rowTitle.indexOf('ครู') !== -1;
+      const role = isTeacher ? 'TEACHER' : 'STUDENT';
+      const firstName = rowName.trim() || rowUser;
+      const fullName = (rowTitle + rowName + ' ' + rowLastname).trim() || rowUser;
+      const displayName = firstName; // แสดงเฉพาะชื่อจริง
+
+      return {
+        id: rowUser,
+        userId: rowUser,
+        username: rowUser,
+        title: rowTitle,
+        name: rowName,
+        lastname: rowLastname,
+        displayName: displayName,
+        classroom: classroom,
+        no: Number(rowNo) || 1,
+        role: role,
+        email: isTeacher ? 'krunok@pcccr.ac.th' : rowUser + '@student.pcccr.ac.th',
+        status: 'ACTIVE',
+        mode: 'sheets',
+        joinedAt: new Date().toISOString(),
+        signedIn: true
+      };
+    }
+  }
+
+  throw new Error('รหัสประจำตัว (Username) หรือรหัสผ่าน (Password) ไม่ถูกต้อง');
+}
+

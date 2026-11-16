@@ -1,2 +1,3 @@
-export { AIraAssistant } from './Navigation.jsx';
-export default function(props) { return <AIraAssistant {...props} />; }
+import { AIraAssistant } from './Navigation.jsx';
+export { AIraAssistant };
+export default AIraAssistant;

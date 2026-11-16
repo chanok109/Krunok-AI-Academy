@@ -42,7 +42,7 @@ export const UNITS = [
       { id: "u1-a5", title: "Deepfake Detective" }
     ],
     practice: [],
-    quiz: { id: "u1-quiz", questions: 15 }
+    quiz: { id: "u1-quiz", questions: 10 }
   },
   {
     id: "unit2",
@@ -66,7 +66,11 @@ export const UNITS = [
       { id: "u2-a5", title: "LAB 2.5 Object Detection Explorer" }
     ],
     practice: [],
-    quiz: { id: "u2-quiz", questions: 15 }
+    quiz: { id: "u2-quiz", questions: 15 },
+    slidesUrl: "/unit2/index.html",
+    setupUrl: "/unit2/setup.html",
+    activityUrl: "/unit2/activity-2-1.html",
+    codeUrl: "/code/code-2.3-2.5.zip"
   },
   {
     id: "unit3",
@@ -91,7 +95,9 @@ export const UNITS = [
       { id: "u3-a6", title: "LAB 3.6 Hand Pose Classifier" }
     ],
     practice: [],
-    quiz: { id: "u3-quiz", questions: 15 }
+    quiz: { id: "u3-quiz", questions: 15 },
+    slidesUrl: "/unit3/index.html",
+    codeUrl: "/code/code-unit3.zip"
   },
   {
     id: "unit4",
@@ -112,7 +118,57 @@ export const UNITS = [
       { id: "u4-eval", title: "ประเมินตนเองตาม Rubric" }
     ],
     practice: [],
-    quiz: null
+    quiz: null,
+    slidesUrl: "/unit5/index.html",
+    codeUrl: "/code/code-unit5.zip"
+  }
+];
+
+export const COURSE_RESOURCES = [
+  {
+    id: "res-setup",
+    unitNo: 2,
+    title: "ติดตั้ง VS Code, Python และ OpenCV 4",
+    desc: "ขั้นตอนการติดตั้งเครื่องมือสำหรับเขียนโค้ดและทดลองประมวลผลภาพในคาบเรียน",
+    url: "/unit2/setup.html",
+    badge: "Setup Guide",
+    type: "html"
+  },
+  {
+    id: "res-act21",
+    unitNo: 2,
+    title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ",
+    desc: "กิจกรรมสำรวจพิกเซล สี RGB และโครงสร้างข้อมูลภาพ (เปิดพิมพ์เป็น PDF ได้)",
+    url: "/unit2/activity-2-1.html",
+    badge: "Worksheet (PDF)",
+    type: "html"
+  },
+  {
+    id: "res-code-u2",
+    unitNo: 2,
+    title: "โค้ดตัวอย่าง หน่วยที่ 2 (OpenCV Basics)",
+    desc: "ไฟล์ตัวอย่างโค้ด Python บทที่ 2.3–2.5 พร้อมภาพและวิดีโอตัวอย่าง",
+    url: "/code/code-2.3-2.5.zip",
+    badge: "Code (.zip)",
+    type: "zip"
+  },
+  {
+    id: "res-code-u3",
+    unitNo: 3,
+    title: "โค้ดตัวอย่าง หน่วยที่ 3 (Machine Learning)",
+    desc: "ไฟล์ตัวอย่างโมเดลและการทดลอง Ultralytics / Pose / Hand Detection",
+    url: "/code/code-unit3.zip",
+    badge: "Code (.zip)",
+    type: "zip"
+  },
+  {
+    id: "res-code-u4",
+    unitNo: 4,
+    title: "โค้ดตัวอย่าง หน่วยที่ 4 (AI Innovation Project)",
+    desc: "ไฟล์ตัวอย่างโค้ดสำหรับสร้างชิ้นงานแอปพลิเคชันและการประยุกต์ใช้ ML",
+    url: "/code/code-unit5.zip",
+    badge: "Code (.zip)",
+    type: "zip"
   }
 ];
 
@@ -133,10 +189,12 @@ export const ROUTES = {
 export const NAV_ORDER = ["home", "unit1", "unit2", "unit3", "unit4"];
 
 export const API_CONFIG = {
-  authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "demo",
-  dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "demo",
-  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "",
-  googleClientId: typeof window !== 'undefined' && localStorage.getItem('krunok_google_client_id') ? localStorage.getItem('krunok_google_client_id') : ""
+  authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "sheets",
+  dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "sheets",
+  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "https://script.google.com/macros/s/AKfycbwn0TUHLRizk49v3tS7X4296ZWd6CbkVaa3iM0Wr5U6OT_JE1WiavS7crdOYZeIi7vV/exec",
+  googleClientId: typeof window !== 'undefined' && localStorage.getItem('krunok_google_client_id') ? localStorage.getItem('krunok_google_client_id') : "",
+  sheetId: "19TFaVI3mof8KipcstjbtgfYL7Qmywo4xk7vxdnt9oNw",
+  sheetUsersName: "Users"
 };
 
 export const KEYS = {
@@ -215,8 +273,34 @@ export const ICONS = {
   clock: "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM12 6v6l4 2",
   award: "M15.5 13.5 17 22l-5-3-5 3 1.5-8.5M19 8A7 7 0 1 1 5 8a7 7 0 0 1 14 0z",
   eye: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+  eyeOff: "M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22",
   cpu: "M6 6h12v12H6zM9 9h6v6H9zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4",
-  bulb: "M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"
+  bulb: "M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z",
+  shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  scale: "M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zm-14 0l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zm7-13v18M4 7h16",
+  fileText: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",
+  list: "M3 12h.01M3 18h.01M3 6h.01M8 12h13M8 18h13M8 6h13",
+  expand: "M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7",
+  minimize: "M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7",
+  mail: "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm18 2-10 7L2 6",
+  map: "M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-4v16m8-12v16",
+  camera: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+  mic: "M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8",
+  phone: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z",
+  globe: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+  layers: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+  search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35",
+  image: "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 15l-5-5L5 21",
+  code: "M16 18l6-6-6-6M8 6l-6 6 6 6",
+  users: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 10v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75",
+  copy: "M9 9h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",
+  bot: "M12 2v4M8 6h8a4 4 0 0 1 4 4v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a4 4 0 0 1 4-4zM9 12h.01M15 12h.01M9 16h6M2 12h2M20 12h2",
+  tv: "M4 5h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm4 16h8M12 18v3",
+  external: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3",
+  download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
+  openBook: "M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z",
+  slidePlay: "M2 5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5zM8 21h8M12 18v3M10 8.5l5 2.5-5 2.5v-5z",
+  arrowRight: "M5 12h14M12 5l7 7-7 7"
 };
 
 export const ASSISTANT_SCRIPT = {

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon, AIraBot, GlassCard, Button } from './UIPrimitives.jsx';
 
 function shuffle(arr) {
@@ -190,8 +191,9 @@ function Celebrate({
   data
 }) {
   if (!data) return null;
-  return React.createElement("div", {
-    className: "celebrate",
+  const el = React.createElement("div", {
+    className: "celebrate no-print",
+    style: { zIndex: 10050 },
     role: "status",
     "aria-live": "polite"
   }, React.createElement("div", {
@@ -221,6 +223,7 @@ function Celebrate({
       color: "var(--muted)"
     }
   }, data.sub)));
+  return typeof document !== "undefined" ? createPortal(el, document.body) : el;
 }
 function Modal({
   open,

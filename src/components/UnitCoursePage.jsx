@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from './UIPrimitives.jsx';
 import { Celebrate, Modal, scrollToEl, pad2, AiraTip, Callout } from './UIHelpers.jsx';
 import { QuizRunner } from './QuizRunner.jsx';
+import { HoloStage } from './BackgroundEffects.jsx';
 
 const itemKind = it => it.tag || (it.kind === "lesson" ? `บทเรียนที่ ${it.no}` : it.kind === "activity" ? `กิจกรรมที่ ${it.no}` : "แบบทดสอบ");
 function UnitCoursePage({
@@ -48,16 +50,36 @@ function UnitCoursePage({
     } catch (e) {}
   }, [view]);
   const [tocOpen, setTocOpen] = useState(false);
+  const [fsOpen, setFsOpen] = useState(false);
+  const [fsTocOpen, setFsTocOpen] = useState(false);
   const [refsOpen, setRefsOpen] = useState(false);
   const [party, setParty] = useState(null);
   const contentRef = useRef(null);
   const partyTimer = useRef(null);
   useEffect(() => () => clearTimeout(partyTimer.current), []);
+  useEffect(() => {
+    if (!fsOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onEsc = e => {
+      if (e.key === "Escape") {
+        if (fsTocOpen) setFsTocOpen(false);
+        else setFsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onEsc);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onEsc);
+    };
+  }, [fsOpen, fsTocOpen]);
   const closeRefs = useCallback(() => setRefsOpen(false), []);
-  const go = id => {
+  const go = (id, openFull = true) => {
     setView(id);
     setTocOpen(false);
-    setTimeout(() => scrollToEl(contentRef.current), 40);
+    setFsTocOpen(false);
+    if (openFull) setFsOpen(true);
+    else setTimeout(() => scrollToEl(contentRef.current), 40);
   };
   const completeLesson = id => {
     if (isDone(id)) return;
@@ -93,7 +115,7 @@ function UnitCoursePage({
     className: "hero-meta"
   }, React.createElement(Badge, {
     tone: "cyan"
-  }, "UNIT ", pad2(cfg.no)), React.createElement(Badge, null, cfg.en), cfg.eyebrow && React.createElement(Badge, null, cfg.eyebrow), React.createElement(DemoBadge, null)), React.createElement("h1", {
+  }, "UNIT ", pad2(cfg.no)), React.createElement(Badge, null, cfg.en), React.createElement(DemoBadge, null)), React.createElement("h1", {
     id: unitId + "-title"
   }, cfg.titleNode), React.createElement("div", {
     style: {
@@ -139,7 +161,24 @@ function UnitCoursePage({
     className: "btn-glow",
     icon: "play",
     onClick: () => go(firstOpen || seq[0])
-  }, startLabel), React.createElement(Button, {
+  }, startLabel), cfg.slidesUrl && React.createElement("a", {
+    className: "btn btn-secondary",
+    href: cfg.slidesUrl,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
+  }, React.createElement(Icon, { name: "play", size: 14 }), "สไลด์เต็มจอ ↗"), cfg.setupUrl && React.createElement("a", {
+    className: "btn btn-ghost",
+    href: cfg.setupUrl,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
+  }, React.createElement(Icon, { name: "cpu", size: 14 }), "คู่มือติดตั้ง ↗"), cfg.codeUrl && React.createElement("a", {
+    className: "btn btn-ghost",
+    href: cfg.codeUrl,
+    download: true,
+    style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
+  }, React.createElement(Icon, { name: "sparkle", size: 14 }), "โค้ดตัวอย่าง ↓"), React.createElement(Button, {
     variant: "ghost",
     icon: "book",
     onClick: () => setRefsOpen(true)
@@ -147,7 +186,7 @@ function UnitCoursePage({
     variant: "ghost",
     icon: "grid",
     onClick: () => navigate("home")
-  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), cfg.art(su)), su.completed && React.createElement("div", {
+  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), cfg.art ? cfg.art(su) : React.createElement(HoloStage, { mood: su.completed ? "cheer" : "happy" })), su.completed && React.createElement("div", {
     className: "glass unit-done",
     role: "status"
   }, React.createElement("span", {
@@ -254,9 +293,15 @@ function UnitCoursePage({
     key: view
   }, React.createElement("header", {
     className: "lesson-head"
+  }, React.createElement("div", {
+    style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }
   }, React.createElement("span", {
     className: "eyebrow"
-  }, itemKind(it), " \xB7 \u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 ", it.mins, " \u0E19\u0E32\u0E17\u0E35"), React.createElement("h2", {
+  }, itemKind(it), " \xB7 \u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 ", it.mins, " \u0E19\u0E32\u0E17\u0E35"), React.createElement("button", {
+    type: "button",
+    className: "deck-fullscreen-btn",
+    onClick: () => setFsOpen(true)
+  }, "\u2922 \u0E02\u0E22\u0E32\u0E22\u0E2A\u0E44\u0E25\u0E14\u0E4C\u0E40\u0E15\u0E47\u0E21\u0E08\u0E2D")), React.createElement("h2", {
     id: "lesson-title"
   }, it.title), React.createElement("span", {
     className: "hint"
@@ -321,7 +366,161 @@ function UnitCoursePage({
     href: r.url,
     target: "_blank",
     rel: "noopener noreferrer"
-  }, r.title))))));
+  }, r.title))))), fsOpen && typeof document !== "undefined" && createPortal(
+    React.createElement("div", {
+      className: "lesson-slide-deck deck-fullscreen",
+      "aria-label": `สไลด์เต็มจอ หน่วยที่ ${cfg.no}`
+    },
+      React.createElement("div", { className: "deck-toolbar" },
+        React.createElement("div", { className: "deck-toolbar-left" },
+          React.createElement("button", {
+            type: "button",
+            className: "deck-fs-back-btn",
+            onClick: () => setFsOpen(false)
+          },
+            React.createElement(Icon, { name: "grid", size: 15 }),
+            React.createElement("span", null, "เมนูบทเรียน")
+          ),
+          React.createElement("div", { className: "deck-fs-unit-meta" },
+            React.createElement("span", { className: "deck-fs-unit-kicker" }, "UNIT ", pad2(cfg.no)),
+            React.createElement("span", { className: "deck-fs-unit-title" }, `${itemKind(it)} · ${it.title}`)
+          )
+        ),
+        React.createElement("div", { className: "deck-toolbar-right" },
+          React.createElement("div", { className: "deck-toc-wrapper" },
+            React.createElement("button", {
+              type: "button",
+              className: `deck-fullscreen-btn ${fsTocOpen ? "active" : ""}`,
+              onClick: () => setFsTocOpen(o => !o)
+            },
+              React.createElement(Icon, { name: "list", size: 15 }),
+              React.createElement("span", null, "สารบัญ")
+            ),
+            fsTocOpen && React.createElement("div", { className: "deck-toc-popover", role: "menu" },
+              React.createElement("div", { className: "deck-toc-header" },
+                React.createElement("strong", null, `สารบัญหน่วยที่ ${cfg.no} (${seq.length} หัวข้อ)`),
+                React.createElement("button", {
+                  type: "button",
+                  className: "deck-toc-close",
+                  onClick: () => setFsTocOpen(false)
+                }, "✕")
+              ),
+              React.createElement("div", { className: "deck-toc-list" },
+                seq.map((id, idx) => {
+                  const x = items[id];
+                  return React.createElement("button", {
+                    key: id,
+                    type: "button",
+                    className: `deck-toc-item ${id === view ? "active" : ""}`,
+                    onClick: () => go(id, true)
+                  },
+                    React.createElement("span", { className: "deck-toc-num" }, idx + 1),
+                    React.createElement("span", { className: "deck-toc-text" }, `${itemKind(x)}: ${x.title}`)
+                  );
+                })
+              )
+            )
+          ),
+          React.createElement("button", {
+            type: "button",
+            className: "deck-fullscreen-btn active",
+            onClick: () => setFsOpen(false)
+          },
+            React.createElement("span", null, "⤡ ออกจากเต็มจอ")
+          )
+        )
+      ),
+      React.createElement("div", { className: "deck-slide-stage" },
+        React.createElement("div", { className: "deck-slide-card", key: view },
+          React.createElement("div", { className: "deck-slide-header" },
+            React.createElement("div", { className: "deck-slide-header-row" },
+              React.createElement("span", {
+                className: `deck-slide-icon-badge ${it.kind === "quiz" ? "gold" : it.kind === "activity" ? "green" : "blue"}`
+              },
+                React.createElement(Icon, {
+                  name: it.kind === "quiz" ? "target" : it.kind === "activity" ? "puzzle" : "book",
+                  size: 20
+                })
+              ),
+              React.createElement("div", { className: "deck-slide-header-text" },
+                React.createElement("h3", { className: "deck-slide-heading" }, it.title)
+              )
+            ),
+            it.en && React.createElement("p", { className: "deck-slide-sub" }, it.en)
+          ),
+          React.createElement("div", { className: "deck-slide-body", style: { justifyContent: "flex-start" } },
+            React.createElement(AiraTip, {
+              mood: it.kind === "quiz" ? "think" : it.kind === "activity" ? "wink" : "happy",
+              title: cfg.tipTitle || "AIra แนะนำ"
+            }, it.tip),
+            LessonBody && React.createElement(LessonBody, null),
+            it.kind === "activity" && cfg.renderActivity(view, id => go(id, true)),
+            it.kind === "quiz" && React.createElement(QuizRunner, {
+              unitId: unitId,
+              questions: cfg.quiz,
+              lessonTitle: lessonTitle,
+              onGoLesson: id => go(id, true)
+            }),
+            it.kind === "lesson" && React.createElement("div", { className: "lesson-foot", style: { marginTop: 12 } },
+              isDone(view) ? React.createElement("span", { className: "done-chip" },
+                React.createElement(Icon, { name: "check", size: 18 }),
+                "เรียนจบบทนี้แล้ว"
+              ) : React.createElement("span", { className: "hint" },
+                "อ่านและลองโต้ตอบครบแล้ว กดปุ่มเพื่อบันทึกความก้าวหน้า"
+              ),
+              !isDone(view) && React.createElement(Button, {
+                className: "btn-glow",
+                icon: "check",
+                onClick: () => completeLesson(view)
+              }, "เรียนจบบทนี้แล้ว")
+            )
+          )
+        )
+      ),
+      React.createElement("div", { className: "deck-bottom-bar" },
+        React.createElement("button", {
+          type: "button",
+          className: "deck-fs-nav-btn deck-fs-prev",
+          disabled: !prev,
+          onClick: () => prev && go(prev, true)
+        }, "← ก่อนหน้า"),
+        React.createElement("div", { className: "deck-seg-track", role: "tablist" },
+          seq.map((id, idx) => {
+            const isVisited = idx < pos;
+            const isTeal = isVisited && idx >= Math.ceil(seq.length * 0.35);
+            return React.createElement("button", {
+              key: id,
+              type: "button",
+              role: "tab",
+              "aria-selected": idx === pos,
+              className: [
+                "deck-seg-bar",
+                idx === pos ? "active" : "",
+                isVisited ? "visited" : "",
+                isTeal ? "visited-teal" : ""
+              ].filter(Boolean).join(" "),
+              onClick: () => go(id, true),
+              title: `${idx + 1}. ${items[id].title}`
+            });
+          })
+        ),
+        React.createElement("div", { className: "deck-bottom-right" },
+          React.createElement("span", { className: "deck-fs-counter" },
+            React.createElement("strong", null, pos + 1),
+            " / ",
+            seq.length
+          ),
+          React.createElement("button", {
+            type: "button",
+            className: "deck-fs-nav-btn deck-fs-next",
+            disabled: !next,
+            onClick: () => next && go(next, true)
+          }, next ? "ถัดไป →" : "หัวข้อสุดท้าย")
+        )
+      )
+    ),
+    document.body
+  ));
 }
 
 

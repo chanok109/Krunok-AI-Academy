@@ -10,7 +10,11 @@ const ROBOT_PAL = {
   Y: [255, 214, 109]
 };
 function robotImage() {
-  const img = IMG.make(16, 16);
+  const img = {
+    width: 16,
+    height: 16,
+    data: new Uint8ClampedArray(16 * 16 * 4)
+  };
   ROBOT_ART.forEach((row, y) => [...row].forEach((ch, x) => {
     const [r, g, b] = ROBOT_PAL[ch];
     const o = (y * 16 + x) * 4;

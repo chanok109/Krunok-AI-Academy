@@ -1,0 +1,747 @@
+/* ==========================================================================
+   Unit 1 Cover & Curriculum Page Styles (unit1Page.css)
+   Clean, spacious, high-contrast, illustrated layout for M.5 AI Foundations
+   ========================================================================== */
+
+.u1-cover-view {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 32px;
+}
+
+/* ---------- 1. Enhanced Hero Banner (Fits cleanly in 1 viewport) ---------- */
+.u1-hero.hero-unit1.u1-hero-enhanced {
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(290px, 0.82fr);
+  gap: clamp(18px, 2.4vw, 32px);
+  align-items: center;
+  padding: clamp(18px, 2vw, 24px) clamp(20px, 2.6vw, 30px) !important;
+  background:
+    radial-gradient(640px 380px at 92% 12%, rgba(56, 189, 248, 0.16), transparent 65%),
+    radial-gradient(560px 360px at 8% 92%, rgba(139, 92, 246, 0.13), transparent 65%),
+    linear-gradient(135deg, #F5F3FF 0%, #EFF6FF 52%, #ECFEFF 100%) !important;
+  border: 1.5px solid #D8CEFF !important;
+  border-radius: 24px !important;
+  box-shadow:
+    0 16px 36px -14px rgba(79, 70, 229, 0.14),
+    0 4px 12px rgba(15, 23, 42, 0.04) !important;
+}
+
+.u1-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.u1-hero-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.u1-hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 2.7vw, 35px) !important;
+  font-weight: 800 !important;
+  line-height: 1.22 !important;
+  letter-spacing: -0.02em;
+  color: #0F172A !important;
+  margin: 0 !important;
+}
+
+.u1-hero-lead {
+  font-family: var(--font-body);
+  font-size: clamp(14.5px, 1.05vw, 16px);
+  line-height: 1.58;
+  color: #334155 !important;
+  margin: 0;
+  max-width: 72ch;
+}
+
+/* Progress Summary Box inside Hero */
+.u1-hero-progress-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  flex-wrap: wrap;
+}
+
+.u1-hero-progress-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.u1-hero-progress-title {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.u1-hero-progress-pct {
+  color: #4F46E5;
+  font-weight: 800;
+}
+
+.u1-hero-stat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ---------- 2. Hero Right Artwork Stage (AIFoundationStage) ---------- */
+.u1-foundation-stage {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.u1-stage-card {
+  position: relative;
+  width: 100%;
+  border-radius: 22px;
+  padding: 14px 14px 12px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(99, 102, 241, 0.14), rgba(14, 165, 233, 0.08) 55%, rgba(255, 255, 255, 0.95) 100%);
+  border: 1.5px solid rgba(165, 180, 252, 0.75);
+  box-shadow:
+    0 14px 32px -12px rgba(79, 70, 229, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.u1-stage-svg-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 286px;
+  aspect-ratio: 1 / 0.86;
+  display: grid;
+  place-items: center;
+}
+
+.u1-stage-rings-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.u1-stage-mascot-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.u1-stage-mascot-img {
+  width: clamp(114px, 12vw, 144px);
+  height: auto;
+  filter: drop-shadow(0 12px 18px rgba(30, 41, 59, 0.22));
+  animation: u1MascotFloat 3.8s ease-in-out infinite;
+}
+
+@keyframes u1MascotFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+/* Floating Pillar Chips around AIra */
+.u1-floating-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.u1-floating-chip.chip-ai {
+  top: 6px;
+  left: 4px;
+  color: #1D4ED8;
+  border: 1.5px solid #93C5FD;
+}
+
+.u1-floating-chip.chip-ethics {
+  top: 10px;
+  right: 4px;
+  color: #B45309;
+  border: 1.5px solid #FCD34D;
+}
+
+.u1-floating-chip.chip-pdpa {
+  bottom: 8px;
+  right: 10px;
+  color: #BE123C;
+  border: 1.5px solid #FDA4AF;
+}
+
+.u1-floating-chip.chip-genai {
+  bottom: 10px;
+  left: 8px;
+  color: #0F766E;
+  border: 1.5px solid #5EEAD4;
+}
+
+.u1-stage-speech {
+  margin-top: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #EEF2FF 0%, #F0F9FF 100%);
+  border: 1px solid #C7D2FE;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: #312E81;
+  text-align: center;
+}
+
+.u1-stage-online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+  flex-shrink: 0;
+}
+
+/* ---------- 3. AIra Study Guide Banner ---------- */
+.u1-aira-guide-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 22px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #EEF2FF 0%, #F0F9FF 55%, #ECFDF5 100%);
+  border: 1.5px solid #C7D2FE;
+  box-shadow: 0 8px 22px -8px rgba(79, 70, 229, 0.10);
+  flex-wrap: wrap;
+}
+
+.u1-aira-guide-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+.u1-aira-guide-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1.5px solid #A5B4FC;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.12);
+  padding: 4px;
+}
+
+.u1-aira-guide-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.u1-aira-guide-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.u1-aira-guide-title {
+  font-family: var(--font-heading);
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #312E81;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.u1-aira-guide-steps {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #334155;
+  margin: 0;
+}
+
+.u1-aira-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4338CA;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #C7D2FE;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+}
+
+/* ---------- 5. Enhanced Curriculum Roadmap & Prominent Headings ---------- */
+.u1-cover-sets-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.u1-cover-sets-section .section-title h2 {
+  font-family: var(--font-heading) !important;
+  font-size: clamp(23px, 2.3vw, 28px) !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  letter-spacing: -0.015em;
+}
+
+.u1-cover-sets-section .section-title .hint {
+  font-size: 15px !important;
+  color: #475569 !important;
+}
+
+/* Main Step Card Header Typography & Distinct Color Bands */
+.u1-curriculum-container .curr-step-circle {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+
+/* 1. Green Band (แนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์) */
+.u1-curriculum-container .curr-step-circle.tone-emerald {
+  border: 2.5px solid #10B981;
+  color: #047857;
+  background: linear-gradient(135deg, #FFFFFF 0%, #ECFDF5 100%);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14), 0 4px 12px rgba(5, 150, 105, 0.14);
+}
+.u1-curriculum-container .curr-step-card.tone-emerald {
+  border-color: #A7F3D0;
+  border-left: 5.5px solid #10B981;
+}
+.u1-curriculum-container .curr-step-card.tone-emerald .curr-card-head {
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 52%, #FFFFFF 100%);
+  border-bottom: 1px solid #D1FAE5;
+}
+.u1-curriculum-container .curr-card-kicker.tone-emerald {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+/* 2. Orange Band (กิจกรรมลงมือปฏิบัติ) */
+.u1-curriculum-container .curr-step-circle.tone-orange {
+  border: 2.5px solid #F97316;
+  color: #C2410C;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF7ED 100%);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.14), 0 4px 12px rgba(234, 88, 12, 0.14);
+}
+.u1-curriculum-container .curr-step-card.tone-orange {
+  border-color: #FED7AA;
+  border-left: 5.5px solid #F97316;
+}
+.u1-curriculum-container .curr-step-card.tone-orange .curr-card-head {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 48%, #FFFFFF 100%);
+  border-bottom: 1px solid #FED7AA;
+}
+.u1-curriculum-container .curr-card-kicker.tone-orange {
+  background: #FFEDD5;
+  color: #9A3412;
+  border: 1px solid #FDBA74;
+}
+
+/* 3 & 4. Purple Band (มินิเกมฝึกทบทวน & แบบทดสอบหลังเรียน) */
+.u1-curriculum-container .curr-step-circle.tone-purple {
+  border: 2.5px solid #8B5CF6;
+  color: #6D28D9;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.14), 0 4px 12px rgba(109, 40, 217, 0.14);
+}
+.u1-curriculum-container .curr-step-card.tone-purple {
+  border-color: #DDD6FE;
+  border-left: 5.5px solid #8B5CF6;
+}
+.u1-curriculum-container .curr-step-card.tone-purple .curr-card-head {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 48%, #FFFFFF 100%);
+  border-bottom: 1px solid #DDD6FE;
+}
+.u1-curriculum-container .curr-card-kicker.tone-purple {
+  background: #EDE9FE;
+  color: #5B21B6;
+  border: 1px solid #C4B5FD;
+}
+
+/* 5. Pink Band (แหล่งอ้างอิงและเอกสารศึกษาเพิ่มเติม) */
+.u1-curriculum-container .curr-step-circle.tone-rose {
+  border: 2.5px solid #EC4899;
+  color: #BE185D;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF2F8 100%);
+  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.14), 0 4px 12px rgba(190, 24, 93, 0.14);
+}
+.u1-curriculum-container .curr-step-card.tone-rose {
+  border-color: #FBCFE8;
+  border-left: 5.5px solid #EC4899;
+}
+.u1-curriculum-container .curr-step-card.tone-rose .curr-card-head {
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 48%, #FFFFFF 100%);
+  border-bottom: 1px solid #FBCFE8;
+}
+.u1-curriculum-container .curr-card-kicker.tone-rose {
+  background: #FCE7F3;
+  color: #9D174D;
+  border: 1px solid #F9A8D4;
+}
+
+.u1-curriculum-container .curr-card-head {
+  padding: 22px 28px 18px;
+}
+
+.u1-curriculum-container .curr-card-kicker {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  letter-spacing: 0.02em;
+}
+
+.u1-curriculum-container .curr-card-title {
+  font-family: var(--font-heading) !important;
+  font-size: clamp(22px, 2.1vw, 26px) !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.015em;
+  margin: 4px 0 6px 0 !important;
+}
+
+.u1-curriculum-container .curr-card-desc {
+  font-family: var(--font-body);
+  font-size: 15.5px !important;
+  color: #475569 !important;
+  line-height: 1.6 !important;
+}
+
+/* Sub-Item Visuals & Prominent Sub-Item Headings */
+.u1-subitem-visual {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.07);
+}
+
+.u1-subitem-visual.has-thumb {
+  width: 92px;
+  height: 64px;
+  border-radius: 14px;
+}
+
+.u1-subitem-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.u1-subitem-thumb-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.32);
+}
+
+.u1-subitem-thumb-badge.tone-blue { background: #2563EB; }
+.u1-subitem-thumb-badge.tone-emerald { background: #059669; }
+.u1-subitem-thumb-badge.tone-amber { background: #D97706; }
+.u1-subitem-thumb-badge.tone-rose { background: #E11D48; }
+
+.u1-subitem-visual.icon-tile.tone-amber,
+.u1-subitem-visual.icon-tile.tone-orange {
+  background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%);
+  border-color: #FB923C;
+  color: #C2410C;
+}
+
+.u1-subitem-visual.icon-tile.tone-emerald {
+  background: linear-gradient(135deg, #D1FAE5 0%, #DCFCE7 100%);
+  border-color: #6EE7B7;
+  color: #047857;
+}
+
+.u1-subitem-visual.icon-tile.tone-indigo {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+  border-color: #A5B4FC;
+  color: #4338CA;
+}
+
+.u1-subitem-visual.icon-tile.tone-purple {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border-color: #C4B5FD;
+  color: #6D28D9;
+}
+
+.u1-subitem-visual.icon-tile.tone-rose {
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+  border-color: #F9A8D4;
+  color: #BE185D;
+}
+
+.u1-subitem-visual.icon-tile.tone-sky {
+  background: linear-gradient(135deg, #E0F2FE 0%, #EFF6FF 100%);
+  border-color: #7DD3FC;
+  color: #0369A1;
+}
+
+.u1-subitem-head-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.u1-subitem-kicker {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.u1-subitem-kicker.tone-blue { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+.u1-subitem-kicker.tone-amber,
+.u1-subitem-kicker.tone-orange { background: #FFEDD5; color: #C2410C; border: 1px solid #FDBA74; }
+.u1-subitem-kicker.tone-rose { background: #FCE7F3; color: #BE185D; border: 1px solid #F9A8D4; }
+.u1-subitem-kicker.tone-emerald { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+.u1-subitem-kicker.tone-indigo { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
+.u1-subitem-kicker.tone-purple { background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+.u1-subitem-kicker.tone-sky { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+
+.u1-curriculum-container .curr-subitem-title {
+  font-family: var(--font-heading) !important;
+  font-size: clamp(18.5px, 1.55vw, 21px) !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  line-height: 1.32 !important;
+  letter-spacing: -0.01em;
+}
+
+.u1-curriculum-container .curr-subitem-row.is-checked .curr-subitem-title {
+  color: #1E293B !important;
+}
+
+.u1-subitem-desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.58;
+  color: #475569;
+  margin: 0 0 9px 0;
+}
+
+.u1-curriculum-container .curr-tag-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 3px 11px;
+}
+
+.u1-curriculum-container .curr-btn-ghost,
+.u1-curriculum-container .curr-btn-solid {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  padding: 9px 18px;
+  border-radius: 11px;
+}
+
+.u1-curriculum-container .curr-btn-solid.orange {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.28);
+}
+.u1-curriculum-container .curr-btn-solid.orange:hover {
+  background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.36);
+}
+
+.u1-curriculum-container .curr-btn-solid.purple {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.28);
+}
+.u1-curriculum-container .curr-btn-solid.purple:hover {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.36);
+}
+
+.u1-curriculum-container .curr-btn-solid.rose {
+  background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.28);
+}
+.u1-curriculum-container .curr-btn-solid.rose:hover {
+  background: linear-gradient(135deg, #DB2777 0%, #BE185D 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(219, 39, 119, 0.36);
+}
+
+.curr-subitem-row.u1-enhanced-row {
+  padding: 20px 28px;
+  gap: 18px;
+}
+
+.u1-item-left-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Practice Activities View Top Bar */
+.u1-activities-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  flex-wrap: wrap;
+}
+
+/* References Modal List Polish */
+.u1-ref-cards {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.u1-ref-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.u1-ref-card-item:hover {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+}
+
+.u1-ref-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.u1-ref-link {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E3A8A;
+  text-decoration: none;
+  line-height: 1.45;
+}
+
+.u1-ref-link:hover {
+  text-decoration: underline;
+  color: #2563EB;
+}
+
+/* ---------- Responsive Breakpoints ---------- */
+@media (max-width: 920px) {
+  .u1-hero.hero-unit1.u1-hero-enhanced {
+    grid-template-columns: 1fr;
+  }
+
+  .u1-foundation-stage {
+    order: -1;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 720px) {
+  .u1-item-left-group {
+    align-items: flex-start;
+  }
+
+  .u1-subitem-visual.has-thumb {
+    width: 64px;
+    height: 48px;
+  }
+
+  .u1-floating-chip {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+}
+

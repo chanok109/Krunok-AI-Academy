@@ -4,18 +4,48 @@ import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, DemoBadge, ProgressRing, ErrorBoundary } from './UIPrimitives.jsx';
 
-function Navbar() {
+function getRouteTitle(route) {
+  if (route === "home") return "หน้าหลัก";
+  if (route === "teacher") return "แดชบอร์ดครูผู้สอน";
+  const u = UNITS.find(x => x.id === route);
+  if (u) return `หน่วยที่ ${u.no} · ${u.title}`;
+  return "หน้าหลัก";
+}
+
+function Navbar({ collapsed, onToggleSidebar }) {
   const {
     student,
-    summary
+    summary,
+    logout,
+    notify
   } = useApp();
   const {
+    route,
     navigate
   } = useRoute();
+  const inShell = typeof onToggleSidebar === "function";
   return React.createElement("nav", {
-    className: "navbar",
+    className: "navbar" + (inShell ? " navbar-in-shell" : ""),
     "aria-label": "\u0E41\u0E16\u0E1A\u0E19\u0E33\u0E17\u0E32\u0E07\u0E2B\u0E25\u0E31\u0E01"
+  }, inShell ? React.createElement("div", {
+    className: "navbar-page-left"
   }, React.createElement("button", {
+    type: "button",
+    className: "sidebar-hamburger-btn",
+    onClick: onToggleSidebar,
+    title: collapsed ? "ขยายเมนูด้านซ้าย" : "ย่อเมนูด้านซ้าย",
+    "aria-label": collapsed ? "ขยายเมนูด้านซ้าย" : "ย่อเมนูด้านซ้าย"
+  }, React.createElement("svg", {
+    width: 18,
+    height: 18,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2.2,
+    strokeLinecap: "round"
+  }, React.createElement("line", { x1: 4, y1: 6, x2: 20, y2: 6 }), React.createElement("line", { x1: 4, y1: 12, x2: 20, y2: 12 }), React.createElement("line", { x1: 4, y1: 18, x2: 20, y2: 18 }))), React.createElement("span", {
+    className: "navbar-page-title"
+  }, getRouteTitle(route))) : React.createElement("button", {
     className: "brand",
     onClick: () => navigate(student ? "home" : "login"),
     "aria-label": "\u0E44\u0E1B\u0E2B\u0E19\u0E49\u0E32\u0E2B\u0E25\u0E31\u0E01 KruNok AI Academy"
@@ -42,30 +72,42 @@ function Navbar() {
     className: "np-text"
   }, "\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E23\u0E27\u0E21"), React.createElement(ProgressRing, {
     value: summary.overall,
-    size: 40,
+    size: 38,
     stroke: 5,
     label: "\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E23\u0E27\u0E21"
   })), React.createElement("div", {
     className: "user-chip"
   }, React.createElement("span", {
     className: "user-name"
-  }, student.displayName, " ", React.createElement("span", {
+  }, (student.name || (student.displayName || '').replace(/^(นาย|นางสาว|นาง|เด็กชาย|เด็กหญิง|ด\.ช\.|ด\.ญ\.|ครู)\s*/, '').split(/\s+/)[0]), " ", React.createElement("span", {
     style: {
       color: "var(--dim)"
     }
   }, "\xB7 ", student.classroom)), React.createElement("span", {
     className: "avatar",
     "aria-hidden": "true"
-  }, student.displayName.trim().charAt(0)))));
+  }, ((student.name || student.displayName || '').trim().replace(/^(นาย|นางสาว|นาง|เด็กชาย|เด็กหญิง|ด\.ช\.|ด\.ญ\.|ครู)\s*/, '').charAt(0) || 'U'))), inShell && React.createElement("button", {
+    type: "button",
+    className: "topbar-action-btn",
+    onClick: async () => {
+      await logout();
+      navigate("login");
+      notify({
+        type: "info",
+        title: "ออกจากระบบแล้ว",
+        message: "ความก้าวหน้ายังเก็บไว้ในเครื่องนี้"
+      });
+    }
+  }, "ออกจากระบบ \u2192")));
 }
 function unitStatusText(su) {
   if (!su.ready) return su.visited ? "เคยเข้าแล้ว · รอเปิดเนื้อหา" : "รอเปิดเนื้อหา";
   if (su.completed) return "เรียนครบแล้ว";
   return su.percent > 0 ? `${su.percent}% เสร็จแล้ว` : "ยังไม่เริ่ม";
 }
-function goToProgress(route, navigate) {
+export function goToProgress(route, navigate) {
   const go = () => {
-    const el = document.getElementById("my-progress");
+    const el = document.getElementById("achievements") || document.getElementById("my-progress");
     if (el) {
       el.scrollIntoView({
         behavior: "smooth",
@@ -81,7 +123,7 @@ function goToProgress(route, navigate) {
     setTimeout(go, 420);
   } else go();
 }
-function Sidebar() {
+function Sidebar({ collapsed, onToggle }) {
   const {
     route,
     navigate
@@ -94,75 +136,154 @@ function Sidebar() {
   } = useApp();
   const [confirmReset, setConfirmReset] = useState(false);
   return React.createElement("aside", {
-    className: "sidebar",
+    className: "sidebar" + (collapsed ? " is-collapsed" : ""),
     "aria-label": "\u0E40\u0E21\u0E19\u0E39\u0E1A\u0E17\u0E40\u0E23\u0E35\u0E22\u0E19"
   }, React.createElement("button", {
+    type: "button",
+    className: "side-brand-head",
+    onClick: () => navigate("home"),
+    title: "KruNok AI Academy · ห้องเรียนปัญญาประดิษฐ์"
+  }, React.createElement(AIraBot, {
+    className: "side-brand-logo",
+    float: false,
+    title: ""
+  }), !collapsed && React.createElement("span", {
+    className: "side-brand-text"
+  }, React.createElement("strong", null, "KruNok AI"), React.createElement("small", null, "ห้องเรียน ว32281 · ม.5"))), !collapsed && React.createElement("div", {
+    className: "side-label"
+  }, "บทเรียน"), React.createElement("button", {
     className: "side-link",
     "aria-current": route === "home" ? "page" : undefined,
-    onClick: () => navigate("home")
+    onClick: () => navigate("home"),
+    title: "หน้าแรกบทเรียน"
   }, React.createElement("span", {
     className: "side-num"
   }, React.createElement(Icon, {
-    name: "grid",
+    name: "home",
     size: 16
-  })), React.createElement("span", {
+  })), !collapsed && React.createElement("span", {
     className: "lbl"
-  }, "Dashboard", React.createElement("small", null, "\u0E2B\u0E19\u0E49\u0E32\u0E2B\u0E25\u0E31\u0E01"))), React.createElement("div", {
+  }, "หน้าแรก", React.createElement("small", null, "ภาพรวมห้องเรียน"))), UNITS.map(u => {
+    const su = summary.units[u.id];
+    const isCompleted = Boolean(su && su.completed);
+    return React.createElement(React.Fragment, { key: u.id }, React.createElement("button", {
+      className: "side-link " + (isCompleted ? "is-done" : ""),
+      "aria-current": route === u.id ? "page" : undefined,
+      onClick: () => navigate(u.id),
+      title: `หน่วยที่ ${u.no}: ${u.title}`
+    }, React.createElement("span", {
+      className: "side-num " + (isCompleted ? "done" : "")
+    }, isCompleted ? React.createElement(Icon, {
+      name: "check",
+      size: 15
+    }) : u.no), !collapsed && React.createElement("span", {
+      className: "lbl"
+    }, React.createElement("span", {
+      className: "side-title"
+    }, `หน่วยที่ ${u.no}: ${u.title}`), React.createElement("small", {
+      className: isCompleted ? "status-done" : ""
+    }, unitStatusText(su)))), !collapsed && u.id === 'unit2' && React.createElement("a", {
+      className: "side-link side-sublink",
+      href: "/unit2/setup.html",
+      target: "_blank",
+      rel: "noopener noreferrer",
+      title: "ติดตั้ง VS Code, Python และ OpenCV 4",
+      style: { paddingLeft: "34px", marginBlock: "2px" }
+    }, React.createElement("span", {
+      className: "side-num",
+      style: { width: "20px", height: "20px", minWidth: "20px" }
+    }, React.createElement(Icon, {
+      name: "cpu",
+      size: 13
+    })), React.createElement("span", {
+      className: "lbl"
+    }, React.createElement("span", {
+      className: "side-title",
+      style: { fontSize: "12.5px", color: "var(--lavender, #9B87F5)" }
+    }, "ติดตั้ง VS Code, Python และ OpenCV 4"), React.createElement("small", null, "คู่มือเตรียมเครื่อง ↗"))));
+  }), !collapsed && React.createElement("div", {
     className: "side-label"
-  }, "\u0E2B\u0E19\u0E48\u0E27\u0E22\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E23\u0E39\u0E49"), UNITS.map(u => React.createElement("button", {
-    key: u.id,
+  }, "ความก้าวหน้า"), React.createElement("button", {
     className: "side-link",
-    "aria-current": route === u.id ? "page" : undefined,
-    onClick: () => navigate(u.id)
-  }, React.createElement("span", {
-    className: "side-num"
-  }, u.no), React.createElement("span", {
-    className: "lbl"
-  }, u.titleEn, React.createElement("small", null, "\u0E2B\u0E19\u0E48\u0E27\u0E22\u0E17\u0E35\u0E48 ", u.no, " \xB7 ", unitStatusText(summary.units[u.id]))))), React.createElement("div", {
-    className: "side-label"
-  }, "\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E1C\u0E25"), React.createElement("button", {
-    className: "side-link",
-    onClick: () => goToProgress(route, navigate)
+    onClick: () => goToProgress(route, navigate),
+    title: "ความก้าวหน้าและเหรียญตรา"
   }, React.createElement("span", {
     className: "side-num"
   }, React.createElement(Icon, {
-    name: "chart",
+    name: "award",
     size: 16
-  })), React.createElement("span", {
+  })), !collapsed && React.createElement("span", {
     className: "lbl"
-  }, "My Progress", React.createElement("small", null, "\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E41\u0E25\u0E30\u0E40\u0E2B\u0E23\u0E35\u0E22\u0E0D\u0E15\u0E23\u0E32"))), React.createElement("div", {
+  }, "เหรียญตราและความก้าวหน้า", React.createElement("small", null, "สรุปผลการเรียน"))), !collapsed && React.createElement("div", {
+    className: "side-label"
+  }, "เอกสาร & โค้ด"), React.createElement("a", {
+    className: "side-link",
+    href: "/unit2/setup.html",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    title: "ติดตั้ง VS Code, Python และ OpenCV 4"
+  }, React.createElement("span", {
+    className: "side-num"
+  }, React.createElement(Icon, {
+    name: "cpu",
+    size: 15
+  })), !collapsed && React.createElement("span", {
+    className: "lbl"
+  }, React.createElement("span", {
+    className: "side-title"
+  }, "ติดตั้ง VS Code, Python และ OpenCV 4"), React.createElement("small", null, "คู่มือเตรียมเครื่องเรียน ↗"))), React.createElement("a", {
+    className: "side-link",
+    href: "/unit2/activity-2-1.html",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ (พิมพ์ PDF)"
+  }, React.createElement("span", {
+    className: "side-num"
+  }, React.createElement(Icon, {
+    name: "book",
+    size: 15
+  })), !collapsed && React.createElement("span", {
+    className: "lbl"
+  }, React.createElement("span", {
+    className: "side-title"
+  }, "ใบกิจกรรม 2.1"), React.createElement("small", null, "พิมพ์เป็น PDF ↗"))), React.createElement("a", {
+    className: "side-link",
+    href: "/code/code-2.3-2.5.zip",
+    download: true,
+    title: "ดาวน์โหลดโค้ดตัวอย่างประจำหน่วย"
+  }, React.createElement("span", {
+    className: "side-num"
+  }, React.createElement(Icon, {
+    name: "sparkle",
+    size: 15
+  })), !collapsed && React.createElement("span", {
+    className: "lbl"
+  }, React.createElement("span", {
+    className: "side-title"
+  }, "ดาวน์โหลดโค้ด"), React.createElement("small", null, "ไฟล์โค้ดตัวอย่าง ↓"))), React.createElement("div", {
     className: "side-foot"
-  }, React.createElement(GlassCard, {
-    pad: false,
-    style: {
-      padding: 14,
-      display: "grid",
-      gap: 10
-    }
-  }, React.createElement(DemoBadge, null), React.createElement("p", {
+  }, !collapsed && (!confirmReset ? React.createElement("button", {
+    type: "button",
+    className: "side-link side-sub-btn",
+    onClick: () => setConfirmReset(true)
+  }, React.createElement("span", {
+    className: "side-num"
+  }, React.createElement(Icon, {
+    name: "refresh",
+    size: 15
+  })), React.createElement("span", {
+    className: "lbl"
+  }, "\u0E25\u0E49\u0E32\u0E07\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32")) : React.createElement("div", {
+    className: "side-reset-confirm"
+  }, React.createElement("span", {
     style: {
       fontSize: 12.5,
-      color: "var(--muted)",
-      lineHeight: 1.5
+      color: "#E2E8F0"
     }
-  }, "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E41\u0E25\u0E30\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E40\u0E01\u0E47\u0E1A\u0E43\u0E19\u0E40\u0E1A\u0E23\u0E32\u0E27\u0E4C\u0E40\u0E0B\u0E2D\u0E23\u0E4C\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E19\u0E35\u0E49\u0E40\u0E17\u0E48\u0E32\u0E19\u0E31\u0E49\u0E19"), !confirmReset ? React.createElement(Button, {
-    variant: "ghost",
-    size: "sm",
-    icon: "refresh",
-    onClick: () => setConfirmReset(true)
-  }, "\u0E25\u0E49\u0E32\u0E07\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32") : React.createElement("div", {
-    style: {
-      display: "grid",
-      gap: 8
-    }
-  }, React.createElement("span", {
-    style: {
-      fontSize: 12.5
-    }
-  }, "\u0E25\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\u0E43\u0E19\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E19\u0E35\u0E49?"), React.createElement("div", {
+  }, "\u0E25\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14?"), React.createElement("div", {
     style: {
       display: "flex",
-      gap: 8
+      gap: 6
     }
   }, React.createElement(Button, {
     variant: "danger",
@@ -180,24 +301,13 @@ function Sidebar() {
     size: "sm",
     onClick: () => setConfirmReset(false)
   }, "\u0E22\u0E01\u0E40\u0E25\u0E34\u0E01")))), React.createElement("button", {
-    className: "side-link",
-    onClick: async () => {
-      await logout();
-      navigate("login");
-      notify({
-        type: "info",
-        title: "ออกจากโหมดทดลองแล้ว",
-        message: "ความก้าวหน้ายังเก็บไว้ในเครื่องนี้"
-      });
-    }
+    type: "button",
+    className: "side-collapse-btn",
+    onClick: onToggle,
+    title: collapsed ? "ขยายเมนู" : "ย่อเมนู"
   }, React.createElement("span", {
-    className: "side-num"
-  }, React.createElement(Icon, {
-    name: "logout",
-    size: 16
-  })), React.createElement("span", {
-    className: "lbl"
-  }, "Logout", React.createElement("small", null, "\u0E2D\u0E2D\u0E01\u0E08\u0E32\u0E01\u0E42\u0E2B\u0E21\u0E14\u0E17\u0E14\u0E25\u0E2D\u0E07 \u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E22\u0E31\u0E07\u0E2D\u0E22\u0E39\u0E48")))));
+    className: "collapse-ic"
+  }, collapsed ? "\u21E5" : "\u21E4"), !collapsed && React.createElement("span", null, "ย่อเมนู"))));
 }
 function MobileNav() {
   const {
@@ -224,9 +334,9 @@ function MobileNav() {
   }, k.slice(-1)), React.createElement("span", null, k === "home" ? "Dashboard" : "หน่วย " + k.slice(-1)))), React.createElement("button", {
     onClick: () => goToProgress(route, navigate)
   }, React.createElement(Icon, {
-    name: "chart",
+    name: "award",
     size: 20
-  }), React.createElement("span", null, "\u0E1C\u0E25\u0E02\u0E2D\u0E07\u0E09\u0E31\u0E19")));
+  }), React.createElement("span", null, "\u0E40\u0E2B\u0E23\u0E35\u0E22\u0E0D\u0E15\u0E23\u0E32")));
 }
 function Footer() {
   const {
@@ -253,14 +363,14 @@ function Footer() {
       navigate("login");
       notify({
         type: "info",
-        title: "ออกจากโหมดทดลองแล้ว",
+        title: "ออกจากระบบแล้ว",
         message: "ความก้าวหน้ายังเก็บไว้ในเครื่องนี้"
       });
     }
   }, React.createElement(Icon, {
     name: "logout",
     size: 16
-  }), "\u0E2D\u0E2D\u0E01\u0E08\u0E32\u0E01\u0E42\u0E2B\u0E21\u0E14\u0E17\u0E14\u0E25\u0E2D\u0E07")));
+  }), "ออกจากระบบ")));
 }
 function Toasts() {
   const {
@@ -377,11 +487,18 @@ function AppLayout({
   const {
     route
   } = useRoute();
-  return React.createElement(React.Fragment, null, React.createElement(Navbar, null), React.createElement("div", {
-    className: "shell"
-  }, React.createElement(Sidebar, null), React.createElement("div", {
+  const [collapsed, setCollapsed] = useState(false);
+  return React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "shell" + (collapsed ? " sidebar-collapsed" : "")
+  }, React.createElement(Sidebar, {
+    collapsed: collapsed,
+    onToggle: () => setCollapsed(c => !c)
+  }), React.createElement("div", {
     className: "main"
-  }, React.createElement("main", {
+  }, React.createElement(Navbar, {
+    collapsed: collapsed,
+    onToggleSidebar: () => setCollapsed(c => !c)
+  }), React.createElement("main", {
     className: "content page-enter",
     key: route,
     id: "main"

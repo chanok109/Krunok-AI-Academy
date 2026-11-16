@@ -3,7 +3,8 @@ import { COURSE } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from '../components/UIPrimitives.jsx';
-import { AiraTip, Callout, Feedback, FlipCard, Accordion, Celebrate, Modal } from '../components/UIHelpers.jsx';
+import { AiraTip, Callout, Feedback, FlipCard, Accordion, Celebrate, Modal, scrollToEl, thaiDateTime } from '../components/UIHelpers.jsx';
+import { HoloStage } from '../components/BackgroundEffects.jsx';
 import {
   U4_OBJECTIVES,
   U4_STEPS,
@@ -16,6 +17,7 @@ import {
   PRESENT_FIELDS,
   RUBRIC,
   LEVELS,
+  LEVEL_FRAC,
   SHOWCASE,
   STATE_LABEL,
   STATE_TH
@@ -736,9 +738,9 @@ function Unit4Page() {
     className: "hero-meta"
   }, React.createElement(Badge, {
     tone: "cyan"
-  }, "UNIT 04"), React.createElement(Badge, null, "AI Innovation Project"), React.createElement(Badge, null, "AI Innovation & Project Studio"), React.createElement(DemoBadge, null)), React.createElement("h1", {
+  }, "UNIT 04"), React.createElement(Badge, null, "AI Innovation Project"), React.createElement(DemoBadge, null)), React.createElement("h1", {
     id: "u4-title"
-  }, "\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49 AI \u0E40\u0E1E\u0E37\u0E48\u0E2D", React.createElement("span", {
+  }, "\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49 AI \u0E40\u0E1E\u0E37\u0E48\u0E2D", React.createElement("br"), React.createElement("span", {
     className: "grad-text"
   }, "\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E0A\u0E34\u0E49\u0E19\u0E07\u0E32\u0E19")), React.createElement("div", {
     style: {
@@ -787,12 +789,23 @@ function Unit4Page() {
     className: "btn-glow",
     icon: "play",
     onClick: () => goStep(st.findIndex(s => s.state !== "done") + 1 || 6)
-  }, doneReq === 0 ? "เริ่มโครงงาน" : "ทำต่อ"), React.createElement(Button, {
+  }, doneReq === 0 ? "เริ่มโครงงาน" : "ทำต่อ"), React.createElement("a", {
+    className: "btn btn-secondary",
+    href: "/unit5/index.html",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
+  }, React.createElement(Icon, { name: "book", size: 14 }), "ใบความรู้ & เกณฑ์ประเมิน ↗"), React.createElement("a", {
+    className: "btn btn-ghost",
+    href: "/code/code-unit5.zip",
+    download: true,
+    style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
+  }, React.createElement(Icon, { name: "sparkle", size: 14 }), "โค้ดโครงงาน (.zip) ↓"), React.createElement(Button, {
     variant: "ghost",
     icon: "grid",
     onClick: () => navigate("home")
-  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), React.createElement(InnovationStage, {
-    pct: overall
+  }, "\u0E01\u0E25\u0E31\u0E1A Dashboard"))), React.createElement(HoloStage, {
+    mood: su.completed ? "cheer" : "happy"
   })), su.completed && React.createElement("div", {
     className: "glass unit-done",
     role: "status"
