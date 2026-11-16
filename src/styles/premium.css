@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KruNok AI Academy — "เส้นทาง" (route map) theme, 2026 Teal Night palette (Transformative Teal + Cloud Dancer)
+   KruNok AI Academy — "เส้นทาง" (route map) theme, 2026 Teal Night palette (Transformative Teal accent on Cloud Dancer)
    Loaded last. The course is a line with 4 stations (units); each unit owns a
    line color. Navy ink + cool paper everywhere else, so the line colors carry
    the identity. Older theme files use !important heavily, so rules here are
@@ -15,6 +15,10 @@
   --rule: #DAD7CF;
   --rule-soft: #E7E4DC;
   --focus: #1C6E74;
+  /* 2026 accent: Transformative Teal carries every action + active state */
+  --accent: #1C6E74;
+  --accent-hover: #145459;
+  --accent-soft: #DDEDEC;
 
   /* สีเส้นทางประจำหน่วย */
   --u1: #C93F63;
@@ -31,9 +35,9 @@
   --font-body: 'FreeSans', 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif;
 
   /* remap the old lavender theme tokens so unrestyled pages follow along */
-  --color-primary: var(--ink);
-  --color-primary-hover: #0A1A25;
-  --color-primary-soft: #E8EDF5;
+  --color-primary: var(--accent);
+  --color-primary-hover: var(--accent-hover);
+  --color-primary-soft: var(--accent-soft);
   --color-lavender: var(--u2);
   --color-cyan: var(--u2);
   --color-cyan-soft: var(--u2-soft);
@@ -92,15 +96,15 @@ html body .btn {
   border-radius: 10px;
 }
 html body .btn-primary {
-  background: var(--ink) !important;
+  background: var(--accent) !important;
   color: #FFFFFF !important;
-  border: 1px solid var(--ink) !important;
+  border: 1px solid var(--accent) !important;
   box-shadow: none !important;
 }
 html body .btn-primary:hover:not(:disabled) {
-  background: #0A1A25 !important;
+  background: var(--accent-hover) !important;
   filter: none;
-  box-shadow: 0 6px 16px rgba(14, 34, 48, 0.22) !important;
+  box-shadow: 0 6px 16px rgba(28, 110, 116, 0.28) !important;
 }
 html body .btn-ghost {
   background: var(--surface) !important;
@@ -139,9 +143,9 @@ html body .sidebar .side-link {
 html body .sidebar .side-link .side-title { color: var(--ink) !important; }
 html body .sidebar .side-link .lbl small { color: var(--ink-3) !important; }
 html body .sidebar .side-link .lbl small.status-done { color: var(--u3) !important; }
-html body .sidebar .side-link:hover { background: #F2F0EB !important; }
+html body .sidebar .side-link:hover { background: #EAF3F2 !important; }
 html body .sidebar .side-link[aria-current="page"] {
-  background: #ECEAE3 !important;
+  background: var(--accent-soft) !important;
   border-color: transparent !important;
 }
 html body .sidebar .side-link[aria-current="page"] .side-title { color: var(--ink) !important; }
@@ -164,8 +168,8 @@ html body .sidebar .side-link[data-unit] .side-num.done {
   color: #FFFFFF !important;
 }
 html body .sidebar .side-link[aria-current="page"]:not([data-unit]) .side-num {
-  background: var(--ink) !important;
-  border-color: var(--ink) !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
   color: #FFFFFF !important;
 }
 
@@ -514,7 +518,7 @@ html body .login-wrap .login-card {
   backdrop-filter: none !important;
 }
 html body .login-wrap .login-card::before { display: none !important; }
-html body .login-wrap .login-card-icon-badge { background: var(--ink) !important; color: #FFFFFF !important; box-shadow: none !important; }
+html body .login-wrap .login-card-icon-badge { background: var(--accent) !important; color: #FFFFFF !important; box-shadow: none !important; }
 html body .login-wrap .login-card h2 { color: var(--ink) !important; font-family: var(--font-heading) !important; }
 html body .login-wrap .login-card-sub,
 html body .login-wrap .login-card-desc { color: var(--ink-2) !important; }
@@ -527,14 +531,14 @@ html body .login-wrap .input {
 }
 html body .login-wrap .input:focus { border-color: var(--focus) !important; box-shadow: 0 0 0 3px rgba(28, 110, 116, 0.18) !important; }
 html body .login-wrap .login-submit-btn {
-  background: var(--ink) !important;
-  border-color: var(--ink) !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
   box-shadow: none !important;
   color: #FFFFFF !important;
 }
-html body .login-wrap .login-submit-btn:hover:not(:disabled) { background: #0A1A25 !important; }
+html body .login-wrap .login-submit-btn:hover:not(:disabled) { background: var(--accent-hover) !important; }
 html body .login-wrap .course-chip { background: var(--surface) !important; border: 1px solid var(--rule) !important; box-shadow: none !important; }
-html body .login-wrap .course-chip .code { background: var(--ink) !important; color: #FFFFFF !important; }
+html body .login-wrap .course-chip .code { background: var(--accent) !important; color: #FFFFFF !important; }
 html body .login-wrap .holo-glow-ring { display: none !important; }
 html body .login-wrap .login-card::after { display: none !important; }
 html body .login-wrap .field .hint { font-size: 14px !important; color: var(--ink-3) !important; }
@@ -1350,7 +1354,7 @@ html body .login-wrap .login-input .input {
   background: #F7F6F2 !important;
 }
 html body .login-wrap .login-input .input:focus { background: #FFFFFF !important; }
-.login-input:focus-within .login-input-icon { background: var(--ink); color: #FFFFFF; }
+.login-input:focus-within .login-input-icon { background: var(--accent); color: #FFFFFF; }
 
 /* the sign-in button: navy-to-blue pill with a glow, icon in its own circle */
 html body .login-wrap .login-submit-btn {
