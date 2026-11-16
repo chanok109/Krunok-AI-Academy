@@ -6,6 +6,7 @@ import './styles/components.css';
 import './styles/lightTheme.css';
 import './styles/unit1KnowledgeSheet.css';
 import './styles/unit1Page.css';
+import './styles/premium.css';
 
 import { COURSE, UNITS, QUIZ_PASS_PERCENT, NAV_ORDER, ROUTES } from './data/courseData.js';
 import { AIraBot } from './components/UIPrimitives.jsx';

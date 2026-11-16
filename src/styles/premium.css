@@ -1,0 +1,1479 @@
+/* ==========================================================================
+   KruNok AI Academy — "เส้นทาง" (route map) theme, Midnight Galaxy palette
+   Loaded last. The course is a line with 4 stations (units); each unit owns a
+   line color. Navy ink + cool paper everywhere else, so the line colors carry
+   the identity. Older theme files use !important heavily, so rules here are
+   prefixed with `html body` to win on specificity.
+   ========================================================================== */
+
+:root {
+  --ink: #2B1E3E;
+  --ink-2: #4A4E8F;
+  --ink-3: #6E6A95;
+  --paper: #E6E6FA;
+  --surface: #FFFFFF;
+  --rule: #D6D3EC;
+  --rule-soft: #E8E6F6;
+  --focus: #4A4E8F;
+
+  /* สีเส้นทางประจำหน่วย */
+  --u1: #C93F63;
+  --u2: #4D5BC8;
+  --u3: #2A9A7A;
+  --u4: #C98A1E;
+  --u1-soft: #FBE8EE;
+  --u2-soft: #E8EAFA;
+  --u3-soft: #E2F4EE;
+  --u4-soft: #FBF0DC;
+
+  /* Midnight Galaxy uses FreeSans, which has no Thai: Noto Sans Thai is the closest Thai-capable match */
+  --font-heading: 'FreeSans', 'Noto Sans Thai', 'Leelawadee UI', sans-serif;
+  --font-body: 'FreeSans', 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif;
+
+  /* remap the old lavender theme tokens so unrestyled pages follow along */
+  --color-primary: var(--ink);
+  --color-primary-hover: #20162F;
+  --color-primary-soft: #E8EDF5;
+  --color-lavender: var(--u2);
+  --color-cyan: var(--u2);
+  --color-cyan-soft: var(--u2-soft);
+  --color-background: var(--paper);
+  --color-text: var(--ink);
+  --color-text-secondary: var(--ink-2);
+  --color-border: var(--rule);
+  --color-sidebar: var(--surface);
+  --lavender: var(--u2);
+  --cyan: var(--u2);
+  --neon: var(--u2);
+  --bg: var(--paper);
+  --text-heading: var(--ink);
+  --text-section: var(--ink);
+  --text-tech: var(--u2);
+  --text-body: var(--ink);
+  --text-secondary: var(--ink-2);
+  --surface-indigo: #ECEAF8;
+  --surface-sky: var(--u2-soft);
+  --surface-soft: #F6F5FD;
+  --line: var(--rule);
+  --line-strong: rgba(43, 30, 62, 0.28);
+  --grad: linear-gradient(90deg, #2B1E3E, #4A4E8F);
+}
+
+[data-unit="1"] { --line-c: var(--u1); --line-soft: var(--u1-soft); }
+[data-unit="2"] { --line-c: var(--u2); --line-soft: var(--u2-soft); }
+[data-unit="3"] { --line-c: var(--u3); --line-soft: var(--u3-soft); }
+[data-unit="4"] { --line-c: var(--u4); --line-soft: var(--u4-soft); }
+
+/* ---------- Base ---------- */
+html body {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body);
+}
+html body h1, html body h2, html body h3, html body h4 {
+  font-family: var(--font-heading);
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+html body .grad-text {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: inherit !important;
+}
+html body :focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Buttons ---------- */
+html body .btn {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  border-radius: 10px;
+}
+html body .btn-primary {
+  background: var(--ink) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--ink) !important;
+  box-shadow: none !important;
+}
+html body .btn-primary:hover:not(:disabled) {
+  background: #20162F !important;
+  filter: none;
+  box-shadow: 0 6px 16px rgba(43, 30, 62, 0.22) !important;
+}
+html body .btn-ghost {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--rule) !important;
+  box-shadow: none !important;
+}
+html body .btn-ghost:hover:not(:disabled) {
+  background: #F6F5FD !important;
+  border-color: var(--ink-3) !important;
+  color: var(--ink) !important;
+}
+
+/* ---------- Sidebar ---------- */
+html body .sidebar {
+  background: var(--surface) !important;
+  border-right: 1px solid var(--rule) !important;
+  box-shadow: none !important;
+}
+html body .sidebar .side-label {
+  color: var(--ink-3) !important;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+html body .sidebar .side-link {
+  color: var(--ink) !important;
+  border: 1px solid transparent !important;
+  border-left: 0 !important;
+  border-radius: 10px;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html body .sidebar .side-link .side-title { color: var(--ink) !important; }
+html body .sidebar .side-link .lbl small { color: var(--ink-3) !important; }
+html body .sidebar .side-link .lbl small.status-done { color: var(--u3) !important; }
+html body .sidebar .side-link:hover { background: #F1F0FB !important; }
+html body .sidebar .side-link[aria-current="page"] {
+  background: #ECEAF8 !important;
+  border-color: transparent !important;
+}
+html body .sidebar .side-link[aria-current="page"] .side-title { color: var(--ink) !important; }
+html body .sidebar .side-num {
+  background: var(--surface) !important;
+  border: 2px solid var(--ink-3) !important;
+  color: var(--ink) !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+html body .sidebar .side-link[data-unit] .side-num {
+  border-color: var(--line-c) !important;
+  color: var(--line-c) !important;
+}
+html body .sidebar .side-link[data-unit][aria-current="page"] .side-num,
+html body .sidebar .side-link[data-unit] .side-num.done {
+  background: var(--line-c) !important;
+  color: #FFFFFF !important;
+}
+html body .sidebar .side-link[aria-current="page"]:not([data-unit]) .side-num {
+  background: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #FFFFFF !important;
+}
+
+/* ---------- Top bar ---------- */
+html body .navbar,
+html body .navbar.navbar-in-shell {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 1px solid var(--rule) !important;
+  box-shadow: none !important;
+}
+html body .navbar-page-title { color: var(--ink) !important; font-family: var(--font-heading); }
+
+/* ==========================================================================
+   Home: route hero
+   ========================================================================== */
+html body .rt-hero {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  padding: clamp(22px, 3.2vw, 40px);
+  display: grid;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+.rt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.rt-intro { min-width: 0; flex: 1 1 360px; }
+.rt-course {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.rt-room {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+}
+html body .rt-hero h1 {
+  margin: 0;
+  font-size: clamp(30px, 4.2vw, 46px);
+  line-height: 1.2;
+  font-weight: 700;
+}
+.rt-sub {
+  display: block;
+  margin-top: 6px;
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.rt-aira {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 380px;
+  flex: 0 1 380px;
+}
+.rt-aira-bot { flex: none; width: 72px; }
+.rt-aira p {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 14px 14px 14px 4px;
+  background: #F1F0FB;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.rt-aira p b { display: block; font-family: var(--font-heading); font-size: 13px; color: var(--ink-2); }
+
+/* the line itself */
+.rt-line {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.rt-line li { position: relative; }
+.rt-line li::before {
+  /* track to the next station */
+  content: "";
+  position: absolute;
+  top: 26px;
+  left: 28px;
+  right: -28px;
+  height: 6px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, var(--rule) 0 10px, transparent 10px 16px);
+}
+.rt-line li:last-child::before { display: none; }
+.rt-line li.is-done::before { background: var(--line-c); }
+.rt-line li.is-here::before,
+.rt-line li.is-started::before {
+  background: linear-gradient(90deg, var(--line-c) 0 40%, transparent 40%),
+              repeating-linear-gradient(90deg, var(--rule) 0 10px, transparent 10px 16px);
+}
+.rt-line button {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  width: 100%;
+  padding: 0 18px 4px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+.rt-stop {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 10px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 5px solid var(--line-c);
+  background: var(--surface);
+  color: var(--line-c);
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: transform .2s ease;
+}
+.rt-line li.is-done .rt-stop { background: var(--line-c); color: #FFFFFF; }
+.rt-line li.is-here .rt-stop {
+  background: var(--line-c);
+  color: #FFFFFF;
+  box-shadow: 0 0 0 7px var(--line-soft);
+}
+.rt-line button:hover .rt-stop { transform: scale(1.06); }
+.rt-name {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.45;
+  max-width: 22ch;
+}
+.rt-state { font-size: 14px; color: var(--ink-2); }
+.rt-line li.is-done .rt-state { color: var(--u3); font-weight: 500; }
+.rt-here {
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--line-soft);
+  color: var(--line-c);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+}
+.rt-line li[data-unit="4"] .rt-here { color: #8A5800; }
+.rt-line li[data-unit="4"] .rt-state { color: var(--ink-2); }
+
+.rt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+html body .rt-actions .rt-go { padding-inline: 22px; }
+.rt-last { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ink-3); }
+
+.rt-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 20px;
+  gap: 16px;
+}
+.rt-facts div { min-width: 0; }
+.rt-facts dt { font-size: 14px; color: var(--ink-2); }
+.rt-facts dd {
+  margin: 2px 0 0;
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.rt-facts dd small {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+/* one orchestrated moment: the line draws in once on load */
+@media (prefers-reduced-motion: no-preference) {
+  .rt-line li::before { animation: rtDraw .7s cubic-bezier(.2, .8, .2, 1) both; transform-origin: left; }
+  .rt-line li:nth-child(2)::before { animation-delay: .12s; }
+  .rt-line li:nth-child(3)::before { animation-delay: .24s; }
+  @keyframes rtDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rt-stop { transition: none; }
+  .rt-line button:hover .rt-stop { transform: none; }
+}
+
+/* vertical line on narrow screens */
+@media (max-width: 760px) {
+  .rt-line { grid-template-columns: 1fr; gap: 0; }
+  .rt-line li::before { top: 28px; left: 25px; right: auto; bottom: -28px; width: 6px; height: auto;
+    background: repeating-linear-gradient(180deg, var(--rule) 0 10px, transparent 10px 16px); }
+  .rt-line li.is-done::before { background: var(--line-c); }
+  .rt-line li.is-here::before, .rt-line li.is-started::before {
+    background: linear-gradient(180deg, var(--line-c) 0 40%, transparent 40%),
+                repeating-linear-gradient(180deg, var(--rule) 0 10px, transparent 10px 16px); }
+  .rt-line button { grid-template-columns: 56px 1fr; column-gap: 16px; padding: 0 0 22px; align-items: center; }
+  .rt-stop { grid-row: span 3; margin: 0; }
+  .rt-name { max-width: none; }
+  .rt-here { justify-self: start; grid-column: 2; }
+  .rt-stop { grid-row: span 4; }
+  .rt-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @keyframes rtDraw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .rt-line li::before { transform-origin: top; }
+  .rt-aira { max-width: none; flex-basis: 100%; }
+}
+
+/* ==========================================================================
+   Home: unit cards as station boards
+   ========================================================================== */
+html body .classroom-home .units-grid-title { font-size: 24px; color: var(--ink) !important; }
+html body .unit-menu-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--rule) !important;
+  border-top: 6px solid var(--line-c) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+html body .unit-menu-card:hover {
+  transform: none !important;
+  border-color: var(--rule) !important;
+  border-top-color: var(--line-c) !important;
+  box-shadow: 0 10px 26px rgba(43, 30, 62, 0.08) !important;
+}
+html body .unit-menu-card.is-target { box-shadow: 0 0 0 3px var(--line-soft) !important; }
+html body .unit-card-body { padding: 20px 22px 22px !important; gap: 10px; }
+.unit-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.unit-roundel {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 4px solid var(--line-c);
+  color: var(--line-c);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+}
+html body .unit-menu-card.is-done .unit-roundel { background: var(--line-c); color: #FFFFFF; }
+html body .unit-card-title {
+  font-family: var(--font-heading) !important;
+  font-size: 20px !important;
+  line-height: 1.4 !important;
+  color: var(--ink) !important;
+}
+html body .unit-card-desc { color: var(--ink-2) !important; font-size: 15px !important; }
+html body .unit-status-pill {
+  position: static !important;
+  background: #F1F0FB !important;
+  color: var(--ink-2) !important;
+  border: 0 !important;
+  font-family: var(--font-heading);
+  font-size: 13px !important;
+  font-weight: 600;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  backdrop-filter: none !important;
+}
+html body .unit-status-pill.status-pill-progress { background: var(--line-soft) !important; color: var(--ink) !important; }
+html body .unit-status-pill.status-pill-done { background: var(--u3-soft) !important; color: var(--u3) !important; }
+html body .unit-card-progress-track { background: var(--rule-soft) !important; height: 6px !important; border-radius: 3px !important; }
+html body .unit-card-progress-fill { background: var(--line-c) !important; border-radius: 3px !important; }
+
+/* quieter supporting cards */
+html body .classroom-home .classroom-card {
+  border: 1px solid var(--rule) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Home: badges row ---------- */
+html body .classroom-home .classroom-bottom-row { grid-template-columns: 1fr !important; }
+html body .classroom-home .ach-classroom-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 12px !important;
+}
+html body .classroom-home .ach-classroom-item {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  background: #F6F5FD !important;
+  border: 1px solid var(--rule-soft) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+html body .classroom-home .ach-medal-box {
+  background: var(--surface) !important;
+  border: 2px solid var(--rule) !important;
+  color: var(--ink-3) !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+}
+html body .classroom-home .ach-classroom-item.is-unlocked { background: #FFF8E6 !important; border-color: #F3DDA5 !important; }
+html body .classroom-home .ach-classroom-item.is-unlocked .ach-medal-box { border-color: var(--u4) !important; color: #8A5800 !important; }
+html body .classroom-home .ach-item-title { color: var(--ink) !important; font-family: var(--font-heading); }
+
+/* ==========================================================================
+   Login
+   ========================================================================== */
+html body .login-wrap { background: var(--paper) !important; }
+html body .login-wrap .login-hero h1 {
+  font-family: var(--font-heading) !important;
+  font-size: clamp(32px, 4.4vw, 50px) !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  color: var(--ink) !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+html body .login-wrap .login-hero .th1 {
+  font-family: var(--font-body) !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  color: var(--ink-2) !important;
+  max-width: 34ch;
+}
+html body .login-wrap .login-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 50px rgba(43, 30, 62, 0.10) !important;
+  backdrop-filter: none !important;
+}
+html body .login-wrap .login-card::before { display: none !important; }
+html body .login-wrap .login-card-icon-badge { background: var(--ink) !important; color: #FFFFFF !important; box-shadow: none !important; }
+html body .login-wrap .login-card h2 { color: var(--ink) !important; font-family: var(--font-heading) !important; }
+html body .login-wrap .login-card-sub,
+html body .login-wrap .login-card-desc { color: var(--ink-2) !important; }
+html body .login-wrap .field label { color: var(--ink) !important; font-family: var(--font-heading); }
+html body .login-wrap .input {
+  border: 1.5px solid var(--rule) !important;
+  border-radius: 10px !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+}
+html body .login-wrap .input:focus { border-color: var(--focus) !important; box-shadow: 0 0 0 3px rgba(74, 78, 143, 0.18) !important; }
+html body .login-wrap .login-submit-btn {
+  background: var(--ink) !important;
+  border-color: var(--ink) !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+}
+html body .login-wrap .login-submit-btn:hover:not(:disabled) { background: #20162F !important; }
+html body .login-wrap .course-chip { background: var(--surface) !important; border: 1px solid var(--rule) !important; box-shadow: none !important; }
+html body .login-wrap .course-chip .code { background: var(--ink) !important; color: #FFFFFF !important; }
+html body .login-wrap .holo-glow-ring { display: none !important; }
+html body .login-wrap .login-card::after { display: none !important; }
+html body .login-wrap .field .hint { font-size: 14px !important; color: var(--ink-3) !important; }
+@media (max-width: 900px) {
+  html body .login-wrap .login { display: flex !important; flex-direction: column !important; }
+  html body .login-wrap .login-card { order: -1; }
+  html body .login-wrap .holo-showcase-box { transform: scale(.7); margin: -30px 0 -40px; }
+  html body .login-wrap .course-chip { flex-wrap: wrap; }
+}
+@media (max-width: 760px) {
+  .rt-head { order: 1; }
+  .rt-actions { order: 2; }
+  .rt-line { order: 3; }
+  .rt-facts { order: 4; }
+}
+
+/* ---------- Lesson stops under each station (branch stops, roadmap-style) ---------- */
+.rt-dots { display: flex; gap: 6px; margin-top: 4px; }
+.rt-dots i {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--line-c);
+  background: var(--surface);
+}
+.rt-dots i.on { background: var(--line-c); }
+@media (max-width: 760px) { .rt-dots { grid-column: 2; } }
+
+/* ---------- Next lesson on each unit card: show real content, not decoration ---------- */
+.unit-next {
+  margin: 0 !important;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--line-soft);
+  font-family: var(--font-heading);
+  font-size: 15px !important;
+  font-weight: 600;
+  color: var(--ink) !important;
+  line-height: 1.45 !important;
+}
+.unit-next span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+/* ---------- Tactile buttons: a solid base that sinks when pressed ---------- */
+html body .btn-primary {
+  box-shadow: 0 4px 0 #140D1F !important;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, background .15s ease !important;
+}
+html body .btn-primary:hover:not(:disabled) { box-shadow: 0 4px 0 #140D1F !important; }
+html body .btn-primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #140D1F !important; }
+html body .btn-ghost {
+  box-shadow: 0 3px 0 var(--rule) !important;
+  transition: transform .08s ease, box-shadow .08s ease !important;
+}
+html body .btn-ghost:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--rule) !important; }
+@media (prefers-reduced-motion: reduce) {
+  html body .btn-primary:active:not(:disabled), html body .btn-ghost:active:not(:disabled) { transform: none; }
+}
+
+/* ---------- AIra gets more presence in the hero ---------- */
+.rt-aira-bot { width: 96px; }
+.rt-aira p { font-size: 16px; }
+@media (min-width: 1000px) {
+  html body .classroom-home .ach-classroom-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+}
+
+/* ==========================================================================
+   Decoration: illustrations, icons, motion
+   ========================================================================== */
+
+/* hero: faint map-paper dot grid behind the route */
+html body .rt-hero {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(43, 30, 62, 0.07) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--surface);
+}
+
+/* icons beside labels and headings */
+.rt-facts dt { display: flex; align-items: center; gap: 6px; }
+.rt-facts dt svg { color: var(--ink-3); flex: none; }
+html body .classroom-home .units-grid-title,
+html body .classroom-home .clean-section-title { display: flex; align-items: center; gap: 10px; }
+html body .classroom-home .units-grid-title svg,
+html body .classroom-home .clean-section-title svg { color: var(--ink-3); }
+
+/* ---------- Motion (all off under reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* page load: line draws (above), then stations arrive one by one */
+  .rt-stop { animation: rtStop .45s cubic-bezier(.2, 1.4, .4, 1) backwards; }
+  .rt-line li:nth-child(1) .rt-stop { animation-delay: .05s; }
+  .rt-line li:nth-child(2) .rt-stop { animation-delay: .2s; }
+  .rt-line li:nth-child(3) .rt-stop { animation-delay: .35s; }
+  .rt-line li:nth-child(4) .rt-stop { animation-delay: .5s; }
+  @keyframes rtStop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* lesson dots fill in after their station */
+  .rt-dots i.on { animation: rtDot .3s ease both; }
+  .rt-dots i.on:nth-child(2) { animation-delay: .08s; } .rt-dots i.on:nth-child(3) { animation-delay: .16s; }
+  .rt-dots i.on:nth-child(4) { animation-delay: .24s; } .rt-dots i.on:nth-child(5) { animation-delay: .32s; }
+  .rt-dots i.on:nth-child(6) { animation-delay: .4s; }
+  @keyframes rtDot { from { background: var(--surface); } to { background: var(--line-c); } }
+
+  /* "you are here": a slow beacon is the one continuous motion on the page */
+  .rt-line li.is-here .rt-stop::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 3px solid var(--line-c);
+    animation: rtBeacon 2.4s ease-out 1s infinite;
+  }
+  @keyframes rtBeacon { from { transform: scale(1); opacity: .7; } to { transform: scale(1.7); opacity: 0; } }
+
+  /* progress bars grow from empty on load */
+  html body .unit-card-progress-fill { animation: barGrow .9s cubic-bezier(.2, .8, .2, 1) .3s both; transform-origin: left; }
+  @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+}
+
+/* ---------- Unit card photos (realistic art already used in the Unit 1 lessons) ---------- */
+html body .unit-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--ink);
+  cursor: pointer;
+}
+.unit-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.unit-photo::after {
+  /* tie the photo to the unit's line color and soften the hard edge into the card */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(43, 30, 62, .45)),
+    linear-gradient(90deg, var(--line-c), transparent 45%);
+  opacity: .55;
+  mix-blend-mode: multiply;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .unit-photo img { transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+  .unit-menu-card:hover .unit-photo img { transform: scale(1.05); }
+}
+
+/* ==========================================================================
+   More motion: the train ride, count-up (JS), scroll reveal, hover touches
+   ========================================================================== */
+.rt-track { position: relative; }
+.rt-train { display: none; }
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 761px) {
+  /* a train leaves station 1 and rides the line to where the student is, then pulls in */
+  .rt-train {
+    display: block;
+    position: absolute;
+    z-index: 2;
+    top: 25px;
+    left: calc(var(--at) * 25% + 28px - 10px);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--line-c);
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 0 0 2px var(--line-c), 0 6px 14px rgba(43, 30, 62, .25);
+    pointer-events: none;
+    animation: rtTrain 1.5s cubic-bezier(.55, 0, .25, 1) .7s both;
+  }
+  @keyframes rtTrain {
+    0%   { left: 18px; opacity: 0; transform: scale(.6); }
+    12%  { opacity: 1; transform: scale(1); }
+    85%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.8); }
+  }
+  /* the current station answers the train's arrival */
+  .rt-line li.is-here .rt-stop { animation: rtStop .45s cubic-bezier(.2, 1.4, .4, 1) backwards, rtArrive .5s ease 2.1s; }
+  @keyframes rtArrive { 40% { transform: scale(1.15); } }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* AIra speaks once the route has drawn */
+  .rt-aira p { animation: rtSay .45s cubic-bezier(.2, 1.2, .4, 1) 1.1s backwards; transform-origin: 0 100%; }
+  @keyframes rtSay { from { opacity: 0; transform: scale(.85) translateY(8px); } }
+
+  /* the main button nudges its arrow toward the destination */
+  html body .btn-unit-card-cta svg,
+  html body .rt-go svg { transition: transform .2s ease; }
+  html body .btn-unit-card-cta:hover svg,
+  html body .rt-go:hover svg { transform: translateX(4px); }
+
+  /* cards and badges rise in as they scroll into view (browsers with scroll timelines) */
+  @supports (animation-timeline: view()) {
+    html body .classroom-home .unit-menu-card,
+    html body .classroom-home .ach-classroom-item {
+      animation: rtReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+    @keyframes rtReveal { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  }
+}
+@media (max-width: 760px) { .rt-track { order: 3; } }
+
+/* ==========================================================================
+   Unit cards: per-unit photo effects + card motion
+   ========================================================================== */
+.unit-fx { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.unit-fx i { position: absolute; display: block; opacity: 0; }
+
+/* light sweep across the photo (all cards) */
+html body .unit-photo::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0; bottom: 0; left: -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .35), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* unit 1: neurons firing across the brain */
+.fx-1 i { width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 0 12px 6px var(--line-c); }
+.fx-1 i:nth-child(1) { left: 34%; top: 38%; } .fx-1 i:nth-child(2) { left: 52%; top: 28%; }
+.fx-1 i:nth-child(3) { left: 62%; top: 55%; } .fx-1 i:nth-child(4) { left: 44%; top: 66%; }
+
+/* unit 2: a scan line and a detection box hunting for faces */
+.fx-2 i:nth-child(1) { left: 0; right: 0; top: 0; height: 3px; background: #B9A6E0; box-shadow: 0 0 12px 3px rgba(164, 144, 194, .8); }
+.fx-2 i:nth-child(2) {
+  width: 15%; height: 34%; left: 14%; top: 52%;
+  border: 2px solid #B9A6E0;
+  box-shadow: 0 0 10px rgba(164, 144, 194, .6);
+}
+
+/* unit 3: data flowing up the model tree */
+.fx-3 i { width: 7px; height: 7px; border-radius: 50%; background: #C6F5E5; box-shadow: 0 0 10px 4px var(--line-c); left: 50%; bottom: 0; }
+.fx-3 i:nth-child(2) { left: 46%; } .fx-3 i:nth-child(3) { left: 54%; } .fx-3 i:nth-child(4) { left: 49%; }
+
+/* unit 4: each application panel lights up in turn */
+.fx-4 i { width: 37%; height: 42%; border: 2px solid var(--u4); border-radius: 8px; box-shadow: 0 0 14px rgba(201, 138, 30, .7), inset 0 0 20px rgba(201, 138, 30, .25); }
+.fx-4 i:nth-child(1) { left: 6%;  top: 3%; }  .fx-4 i:nth-child(2) { left: 56%; top: 3%; }
+.fx-4 i:nth-child(3) { left: 56%; top: 55%; } .fx-4 i:nth-child(4) { left: 6%;  top: 55%; }
+
+/* in-progress badge gets a live dot */
+html body .unit-status-pill.status-pill-progress { display: inline-flex; align-items: center; gap: 6px; }
+html body .unit-status-pill.status-pill-progress::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-c);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* card lifts toward the pointer with a glow in its line color */
+  html body .classroom-home .unit-menu-card {
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease !important;
+  }
+  html body .classroom-home .unit-menu-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 18px 36px -12px var(--line-c), 0 4px 12px rgba(43, 30, 62, .08) !important;
+  }
+  html body .unit-menu-card:hover .unit-photo::before { animation: fxSweep .9s ease-out; }
+  @keyframes fxSweep { from { left: -60%; opacity: 1; } to { left: 120%; opacity: 1; } }
+
+  /* roundel fills with its line color */
+  .unit-roundel { transition: background .25s ease, color .25s ease, transform .35s cubic-bezier(.2, 1.4, .4, 1); }
+  html body .unit-menu-card:hover .unit-roundel { background: var(--line-c); color: #FFFFFF; transform: rotate(-8deg) scale(1.08); }
+
+  /* the next-lesson box slides a touch */
+  .unit-next { transition: transform .3s ease; }
+  html body .unit-menu-card:hover .unit-next { transform: translateX(4px); }
+
+  /* live dot and a progress shimmer on the unit being studied */
+  html body .unit-status-pill.status-pill-progress::before { animation: fxLive 1.6s ease-in-out infinite; }
+  @keyframes fxLive { 50% { transform: scale(.55); opacity: .5; } }
+  html body .unit-menu-card.is-target .unit-card-progress-track { position: relative; overflow: hidden; }
+  html body .unit-menu-card.is-target .unit-card-progress-track::after {
+    content: ""; position: absolute; inset: 0; width: 30%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent);
+    animation: fxShimmer 2.8s ease-in-out 1.5s infinite;
+  }
+  @keyframes fxShimmer { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+
+  /* per-unit photo effects run while the card is hovered */
+  .unit-menu-card:hover .fx-1 i { animation: fxNeuron 1.4s ease-in-out infinite; }
+  .unit-menu-card:hover .fx-1 i:nth-child(2) { animation-delay: .35s; }
+  .unit-menu-card:hover .fx-1 i:nth-child(3) { animation-delay: .7s; }
+  .unit-menu-card:hover .fx-1 i:nth-child(4) { animation-delay: 1.05s; }
+  @keyframes fxNeuron { 0%, 100% { opacity: 0; transform: scale(.4); } 40% { opacity: 1; transform: scale(1); } }
+
+  .unit-menu-card:hover .fx-2 i:nth-child(1) { animation: fxScan 1.8s linear infinite; }
+  @keyframes fxScan { from { top: 0; opacity: .9; } to { top: 100%; opacity: .9; } }
+  .unit-menu-card:hover .fx-2 i:nth-child(2) { animation: fxDetect 3.2s ease-in-out infinite; }
+  @keyframes fxDetect {
+    0%   { opacity: 0; left: 14%; top: 52%; }
+    10%  { opacity: 1; }
+    40%  { left: 14%; top: 52%; }
+    55%  { left: 62%; top: 8%; width: 17%; height: 44%; }
+    90%  { opacity: 1; left: 62%; top: 8%; width: 17%; height: 44%; }
+    100% { opacity: 0; left: 62%; top: 8%; width: 17%; height: 44%; }
+  }
+
+  .unit-menu-card:hover .fx-3 i { animation: fxRise 1.6s ease-in infinite; }
+  .unit-menu-card:hover .fx-3 i:nth-child(2) { animation-delay: .4s; }
+  .unit-menu-card:hover .fx-3 i:nth-child(3) { animation-delay: .8s; }
+  .unit-menu-card:hover .fx-3 i:nth-child(4) { animation-delay: 1.2s; }
+  @keyframes fxRise { 0% { opacity: 0; bottom: 0; } 15% { opacity: 1; } 100% { opacity: 0; bottom: 85%; } }
+
+  .unit-menu-card:hover .fx-4 i { animation: fxPanel 3.2s ease-in-out infinite; }
+  .unit-menu-card:hover .fx-4 i:nth-child(2) { animation-delay: .8s; }
+  .unit-menu-card:hover .fx-4 i:nth-child(3) { animation-delay: 1.6s; }
+  .unit-menu-card:hover .fx-4 i:nth-child(4) { animation-delay: 2.4s; }
+  @keyframes fxPanel { 0%, 30%, 100% { opacity: 0; } 8%, 22% { opacity: 1; } }
+
+  /* cards in a row arrive one after another as they scroll in */
+  @supports (animation-timeline: view()) {
+    html body .classroom-home .unit-menu-card:nth-child(2) { animation-range: entry 8% entry 53%; }
+    html body .classroom-home .unit-menu-card:nth-child(3) { animation-range: entry 16% entry 61%; }
+    html body .classroom-home .unit-menu-card:nth-child(4) { animation-range: entry 24% entry 69%; }
+  }
+}
+
+/* ==========================================================================
+   Header as a night route map: navy board, bright line colors, big AIra
+   ========================================================================== */
+html body .rt-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 0;
+  color: #FFFFFF;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0) 0 0 / 24px 24px,
+    radial-gradient(600px 320px at 88% 10%, rgba(164, 144, 194, 0.28), transparent 70%),
+    radial-gradient(500px 300px at 8% 110%, rgba(255, 84, 104, 0.16), transparent 70%),
+    linear-gradient(150deg, #2B1E3E 0%, #352653 55%, #2B1E3E 100%);
+  box-shadow: 0 24px 50px -24px rgba(43, 30, 62, 0.55);
+}
+/* brighter line colors that read on navy */
+.rt-hero [data-unit="1"] { --line-c: #FF6F91; --line-soft: rgba(255, 111, 145, .2); }
+.rt-hero [data-unit="2"] { --line-c: #8C9BFF; --line-soft: rgba(164, 144, 194, .2); }
+.rt-hero [data-unit="3"] { --line-c: #5FE0B5; --line-soft: rgba(95, 224, 181, .2); }
+.rt-hero [data-unit="4"] { --line-c: #FFC266; --line-soft: rgba(255, 194, 102, .2); }
+
+
+/* type on navy */
+html body .rt-hero h1 { color: #FFFFFF; font-size: clamp(34px, 5vw, 58px); }
+html body .rt-hero .rt-sub { color: #D4CDE8; }
+html body .rt-hero .rt-course { color: #D4CDE8; }
+html body .rt-hero .rt-room { background: #FFFFFF; color: var(--ink); }
+
+/* AIra steps forward */
+html body .rt-hero .rt-aira { flex: 0 1 440px; max-width: 440px; align-items: center; }
+html body .rt-hero .rt-aira-bot { width: 150px; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .35)); }
+html body .rt-hero .rt-aira p {
+  background: #FFFFFF;
+  color: var(--ink);
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .45);
+}
+
+/* the line on navy */
+html body .rt-hero .rt-line li::before {
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .22) 0 10px, transparent 10px 16px);
+}
+html body .rt-hero .rt-line li.is-done::before { background: var(--line-c); }
+html body .rt-hero .rt-line li.is-here::before,
+html body .rt-hero .rt-line li.is-started::before {
+  background: linear-gradient(90deg, var(--line-c) 0 40%, transparent 40%),
+              repeating-linear-gradient(90deg, rgba(255, 255, 255, .22) 0 10px, transparent 10px 16px);
+}
+html body .rt-hero .rt-line li.is-here::before,
+html body .rt-hero .rt-line li.is-done::before { box-shadow: 0 0 14px var(--line-c); }
+html body .rt-hero .rt-line button { color: #FFFFFF; }
+html body .rt-hero .rt-stop { background: #2B1E3E; box-shadow: 0 0 18px -2px var(--line-c); }
+html body .rt-hero .rt-line li.is-here .rt-stop { box-shadow: 0 0 0 7px var(--line-soft), 0 0 28px var(--line-c); }
+html body .rt-hero .rt-name { max-width: 26ch; }
+html body .rt-hero .rt-state { color: #B8AED6; }
+html body .rt-hero .rt-line li.is-done .rt-state { color: #5FE0B5; }
+html body .rt-hero .rt-dots i { background: transparent; }
+html body .rt-hero .rt-dots i.on { background: var(--line-c); box-shadow: 0 0 8px var(--line-c); }
+html body .rt-hero .rt-here { background: var(--line-c); color: #FFFFFF; }
+html body .rt-hero .rt-line li[data-unit="4"] .rt-here { color: var(--ink); }
+html body .rt-hero .rt-train { border-color: #2B1E3E; }
+
+/* buttons invert on navy */
+html body .rt-hero .btn-primary {
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 4px 0 #A490C2 !important;
+}
+html body .rt-hero .btn-primary:hover:not(:disabled) { background: #F1EEFA !important; box-shadow: 0 4px 0 #A490C2 !important; }
+html body .rt-hero .btn-primary:active:not(:disabled) { box-shadow: 0 1px 0 #A490C2 !important; }
+html body .rt-hero .btn-ghost {
+  background: rgba(255, 255, 255, .06) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, .35) !important;
+  box-shadow: 0 3px 0 rgba(255, 255, 255, .15) !important;
+}
+html body .rt-hero .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .12) !important; border-color: #FFFFFF !important; color: #FFFFFF !important; }
+html body .rt-hero .rt-last { color: #B8AED6; }
+
+/* facts on navy */
+html body .rt-hero .rt-facts { border-top-color: rgba(255, 255, 255, .14); }
+html body .rt-hero .rt-facts dt { color: #B8AED6; }
+html body .rt-hero .rt-facts dt svg { color: #A490C2; }
+html body .rt-hero .rt-facts dd { color: #FFFFFF; font-size: 32px; }
+html body .rt-hero .rt-facts dd small { color: #9A90C0; }
+
+@media (prefers-reduced-motion: no-preference) {
+}
+@media (max-width: 760px) {
+  html body .rt-hero .rt-aira-bot { width: 96px; }
+  html body .rt-hero .rt-line li::before {
+    background: repeating-linear-gradient(180deg, rgba(255, 255, 255, .22) 0 10px, transparent 10px 16px);
+  }
+  html body .rt-hero .rt-line li.is-here::before,
+  html body .rt-hero .rt-line li.is-started::before {
+    background: linear-gradient(180deg, var(--line-c) 0 40%, transparent 40%),
+                repeating-linear-gradient(180deg, rgba(255, 255, 255, .22) 0 10px, transparent 10px 16px);
+  }
+}
+html body .rt-hero .rt-line li[data-unit="4"] .rt-state { color: #B8AED6; }
+
+/* ---------- Header background: live route network + aurora ---------- */
+.rt-net {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: .85;
+  /* strongest at the top right, fading where the route labels sit */
+  -webkit-mask-image: radial-gradient(130% 100% at 85% 0%, #000 35%, rgba(0, 0, 0, .55) 65%, rgba(0, 0, 0, .3) 100%);
+          mask-image: radial-gradient(130% 100% at 85% 0%, #000 35%, rgba(0, 0, 0, .55) 65%, rgba(0, 0, 0, .3) 100%);
+}
+.rt-aurora {
+  position: absolute;
+  z-index: -2;
+  inset: -40%;
+  background:
+    radial-gradient(30% 35% at 30% 40%, rgba(164, 144, 194, .30), transparent 70%),
+    radial-gradient(28% 30% at 70% 30%, rgba(95, 224, 181, .18), transparent 70%),
+    radial-gradient(30% 32% at 60% 75%, rgba(255, 111, 145, .20), transparent 70%),
+    radial-gradient(25% 28% at 25% 80%, rgba(255, 194, 102, .14), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rt-aurora { animation: aurora 22s ease-in-out infinite alternate; }
+  @keyframes aurora {
+    0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50%  { transform: translate(6%, -4%) rotate(18deg) scale(1.08); }
+    100% { transform: translate(-5%, 5%) rotate(-12deg) scale(1); }
+  }
+}
+@media (max-width: 760px) { .rt-net { opacity: .45; } }
+
+/* ==========================================================================
+   Facts strip: a neon route along the divider, a comet riding it, and a
+   station per fact that flashes as the comet passes. Kept below the unit
+   timeline, so it reads as a footer line, not a fifth route.
+   ========================================================================== */
+html body .rt-hero .rt-facts {
+  position: relative;
+  border-top: 0;
+  padding-top: 26px;
+  --facts-time: 5s;
+}
+html body .rt-hero .rt-facts::before {
+  /* the track: four segments in the unit colors, softly glowing */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg,
+    #FF6F91 0 25%, #8C9BFF 25% 50%, #5FE0B5 50% 75%, #FFC266 75% 100%);
+  opacity: .55;
+  box-shadow: 0 0 10px rgba(164, 144, 194, .45);
+}
+html body .rt-hero .rt-facts::after {
+  /* the comet */
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 180px;
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .25) 55%, #FFFFFF);
+  box-shadow: 0 0 14px 3px rgba(255, 255, 255, .55);
+  opacity: 0;
+  pointer-events: none;
+}
+.rt-facts > div { position: relative; }
+html body .rt-hero .rt-facts > div::before {
+  /* a station on the line above each fact */
+  content: "";
+  position: absolute;
+  top: -32px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2B1E3E;
+  border: 3px solid var(--fc);
+  box-shadow: 0 0 10px var(--fc);
+}
+.rt-facts > div:nth-child(1) { --fc: #FF6F91; }
+.rt-facts > div:nth-child(2) { --fc: #8C9BFF; }
+.rt-facts > div:nth-child(3) { --fc: #5FE0B5; }
+.rt-facts > div:nth-child(4) { --fc: #FFC266; }
+html body .rt-hero .rt-facts dd { text-shadow: 0 0 22px color-mix(in srgb, var(--fc) 55%, transparent); }
+html body .rt-hero .rt-facts dt svg { color: var(--fc); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html body .rt-hero .rt-facts::after { animation: factComet var(--facts-time) linear 2s infinite; }
+  @keyframes factComet {
+    0%   { left: -180px; opacity: 0; }
+    6%   { opacity: 1; }
+    70%  { left: calc(100% - 20px); opacity: 1; }
+    76%, 100% { left: calc(100% - 20px); opacity: 0; }
+  }
+  /* each station flashes when the comet's head reaches its column (columns start at 0/25/50/75%) */
+  html body .rt-hero .rt-facts > div::before { animation: factFlash var(--facts-time) ease-out infinite; }
+  html body .rt-hero .rt-facts > div:nth-child(1)::before { animation-delay: calc(2s + var(--facts-time) * .02); }
+  html body .rt-hero .rt-facts > div:nth-child(2)::before { animation-delay: calc(2s + var(--facts-time) * .16); }
+  html body .rt-hero .rt-facts > div:nth-child(3)::before { animation-delay: calc(2s + var(--facts-time) * .32); }
+  html body .rt-hero .rt-facts > div:nth-child(4)::before { animation-delay: calc(2s + var(--facts-time) * .47); }
+  @keyframes factFlash {
+    0%   { background: #FFFFFF; transform: scale(1.5); box-shadow: 0 0 0 0 var(--fc), 0 0 18px #FFFFFF; }
+    12%  { box-shadow: 0 0 0 10px transparent, 0 0 12px var(--fc); }
+    20%, 100% { background: #2B1E3E; transform: scale(1); box-shadow: 0 0 10px var(--fc); }
+  }
+}
+@media (max-width: 760px) {
+  /* two columns on phones: the stations sit on the top row only */
+  html body .rt-hero .rt-facts > div:nth-child(n+3)::before { display: none; }
+}
+
+/* ==========================================================================
+   Unit card buttons: colored by unit. The current unit's "เรียนต่อ" is a
+   filled, glowing pill; the others are soft tinted pills that fill on hover.
+   ========================================================================== */
+[data-unit="1"] { --line-ink: #A8304F; --line-deep: #8E2742; }
+[data-unit="2"] { --line-ink: #3B47A6; --line-deep: #2F3A8C; }
+[data-unit="3"] { --line-ink: #1E7A60; --line-deep: #17624D; }
+[data-unit="4"] { --line-ink: #8A5800; --line-deep: #A86A00; }
+
+html body .classroom-home .unit-menu-card .btn-unit-card-cta {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 50px;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px !important;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  background: var(--line-soft) !important;
+  color: var(--line-ink) !important;
+  border: 1.5px solid color-mix(in srgb, var(--line-c) 35%, transparent) !important;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--line-c) 30%, transparent) !important;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .08s ease !important;
+}
+/* the arrow / play icon sits in its own little circle */
+html body .classroom-home .unit-menu-card .btn-unit-card-cta svg {
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: var(--line-c);
+  flex: none;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+html body .classroom-home .unit-menu-card .btn-unit-card-cta:hover:not(:disabled) {
+  background: var(--line-c) !important;
+  color: #FFFFFF !important;
+  border-color: var(--line-c) !important;
+  box-shadow: 0 4px 0 var(--line-deep), 0 12px 24px -10px var(--line-c) !important;
+}
+html body .classroom-home .unit-menu-card .btn-unit-card-cta:hover:not(:disabled) svg {
+  background: rgba(255, 255, 255, .22);
+  color: #FFFFFF;
+}
+html body .classroom-home .unit-menu-card .btn-unit-card-cta:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--line-deep) !important;
+}
+/* unit 4's amber needs dark text when filled */
+html body .classroom-home .unit-menu-card[data-unit="4"] .btn-unit-card-cta:hover:not(:disabled) { color: #3D2700 !important; }
+html body .classroom-home .unit-menu-card[data-unit="4"] .btn-unit-card-cta:hover:not(:disabled) svg { color: #3D2700; background: rgba(255, 255, 255, .45); }
+
+/* the unit being studied: filled and glowing from the start */
+html body .classroom-home .unit-menu-card.is-target .btn-unit-card-cta {
+  background: linear-gradient(135deg, var(--line-c), var(--line-deep)) !important;
+  color: #FFFFFF !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--line-deep) 75%, #000), 0 14px 28px -12px var(--line-c) !important;
+}
+html body .classroom-home .unit-menu-card.is-target .btn-unit-card-cta svg { background: rgba(255, 255, 255, .22); color: #FFFFFF; }
+html body .classroom-home .unit-menu-card[data-unit="4"].is-target .btn-unit-card-cta { color: #3D2700 !important; }
+
+/* light sweep across the button on hover */
+html body .classroom-home .unit-menu-card .btn-unit-card-cta::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -40%;
+  width: 30%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
+  transform: skewX(-20deg);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html body .classroom-home .unit-menu-card .btn-unit-card-cta:hover::after { animation: ctaSweep .7s ease-out; }
+  @keyframes ctaSweep { from { left: -40%; opacity: 1; } to { left: 120%; opacity: 1; } }
+  html body .classroom-home .unit-menu-card .btn-unit-card-cta:hover svg { transform: translateX(3px); }
+  /* the current unit's button breathes gently to invite the next step */
+  html body .classroom-home .unit-menu-card.is-target .btn-unit-card-cta {
+    outline: 2px solid transparent;
+    animation: ctaBreathe 2.6s ease-out 1.5s infinite;
+  }
+  @keyframes ctaBreathe {
+    0% { outline-color: color-mix(in srgb, var(--line-c) 70%, transparent); outline-offset: 0; }
+    100% { outline-color: transparent; outline-offset: 10px; }
+  }
+}
+html body .classroom-home .unit-menu-card .btn-unit-card-cta:focus-visible { outline: 3px solid var(--line-c); outline-offset: 3px; }
+
+/* ---------- 3D neural orb behind AIra (three.js, loaded lazily) ---------- */
+.rt-orb {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  mix-blend-mode: screen; /* black canvas background drops out over the navy header */
+  /* soft round edge */
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 26%, rgba(0, 0, 0, .5) 44%, transparent 60%);
+          mask-image: radial-gradient(circle at 50% 50%, #000 26%, rgba(0, 0, 0, .5) 44%, transparent 60%);
+}
+.rt-orb.is-ready { opacity: 1; }
+/* AIra stands in front of her core */
+html body .rt-hero .rt-aira { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   Login: split card. Left = night route map with the 3D core behind AIra,
+   right = calm white sign-in form.
+   ========================================================================== */
+html body .login-wrap .login {
+  position: relative;
+  max-width: 1120px !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 28px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--rule) !important;
+  box-shadow: 0 40px 80px -30px rgba(43, 30, 62, 0.45) !important;
+  align-items: stretch !important;
+}
+html body .login-wrap .login-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 640px;
+  padding: 44px 40px 36px !important;
+  justify-content: center;
+  gap: 14px !important;
+  color: #FFFFFF;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0) 0 0 / 24px 24px,
+    radial-gradient(520px 320px at 50% 18%, rgba(164, 144, 194, 0.30), transparent 70%),
+    radial-gradient(420px 280px at 10% 110%, rgba(255, 111, 145, 0.18), transparent 70%),
+    linear-gradient(160deg, #2B1E3E 0%, #352653 55%, #2B1E3E 100%) !important;
+}
+
+/* the robot keeps its own art but drops its old network lines; the 3D core replaces them */
+html body .login-wrap .login-hero .holo-stage .net { display: none !important; }
+html body .login-wrap .holo-showcase-box { position: relative; z-index: 1; }
+html body .login-wrap .holo-showcase-box img,
+html body .login-wrap .holo-showcase-box svg { filter: drop-shadow(0 16px 26px rgba(0, 0, 0, .4)); }
+
+html body .login-wrap .login-hero h1 { color: #FFFFFF !important; text-shadow: 0 4px 30px rgba(164, 144, 194, .35); }
+html body .login-wrap .login-hero .th1 { color: #D4CDE8 !important; }
+
+
+/* course chip as glass on navy */
+html body .login-wrap .login-hero .course-chip {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, .07) !important;
+  border: 1px solid rgba(255, 255, 255, .18) !important;
+  backdrop-filter: blur(8px);
+  color: #FFFFFF !important;
+}
+html body .login-wrap .login-hero .course-chip * { color: #FFFFFF !important; }
+html body .login-wrap .login-hero .course-chip .course-line-level,
+html body .login-wrap .login-hero .course-chip .course-line-school { color: #B8AED6 !important; }
+html body .login-wrap .login-hero .course-chip .code { background: #FFFFFF !important; color: var(--ink) !important; }
+
+/* right side: the form sits on the white half, no second card frame */
+html body .login-wrap .login-card {
+  align-self: center;
+  margin: 40px;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+
+@media (max-width: 900px) {
+  html body .login-wrap .login { border-radius: 22px !important; }
+  html body .login-wrap .login-hero { min-height: 0; padding: 32px 22px 28px !important; }
+  html body .login-wrap .login-card { margin: 26px 22px; }
+}
+
+/* ---------- Login v2: one screen, icon ring, inputs with icons, glowing button ---------- */
+html body .login-wrap {
+  min-height: calc(100dvh - 76px) !important; /* top bar 54px + its 8px offset, with room to spare */
+  height: auto !important;
+  display: grid;
+  place-items: center;
+  padding: 20px 24px !important;
+}
+html body .login-wrap .login {
+  height: min(calc(100dvh - 156px), 640px);
+  min-height: 520px;
+}
+html body .login-wrap .login-hero {
+  min-height: 0;
+  height: 100%;
+  padding: 28px 36px !important;
+  gap: 10px !important;
+}
+html body .login-wrap .login-hero .holo-stage { width: min(300px, 34vh) !important; }
+html body .login-wrap .login-hero h1 { font-size: clamp(30px, 3.4vw, 44px) !important; margin: 0 !important; }
+html body .login-wrap .login-hero .th1 { font-size: 16px !important; margin: 0 !important; max-width: 36ch; }
+html body .login-wrap .login-hero .course-chip { margin-top: 6px; }
+
+/* the form column */
+html body .login-wrap .login-card { margin: 0 44px; width: auto; max-width: 400px; justify-self: center; }
+html body .login-wrap .login-card-head { margin-bottom: 18px; }
+html body .login-wrap .login-head-title-group { display: flex; align-items: center; gap: 14px; }
+html body .login-wrap .login-card h2 { font-size: 30px !important; line-height: 1.15 !important; margin: 0 !important; }
+html body .login-wrap .login-card-sub { font-size: 15px; }
+
+/* header icon: navy disc inside a ring of the four unit colors */
+html body .login-wrap .login-card-icon-badge {
+  position: relative;
+  width: 56px !important;
+  height: 56px !important;
+  display: grid !important;
+  place-items: center;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, #4A4E8F, #2B1E3E) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 22px -8px rgba(43, 30, 62, .6) !important;
+}
+html body .login-wrap .login-card-icon-badge::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(#FF6F91 0 25%, #8C9BFF 0 50%, #5FE0B5 0 75%, #FFC266 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+/* inputs with a leading icon */
+html body .login-wrap .field { margin-bottom: 16px; }
+html body .login-wrap .field label { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: block; }
+.login-input { position: relative; }
+.login-input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #ECEAF8;
+  color: var(--ink-2);
+  pointer-events: none;
+  transition: background .2s ease, color .2s ease;
+}
+html body .login-wrap .login-input .input {
+  height: 54px;
+  padding-left: 56px !important;
+  border-radius: 14px !important;
+  font-size: 16px;
+  background: #F6F5FD !important;
+}
+html body .login-wrap .login-input .input:focus { background: #FFFFFF !important; }
+.login-input:focus-within .login-input-icon { background: var(--ink); color: #FFFFFF; }
+
+/* the sign-in button: navy-to-blue pill with a glow, icon in its own circle */
+html body .login-wrap .login-submit-btn {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 10px !important;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 999px !important;
+  border: 0 !important;
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFFFFF !important;
+  background: linear-gradient(120deg, #2B1E3E 0%, #4A4E8F 55%, #6A5FA8 100%) !important;
+  box-shadow: 0 4px 0 #1A1229, 0 16px 30px -12px rgba(74, 78, 143, .7) !important;
+  transition: transform .08s ease, box-shadow .2s ease, filter .2s ease !important;
+}
+html body .login-wrap .login-submit-btn svg {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .16);
+  flex: none;
+  transition: transform .2s ease;
+}
+html body .login-wrap .login-submit-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 0 #1A1229, 0 20px 36px -12px rgba(74, 78, 143, .85) !important;
+}
+html body .login-wrap .login-submit-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #1A1229 !important; }
+html body .login-wrap .login-submit-btn:disabled { opacity: .75; }
+html body .login-wrap .login-submit-btn::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -40%;
+  width: 30%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .35), transparent);
+  transform: skewX(-20deg);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html body .login-wrap .login-submit-btn:hover::after { animation: ctaSweep .7s ease-out; }
+  html body .login-wrap .login-submit-btn:hover:not(:disabled) svg { transform: translateX(3px); }
+}
+
+/* phones: stack, natural height, form first */
+@media (max-width: 900px) {
+  html body .login-wrap { padding: 14px !important; min-height: 0; }
+  html body .login-wrap .login { height: auto; min-height: 0; }
+  html body .login-wrap .login-hero { height: auto; padding: 24px 20px 26px !important; }
+  html body .login-wrap .login-hero .holo-stage { width: 190px !important; }
+  html body .login-wrap .login-card { margin: 26px 20px; max-width: none; }
+}
+
+/* ---------- Login v3: balanced proportions ---------- */
+/* header icon: an even 3px four-colour ring drawn as the border itself */
+html body .login-wrap .login-card-icon-badge {
+  width: 52px !important;
+  height: 52px !important;
+  border: 3px solid transparent !important;
+  background:
+    linear-gradient(145deg, #4A4E8F, #2B1E3E) padding-box,
+    conic-gradient(from -45deg, #FF6F91 0 25%, #8C9BFF 0 50%, #5FE0B5 0 75%, #FFC266 0) border-box !important;
+  box-shadow: 0 8px 18px -8px rgba(43, 30, 62, .55) !important;
+}
+html body .login-wrap .login-card-icon-badge::before { display: none !important; }
+html body .login-wrap .login-card-icon-badge svg { width: 20px; height: 20px; }
+html body .login-wrap .login-head-title-group { gap: 14px; }
+html body .login-wrap .login-card h2 { font-size: 28px !important; }
+html body .login-wrap .login-card-head { margin-bottom: 22px; }
+
+/* fields: one rhythm, inputs and button share the same height */
+html body .login-wrap .field { margin-bottom: 18px; }
+html body .login-wrap .field label { margin-bottom: 8px; font-size: 14px; }
+html body .login-wrap .login-input .input { height: 52px; padding-left: 52px !important; }
+.login-input-icon { left: 12px; width: 28px; height: 28px; border-radius: 8px; }
+.login-input-icon svg { width: 16px; height: 16px; }
+
+/* button: same height as the inputs, soft glow instead of a hard base */
+html body .login-wrap .login-submit-btn {
+  min-height: 52px;
+  height: 52px;
+  margin-top: 8px !important;
+  gap: 10px;
+  font-size: 16px;
+  box-shadow: 0 12px 26px -12px rgba(74, 78, 143, .75), inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+html body .login-wrap .login-submit-btn:hover:not(:disabled) {
+  box-shadow: 0 16px 30px -12px rgba(74, 78, 143, .9), inset 0 1px 0 rgba(255, 255, 255, .15) !important;
+}
+html body .login-wrap .login-submit-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 6px 14px -8px rgba(74, 78, 143, .8) !important;
+}
+html body .login-wrap .login-submit-btn svg { width: 26px; height: 26px; padding: 5px; }
+html body .login-wrap .login-hero .th1 { text-wrap: balance; }
+html body .login-wrap .login-hero .th1 { display: grid; gap: 4px; max-width: 44ch; }
+html body .login-wrap .login-hero .th1 strong { color: #FFFFFF; font-family: var(--font-heading); font-size: 19px; font-weight: 600; }
+html body .login-wrap .login-hero .th1 span { color: #D4CDE8; font-size: 15px; }
+
+/* ==========================================================================
+   Home header v6: dark plum with a glowing plexus network, animated by HeroCircuit
+   (Canvas 2D). Lighter in the middle, darker toward the edges like the
+   reference; the layer ignores the pointer and is clipped to the header.
+   ========================================================================== */
+html body .rt-hero {
+  background:
+    radial-gradient(ellipse 55% 75% at 82% 40%, rgba(150, 20, 170, 0.28), transparent 70%),
+    radial-gradient(ellipse 70% 90% at 12% 15%, #3E1240 0%, #2B0C2C 55%, #1A0619 100%);
+  box-shadow: 0 24px 50px -24px rgba(36, 3, 40, 0.7);
+}
+.rt-circuit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+/* AIra reads clearly against the dark: a soft violet halo behind her */
+html body .rt-hero .rt-aira-bot { filter: drop-shadow(0 0 26px rgba(170, 235, 255, .35)) drop-shadow(0 14px 22px rgba(0, 0, 0, .5)); }

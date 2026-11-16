@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ACHIEVEMENTS, COURSE, QUIZ_PASS_PERCENT, UNITS } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
@@ -6,6 +6,13 @@ import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, Progr
 import { BRAIN_PATH, BRAIN_GYRI } from '../components/BackgroundEffects.jsx';
 import { thaiDate } from '../components/UIHelpers.jsx';
 import { goToProgress } from '../components/Navigation.jsx';
+import { HeroCircuit } from '../components/HeroCircuit.jsx';
+import unit1Photo from '../assets/images/units/unit1.jpg';
+import unit2Photo from '../assets/images/units/unit2.jpg';
+import unit3Photo from '../assets/images/units/unit3.jpg';
+import unit4Photo from '../assets/images/units/unit4.jpg';
+
+const UNIT_PHOTO = { 1: unit1Photo, 2: unit2Photo, 3: unit3Photo, 4: unit4Photo };
 
 function gearPath(cx, cy, rOut, rIn, teeth) {
   const step = (Math.PI * 2) / teeth;
@@ -52,12 +59,6 @@ for (let l = 0; l < U3_LAYERS.length - 1; l++) {
 const GEAR_L = gearPath(224, 122, 50, 40, 12);
 const GEAR_S = gearPath(286, 78, 34, 26, 10);
 
-const CATEGORY_MAP = {
-  unit1: 'AI FOUNDATIONS & ETHICS',
-  unit2: 'COMPUTER VISION FUNDAMENTALS',
-  unit3: 'MACHINE LEARNING APPLICATIONS',
-  unit4: 'AI INNOVATION PROJECT'
-};
 
 function UnitArt({ id }) {
   const uid = useMemo(() => "ua" + Math.random().toString(36).slice(2, 7), []);
@@ -642,8 +643,30 @@ const MEDAL_ICON = {
   crown: "trophy"
 };
 
+// นับขึ้นจาก 0 ถึงค่าจริงตอนเปิดหน้า (ข้ามถ้าเครื่องตั้งค่าลดการเคลื่อนไหว)
+function CountUp({ value, ms = 900, delay = 500 }) {
+  const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [n, setN] = useState(reduce ? value : 0);
+  useEffect(() => {
+    if (reduce) { setN(value); return; }
+    let raf, start;
+    const t = setTimeout(() => {
+      const step = now => {
+        start ??= now;
+        const p = Math.min((now - start) / ms, 1);
+        setN(Math.round(value * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimationFrame(raf); };
+  }, [value]);
+  return n;
+}
+
 function HomePage() {
-  const { student, summary } = useApp();
+  const { student, summary, progress } = useApp();
+  const lessonDone = (u, l) => !!progress[u.id]?.completedLessons?.includes(l.id);
   const { navigate } = useRoute();
   const target = continueTarget(summary);
   const advice = airaAdvice(summary, target);
@@ -655,135 +678,81 @@ function HomePage() {
 
   return (
     <div className="classroom-home">
-      {/* 1. Hero Welcome Card */}
-      <GlassCard pad={false} className="welcome">
-        <div className="welcome-text">
-          <div className="hero-meta">
-            <Badge tone="cyan" dot>
-              ห้อง {student?.classroom || 'ม.5/1'}
-            </Badge>
-            <Badge>
-              {COURSE.code} {COURSE.name}
-            </Badge>
-            <DemoBadge />
-          </div>
-
-          <h1>
-            Welcome Back, <span className="grad-text">{studentDisplayName}</span>
-          </h1>
-
-          <p className="welcome-th">
-            พร้อมออกเดินทางสู่โลกแห่งปัญญาประดิษฐ์แล้วหรือยัง?
-          </p>
-
-          <div className="btn-inline">
-            <Button
-              className="btn-glow"
-              icon="play"
-              onClick={() => navigate(target.id)}
-            >
-              {hasHistory ? "เรียนต่อจากครั้งล่าสุด" : "เริ่มเรียนหน่วยที่ 1"}
-            </Button>
-            <Button
-              variant="ghost"
-              icon="award"
-              className="btn-outline"
-              onClick={() => goToProgress("home", navigate)}
-            >
-              ดูเหรียญตรา
-            </Button>
-          </div>
-
-          {hasHistory && summary.lastVisited?.at && (
-            <p className="hint">
-              <Icon name="clock" size={13} /> ล่าสุด: หน่วยที่ {target.no} · {target.titleEn} · {relTime(summary.lastVisited.at)}
+      {/* 1. เส้นทางวิชา: 4 หน่วยเป็นสถานีบนเส้นทางเดียว */}
+      <section className="rt-hero" aria-labelledby="rt-title">
+        <HeroCircuit />
+        <div className="rt-head">
+          <div className="rt-intro">
+            <p className="rt-course">
+              <span className="rt-room">ห้อง {student?.classroom || 'ม.5/1'}</span>
+              <span>{COURSE.code} {COURSE.name}</span>
+              <DemoBadge />
             </p>
+            <h1 id="rt-title">
+              สวัสดี {studentDisplayName}
+              <span className="rt-sub">เส้นทางวิชา AI ของเธอ</span>
+            </h1>
+          </div>
+          <aside className="rt-aira" aria-live="polite">
+            <AIraBot mood={advice.mood} className="rt-aira-bot" title="AIra" />
+            <p><b>AIra</b>{advice.text}</p>
+          </aside>
+        </div>
+
+        <div className="rt-track" style={{ "--at": Math.max(0, UNITS.findIndex(u => u.id === target.id)) }}>
+        <span className="rt-train" aria-hidden="true" data-unit={target.no} />
+        <ol className="rt-line">
+          {UNITS.map(u => {
+            const su = summary.units[u.id] || { percent: 0 };
+            const done = su.completed || su.percent === 100;
+            const here = target.id === u.id && !done;
+            const state = done ? "เรียนครบแล้ว" : su.percent > 0 ? `เรียนไปแล้ว ${su.percent}%` : "ยังไม่เริ่ม";
+            return (
+              <li key={u.id} data-unit={u.no} className={done ? "is-done" : here ? "is-here" : su.percent > 0 ? "is-started" : ""}>
+                <button type="button" onClick={() => navigate(u.id)} aria-current={here ? "step" : undefined}>
+                  <span className="rt-stop" aria-hidden="true">{done ? <Icon name="check" size={18} /> : u.no}</span>
+                  <span className="rt-name">หน่วยที่ {u.no} {u.title}</span>
+                  <span className="rt-state">{state}</span>
+                  {u.lessons?.length > 0 && (
+                    <span className="rt-dots" aria-label={`เรียนแล้ว ${u.lessons.filter(l => lessonDone(u, l)).length} จาก ${u.lessons.length} บท`}>
+                      {u.lessons.map(l => <i key={l.id} className={lessonDone(u, l) ? "on" : ""} title={l.title} />)}
+                    </span>
+                  )}
+                  {here && <span className="rt-here">อยู่ตรงนี้</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+        </div>
+
+        <div className="rt-actions">
+          <Button icon="play" className="rt-go" onClick={() => navigate(target.id)}>
+            {hasHistory ? `เรียนต่อ หน่วยที่ ${target.no}` : "เริ่มเรียนหน่วยที่ 1"}
+          </Button>
+          <Button variant="ghost" icon="award" onClick={() => goToProgress("home", navigate)}>ดูเหรียญตรา</Button>
+          {hasHistory && summary.lastVisited?.at && (
+            <span className="rt-last"><Icon name="clock" size={14} /> เปิดล่าสุด {relTime(summary.lastVisited.at)}</span>
           )}
         </div>
 
-        <div className="welcome-aira">
-          <p className="speech" role="status" aria-live="polite">
-            <span className="speech-name">AIra</span>
-            {advice.text}
-          </p>
-          <AIraBot mood={advice.mood} className="welcome-bot" title="AIra" />
-        </div>
-      </GlassCard>
-
-      {/* 2. 4 Stat Cards */}
-      <section className="stats4" aria-label="สรุปผลการเรียน">
-        {/* Stat 1: ความก้าวหน้ารวม */}
-        <GlassCard pad={false} className="stat">
-          <span className="stat-ic">
-            <Icon name="clock" size={22} />
-          </span>
-          <div>
-            <div className="stat-num">
-              {summary.overall}
-              <small>%</small>
-            </div>
-            <div className="stat-lbl">
-              ความก้าวหน้ารวม ({summary.doneItems || 0}/{summary.totalItems || 40} ภารกิจ)
-            </div>
-          </div>
-        </GlassCard>
-
-        {/* Stat 2: หน่วยที่เรียนครบ */}
-        <GlassCard pad={false} className="stat">
-          <span className="stat-ic">
-            <Icon name="award" size={22} />
-          </span>
-          <div>
-            <div className="stat-num">
-              {summary.completed}
-              <small>/{UNITS.length}</small>
-            </div>
-            <div className="stat-lbl">หน่วยที่เรียนครบ</div>
-          </div>
-        </GlassCard>
-
-        {/* Stat 3: กิจกรรมที่ทำเสร็จ */}
-        <GlassCard pad={false} className="stat">
-          <span className="stat-ic">
-            <Icon name="puzzle" size={22} />
-          </span>
-          <div>
-            <div className="stat-num">
-              {summary.activitiesDone}
-              <small>/{summary.activitiesTotal || 17}</small>
-            </div>
-            <div className="stat-lbl">กิจกรรมที่ทำเสร็จ</div>
-          </div>
-        </GlassCard>
-
-        {/* Stat 4: คะแนนทดสอบล่าสุด */}
-        <GlassCard pad={false} className="stat">
-          <span className="stat-ic">
-            <Icon name="check" size={22} />
-          </span>
-          <div>
-            {lq ? (
-              <div className="stat-num">
-                {lq.percent}
-                <small>% ({lq.passed ? 'ผ่าน' : 'ไม่ผ่าน'})</small>
-              </div>
-            ) : (
-              <div className="stat-empty">ยังไม่ได้ทำแบบทดสอบ</div>
-            )}
-            <div className="stat-lbl">คะแนนทดสอบล่าสุด</div>
-          </div>
-        </GlassCard>
+        <dl className="rt-facts">
+          <div><dt><Icon name="chart" size={16} />ความก้าวหน้ารวม</dt><dd><CountUp value={summary.overall} />%<small>{summary.doneItems || 0}/{summary.totalItems || 0} ภารกิจ</small></dd></div>
+          <div><dt><Icon name="award" size={16} />หน่วยที่เรียนครบ</dt><dd><CountUp value={summary.completed} /><small>จาก {UNITS.length} หน่วย</small></dd></div>
+          <div><dt><Icon name="puzzle" size={16} />กิจกรรมที่ทำเสร็จ</dt><dd><CountUp value={summary.activitiesDone} /><small>จาก {summary.activitiesTotal || 0} กิจกรรม</small></dd></div>
+          <div><dt><Icon name="target" size={16} />แบบทดสอบล่าสุด</dt><dd>{lq ? <><CountUp value={lq.percent} />%</> : "–"}<small>{lq ? (lq.passed ? "ผ่านเกณฑ์" : "ยังไม่ผ่าน") : "ยังไม่ได้ทำ"}</small></dd></div>
+        </dl>
       </section>
 
       {/* 3. การ์ดเมนูของแต่ละหน่วย 4 การ์ด (Units Grid 4 Cards Row) */}
       <section className="units-grid-section" aria-label="หน่วยการเรียนรู้ทั้งหมด">
         <div className="units-section-header">
           <div className="units-header-left">
-            <h2 className="units-grid-title">หน่วยการเรียนรู้</h2>
+            <h2 className="units-grid-title"><Icon name="map" size={22} />หน่วยการเรียนรู้</h2>
           </div>
           <div className="units-header-right">
             <span className="units-header-note">
-              เลือกเรียนหน่วยใดก่อนก็ได้ · เกณฑ์ผ่านแบบทดสอบ {QUIZ_PASS_PERCENT}% ทุกหน่วย
+              เลือกเรียนหน่วยใดก่อนก็ได้
             </span>
           </div>
         </div>
@@ -798,30 +767,22 @@ function HomePage() {
             return (
               <article
                 key={u.id}
+                data-unit={u.no}
                 className={`unit-menu-card ${isCurrent ? 'is-target' : ''} ${isCompleted ? 'is-done' : ''}`}
               >
-                {/* Visual Top Banner with Cyber HUD Graphics */}
-                <div
-                  className="unit-card-visual"
-                  onClick={() => navigate(u.id)}
-                  role="button"
-                  tabIndex={0}
-                  title={`คลิกเพื่อเข้าสู่ ${u.title}`}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(u.id); }}
-                >
-                  <UnitArt id={u.id} />
-                  <div className="visual-top-overlay">
-                    <span className="unit-pill-tag">UNIT 0{u.no}</span>
-                    <span className={`unit-status-pill ${isCompleted ? 'status-pill-done' : isInProgress ? 'status-pill-progress' : 'status-pill-ready'}`}>
-                      <span className="status-dot" />
-                      {isCompleted ? 'เรียนครบแล้ว' : isInProgress ? `กำลังเรียน ${su.percent}%` : 'พร้อมเรียน'}
-                    </span>
-                  </div>
-                </div>
+                <button type="button" className="unit-photo" onClick={() => navigate(u.id)} tabIndex={-1} aria-hidden="true">
+                  <img src={UNIT_PHOTO[u.no]} alt="" width="760" height="424" loading="lazy" decoding="async" />
+                  <span className={`unit-fx fx-${u.no}`}><i /><i /><i /><i /></span>
+                </button>
 
                 {/* Card Body */}
                 <div className="unit-card-body">
-                  <div className="unit-cat-tag">{CATEGORY_MAP[u.id] || u.titleEn}</div>
+                  <div className="unit-card-top">
+                    <span className="unit-roundel" aria-hidden="true">{isCompleted ? <Icon name="check" size={16} /> : u.no}</span>
+                    <span className={`unit-status-pill ${isCompleted ? "status-pill-done" : isInProgress ? "status-pill-progress" : "status-pill-ready"}`}>
+                      {isCompleted ? "เรียนครบแล้ว" : isInProgress ? `กำลังเรียน ${su.percent}%` : "พร้อมเรียน"}
+                    </span>
+                  </div>
                   <h3
                     className="unit-card-title"
                     onClick={() => navigate(u.id)}
@@ -830,6 +791,14 @@ function HomePage() {
                     {u.title}
                   </h3>
                   <p className="unit-card-desc">{u.desc}</p>
+                  {u.lessons?.length > 0 && (() => {
+                    const next = u.lessons.find(l => !lessonDone(u, l));
+                    return (
+                      <p className="unit-next">
+                        {next ? <><span>บทถัดไป</span>{next.title}</> : isCompleted ? <span>เรียนครบทุกบทแล้ว</span> : <><span>ต่อไป</span>กิจกรรมและแบบทดสอบท้ายหน่วย</>}
+                      </p>
+                    );
+                  })()}
 
                   {/* Quick Link Chip for Unit 2 if present */}
                   {u.id === 'unit2' && (
@@ -862,7 +831,7 @@ function HomePage() {
                       <Icon name="book" size={12} />
                       {u.id === 'unit4'
                         ? `ทำเสร็จ ${su.percent === 100 ? 4 : Math.round((su.percent / 100) * 4)}/4 ขั้นตอนโครงงาน`
-                        : `เรียนครบ ${isCompleted ? (u.lessons?.length || 0) : Math.round((su.percent / 100) * (u.lessons?.length || 0))}/${u.lessons?.length || 0} บทเรียน`
+                        : `เรียนครบ ${(u.lessons || []).filter(l => lessonDone(u, l)).length}/${u.lessons?.length || 0} บทเรียน`
                       }
                     </span>
                     {su.visited && (
@@ -894,7 +863,7 @@ function HomePage() {
         <section className="classroom-card ach-section" id="achievements" tabIndex={-1} aria-label="เหรียญตราเกียรติยศ">
           <div className="section-head-clean">
             <div>
-              <h2 className="clean-section-title">เหรียญตราและความสำเร็จ</h2>
+              <h2 className="clean-section-title"><Icon name="trophy" size={22} />เหรียญตราและความสำเร็จ</h2>
               <p className="clean-section-desc">สะสมเหรียญตราเมื่อผ่านบทเรียนและทำกิจกรรมครบ</p>
             </div>
             <span className="ach-count-pill">
@@ -930,66 +899,6 @@ function HomePage() {
           </div>
         </section>
 
-        {/* สรุปความก้าวหน้า */}
-        <div className="classroom-bottom-side">
-          {/* การ์ด: สรุปความก้าวหน้า (Progress Summary) */}
-          <section className="classroom-card summary-card" aria-label="สรุปความก้าวหน้า">
-            <div className="side-card-header">
-              <div className="side-card-title-group">
-                <Icon name="award" size={16} />
-                <h2 className="side-card-title">สรุปความก้าวหน้า</h2>
-              </div>
-              <button
-                type="button"
-                className="link-all-progress"
-                onClick={() => goToProgress("home", navigate)}
-              >
-                ดูทั้งหมด →
-              </button>
-            </div>
-
-            <div className="summary-ring-container">
-              <ProgressRing
-                value={summary.overall}
-                size={74}
-                label="ความก้าวหน้ารวม"
-              />
-              <div className="summary-ring-labels">
-                <span className="summary-ring-title">ความก้าวหน้ารวม</span>
-                <strong className="summary-ring-val">{summary.overall}%</strong>
-                <span className="summary-ring-sub">
-                  {summary.totalItems ? `${summary.doneItems}/${summary.totalItems} ภารกิจ` : "ยังไม่มีบทเรียนที่เปิด"}
-                </span>
-              </div>
-            </div>
-
-            <div className="summary-metrics-list">
-              <div className="summary-metric-row">
-                <span className="metric-name">
-                  <Icon name="book" size={13} /> หน่วยที่เรียนครบ
-                </span>
-                <strong className="metric-val">{summary.completed} / {UNITS.length}</strong>
-              </div>
-              <div className="summary-metric-row">
-                <span className="metric-name">
-                  <Icon name="puzzle" size={13} /> กิจกรรมที่ทำสำเร็จ
-                </span>
-                <strong className="metric-val">
-                  {summary.activitiesDone} {summary.activitiesTotal > 0 ? `/ ${summary.activitiesTotal}` : ''}
-                </strong>
-              </div>
-              <div className="summary-metric-row">
-                <span className="metric-name">
-                  <Icon name="target" size={13} /> แบบทดสอบล่าสุด
-                </span>
-                <strong className="metric-val">
-                  {lq ? `${lq.percent}% (${lq.passed ? 'ผ่าน' : 'ไม่ผ่าน'})` : 'ยังไม่มี'}
-                </strong>
-              </div>
-            </div>
-          </section>
-
-        </div>
       </div>
     </div>
   );

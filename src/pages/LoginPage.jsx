@@ -3,7 +3,9 @@ import { COURSE } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, ProgressRing } from '../components/UIPrimitives.jsx';
-import { Particles, HoloStage } from '../components/BackgroundEffects.jsx';
+import { HoloStage } from '../components/BackgroundEffects.jsx';
+import { HeroNetwork } from '../components/HeroNetwork.jsx';
+import { HeroOrb } from '../components/HeroOrb.jsx';
 
 const thaiDate = iso => {
   try {
@@ -17,181 +19,6 @@ const thaiDate = iso => {
   }
 };
 
-function NeuralNetworkBackground() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let animId;
-    let width = 0;
-    let height = 0;
-
-    const COLORS = [
-      { r: 109, g: 77, b: 211 },  // Primary #6D4DD3
-      { r: 155, g: 135, b: 245 }, // Lavender #9B87F5
-      { r: 87, g: 204, b: 242 },  // Cyan #57CCF2
-      { r: 89, g: 56, b: 186 }    // Deep Primary #5938BA
-    ];
-
-    const nodes = [];
-    const mouse = { x: -9999, y: -9999 };
-
-    const initNodes = (w, h) => {
-      nodes.length = 0;
-      const count = Math.min(62, Math.max(36, Math.floor((w * h) / 22000)));
-      for (let i = 0; i < count; i++) {
-        const c = COLORS[i % COLORS.length];
-        const isHub = i % 6 === 0;
-        nodes.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.42,
-          vy: (Math.random() - 0.5) * 0.42,
-          r: isHub ? 2.6 + Math.random() * 1.1 : 1.5 + Math.random() * 1.0,
-          isHub,
-          color: c,
-          phase: Math.random() * Math.PI * 2,
-          pulseSpeed: 0.018 + Math.random() * 0.015
-        });
-      }
-    };
-
-    const resize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = parent.clientWidth || window.innerWidth;
-      height = parent.clientHeight || window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = width + "px";
-      canvas.style.height = height + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (nodes.length === 0) {
-        initNodes(width, height);
-      }
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const onMouseMove = e => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-    };
-    const onMouseLeave = () => {
-      mouse.x = -9999;
-      mouse.y = -9999;
-    };
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("mouseleave", onMouseLeave, { passive: true });
-
-    let tick = 0;
-    const MAX_DIST = 175;
-    const MOUSE_DIST = 190;
-
-    const render = () => {
-      tick += 1;
-      ctx.clearRect(0, 0, width, height);
-
-      // Update node positions
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        n.x += n.vx;
-        n.y += n.vy;
-        n.phase += n.pulseSpeed;
-
-        if (n.x < -20) n.x = width + 20;
-        else if (n.x > width + 20) n.x = -20;
-        if (n.y < -20) n.y = height + 20;
-        else if (n.y > height + 20) n.y = -20;
-      }
-
-      // Draw delicate neural edges between nearby nodes
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i];
-        for (let j = i + 1; j < nodes.length; j++) {
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < MAX_DIST * MAX_DIST) {
-            const dist = Math.sqrt(distSq);
-            const ratio = 1 - dist / MAX_DIST;
-            const alpha = ratio * 0.17; // Subtle & delicate
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(${a.color.r}, ${a.color.g}, ${a.color.b}, ${alpha.toFixed(3)})`;
-            ctx.lineWidth = 0.9;
-            ctx.stroke();
-
-            // Subtle traveling signal pulse on selected hub edges
-            if ((i + j) % 11 === 0 && ratio > 0.35) {
-              const t = ((tick * 0.006 + i * 0.17) % 1);
-              const px = a.x + (b.x - a.x) * t;
-              const py = a.y + (b.y - a.y) * t;
-              ctx.beginPath();
-              ctx.arc(px, py, 1.6, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(14, 165, 233, ${(ratio * 0.38).toFixed(3)})`;
-              ctx.fill();
-            }
-          }
-        }
-
-        // Subtle interactive connection to mouse cursor
-        const mdx = a.x - mouse.x;
-        const mdy = a.y - mouse.y;
-        const mDistSq = mdx * mdx + mdy * mdy;
-        if (mDistSq < MOUSE_DIST * MOUSE_DIST) {
-          const mDist = Math.sqrt(mDistSq);
-          const mAlpha = (1 - mDist / MOUSE_DIST) * 0.18;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(79, 70, 229, ${mAlpha.toFixed(3)})`;
-          ctx.lineWidth = 0.85;
-          ctx.stroke();
-        }
-      }
-
-      // Draw neural nodes & soft halos
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        const pulse = 0.5 + 0.5 * Math.sin(n.phase);
-        const nodeAlpha = n.isHub ? 0.28 + pulse * 0.14 : 0.18 + pulse * 0.10;
-
-        if (n.isHub) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r + 3.5 + pulse * 2.2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${n.color.r}, ${n.color.g}, ${n.color.b}, ${(0.05 + pulse * 0.04).toFixed(3)})`;
-          ctx.fill();
-        }
-
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${n.color.r}, ${n.color.g}, ${n.color.b}, ${nodeAlpha.toFixed(3)})`;
-        ctx.fill();
-      }
-
-      animId = requestAnimationFrame(render);
-    };
-
-    animId = requestAnimationFrame(render);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseleave", onMouseLeave);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="login-neural-canvas" aria-hidden="true" />;
-}
 
 function LoginPage() {
   const { user, summary, login, resume, forgetUser, notify } = useApp();
@@ -408,19 +235,14 @@ function LoginPage() {
         <div className="card-head login-card-head">
           <div className="login-head-title-group">
             <span className="login-card-icon-badge" aria-hidden="true">
-              <Icon name="sparkle" size={20} />
+              <Icon name="lock" size={22} />
             </span>
             <div>
               <h2 id="login-title">เข้าสู่ระบบ</h2>
-              <span className="login-card-sub">Student & Teacher Portal</span>
+              <span className="login-card-sub">สำหรับนักเรียนและครู</span>
             </div>
           </div>
-          <Badge tone="cyan">PCSHSCR</Badge>
         </div>
-
-        <p className="login-card-desc">
-          เข้าสู่ระบบด้วยรหัสประจำตัวและรหัสผ่านจากฐานข้อมูลโรงเรียน
-        </p>
 
         {errors.form && (
           <div className="form-err" role="alert">
@@ -431,10 +253,9 @@ function LoginPage() {
 
         {/* Username Field */}
         <div className="field">
-          <label htmlFor="f-username">
-            <Icon name="user" size={15} style={{ verticalAlign: 'middle', marginRight: 6, color: '#4F46E5' }} />
-            รหัสประจำตัว (Username)
-          </label>
+          <label htmlFor="f-username">รหัสประจำตัว (Username)</label>
+          <div className="login-input">
+          <span className="login-input-icon" aria-hidden="true"><Icon name="user" size={18} /></span>
           <input
             id="f-username"
             ref={refs.username}
@@ -444,13 +265,11 @@ function LoginPage() {
             maxLength={30}
             autoComplete="username"
             aria-invalid={!!errors.username}
-            aria-describedby={errors.username ? "e-username" : "h-username"}
+            aria-describedby={errors.username ? "e-username" : undefined}
             placeholder="กรอกรหัสประจำตัว"
             autoFocus
           />
-          <span id="h-username" className="hint">
-            นักเรียน: รหัสประจำตัว 5 หลัก / ครูผู้สอน: รหัสครู
-          </span>
+          </div>
           {errors.username && (
             <span id="e-username" className="field-err">
               {errors.username}
@@ -460,11 +279,9 @@ function LoginPage() {
 
         {/* Password Field */}
         <div className="field">
-          <label htmlFor="f-pass">
-            <Icon name="lock" size={15} style={{ verticalAlign: 'middle', marginRight: 6, color: '#0284C7' }} />
-            รหัสผ่าน (Password)
-          </label>
-          <div style={{ position: "relative" }}>
+          <label htmlFor="f-pass">รหัสผ่าน (Password)</label>
+          <div className="login-input">
+            <span className="login-input-icon" aria-hidden="true"><Icon name="lock" size={18} /></span>
             <input
               id="f-pass"
               ref={refs.password}
@@ -516,47 +333,28 @@ function LoginPage() {
           disabled={phase !== "idle"}
           style={{ marginTop: 6 }}
         >
-          {phase === "saving" ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ (Sign In)"}
+          {phase === "saving" ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}
         </Button>
 
-        <div className="login-card-perks" aria-hidden="true">
-          <span><Icon name="book" size={13} /> 4 หน่วยการเรียนรู้</span>
-          <span><Icon name="cpu" size={13} /> AI Lab โต้ตอบจริง</span>
-          <span><Icon name="award" size={13} /> สะสมเหรียญรางวัล</span>
-        </div>
       </form>
     );
   }
 
   return (
     <div className="login-wrap">
-      <div className="login-aurora-bg" aria-hidden="true">
-        <span className="aurora-orb orb-1" />
-        <span className="aurora-orb orb-2" />
-        <span className="aurora-orb orb-3" />
-      </div>
-      <NeuralNetworkBackground />
-      <Particles />
       <div className="login">
-        <section className="login-hero" aria-labelledby="welcome-title">
-          <div className="login-eyebrow-pill">
-            <span className="pulse-dot" />
-            <span>NEXT-GEN AI LEARNING PLATFORM · PCSHSCR</span>
-          </div>
+        <section className="login-hero" aria-labelledby="welcome-title" data-orb-host>
+          <span className="rt-aurora" aria-hidden="true" />
+          <HeroNetwork />
+          <HeroOrb anchor=".holo-showcase-box" lift={0} px={720} />
 
           <div className="holo-showcase-box">
             <div className="holo-glow-ring" aria-hidden="true" />
             <HoloStage mood={phase === "success" ? "cheer" : "happy"} />
           </div>
 
-          <h1 id="welcome-title">
-            <span className="w">Welcome to</span>
-            <span className="grad-text">KruNok AI Academy</span>
-          </h1>
-          <p className="th1">ยินดีต้อนรับสู่โลกแห่งปัญญาประดิษฐ์</p>
-          <p className="lead">
-            เรียนรู้ คิดวิเคราะห์ สร้างสรรค์นวัตกรรม AI อย่างมีความรับผิดชอบ
-          </p>
+          <h1 id="welcome-title">KruNok AI Academy</h1>
+          <p className="th1"><strong>ยินดีต้อนรับสู่โลกแห่งปัญญาประดิษฐ์</strong><span>เรียนรู้ คิดวิเคราะห์ สร้างสรรค์นวัตกรรม AI อย่างมีความรับผิดชอบ</span></p>
           <div className="course-chip">
             <span className="code">{COURSE.code}</span>
             <span className="course-chip-lines">

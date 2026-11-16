@@ -168,6 +168,7 @@ function Sidebar({ collapsed, onToggle }) {
     const isCompleted = Boolean(su && su.completed);
     return React.createElement(React.Fragment, { key: u.id }, React.createElement("button", {
       className: "side-link " + (isCompleted ? "is-done" : ""),
+      "data-unit": u.no,
       "aria-current": route === u.id ? "page" : undefined,
       onClick: () => navigate(u.id),
       title: `หน่วยที่ ${u.no}: ${u.title}`
