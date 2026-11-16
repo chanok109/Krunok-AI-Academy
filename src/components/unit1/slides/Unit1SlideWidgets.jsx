@@ -125,8 +125,8 @@ export function NestedDiagram() {
             width="544"
             height="364"
             rx="30"
-            fill="rgba(79,70,229,.08)"
-            stroke="#4F46E5"
+            fill="rgba(96, 97, 182,.08)"
+            stroke="#6061B6"
             strokeWidth={sel === "ai" ? 4 : 2}
           />
           <rect
@@ -137,7 +137,7 @@ export function NestedDiagram() {
             height="292"
             rx="26"
             fill="rgba(3,105,161,.08)"
-            stroke="#0369A1"
+            stroke="#1F67B3"
             strokeWidth={sel === "ml" ? 4 : 2}
           />
           <rect
@@ -147,8 +147,8 @@ export function NestedDiagram() {
             width="300"
             height="214"
             rx="22"
-            fill="rgba(2,132,199,.10)"
-            stroke="#0284C7"
+            fill="rgba(47, 127, 209,.10)"
+            stroke="#2F7FD1"
             strokeWidth={sel === "dl" ? 4 : 2}
           />
           <ellipse
@@ -163,13 +163,13 @@ export function NestedDiagram() {
             strokeDasharray="7 5"
           />
           <g pointerEvents="none" fontFamily="Prompt, sans-serif" fontWeight="600">
-            <text x="30" y="42" fill="#4338CA" fontSize="18">AI</text>
-            <text x="74" y="96" fill="#0369A1" fontSize="17">Machine Learning</text>
-            <text x="122" y="156" fill="#0284C7" fontSize="16">Deep Learning</text>
+            <text x="30" y="42" fill="#4E4F9E" fontSize="18">AI</text>
+            <text x="74" y="96" fill="#1F67B3" fontSize="17">Machine Learning</text>
+            <text x="122" y="156" fill="#2F7FD1" fontSize="16">Deep Learning</text>
             <text x="318" y="252" fill="#B45309" fontSize="16" textAnchor="middle">Generative AI</text>
             <text x="318" y="274" fill="#92400E" fontSize="11.5" fontWeight="500" textAnchor="middle">ส่วนใหญ่ใช้ DL</text>
-            <text x="388" y="40" fill="#475569" fontSize="11.5" fontWeight="500">เช่น ระบบกฎ IF–THEN</text>
-            <text x="320" y="112" fill="#475569" fontSize="11.5" fontWeight="500">เช่น Decision Tree</text>
+            <text x="388" y="40" fill="#474D7A" fontSize="11.5" fontWeight="500">เช่น ระบบกฎ IF–THEN</text>
+            <text x="320" y="112" fill="#474D7A" fontSize="11.5" fontWeight="500">เช่น Decision Tree</text>
           </g>
         </svg>
 
@@ -215,34 +215,34 @@ export function SlideSceneArt({ kind }) {
       return (
         <svg viewBox="0 0 260 96" className="u1-scene-svg" aria-hidden="true">
           <rect width="260" height="96" rx="12" fill="#EFF6FF" />
-          <rect x="24" y="14" width="56" height="68" rx="10" fill="#1E293B" />
+          <rect x="24" y="14" width="56" height="68" rx="10" fill="#14205E" />
           <rect x="30" y="21" width="44" height="54" rx="6" fill="#DBEAFE" />
           <circle cx="52" cy="42" r="10" fill="#2563EB" />
           <path d="M38 64c2-9 26-9 28 0" fill="#3B82F6" />
           <path d="M98 32h42M98 48h56M98 64h34" stroke="#60A5FA" strokeWidth="4" strokeLinecap="round" />
           <rect x="174" y="20" width="62" height="56" rx="12" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="2" />
-          <circle cx="194" cy="40" r="6" fill="#38BDF8" />
+          <circle cx="194" cy="40" r="6" fill="#7DB8FF" />
           <path d="M182 64l14-12 10 8 18-18" fill="none" stroke="#2563EB" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "model-brain":
       return (
         <svg viewBox="0 0 260 96" className="u1-scene-svg" aria-hidden="true">
-          <rect width="260" height="96" rx="12" fill="#EEF2FF" />
+          <rect width="260" height="96" rx="12" fill="#F1EDF9" />
           {[[64, 24], [64, 48], [64, 72]].map(([x, y], i) => (
             <g key={`l1-${i}`}>
-              <line x1={x} y1={y} x2="130" y2="34" stroke="#A5B4FC" strokeWidth="2" />
-              <line x1={x} y1={y} x2="130" y2="62" stroke="#A5B4FC" strokeWidth="2" />
-              <circle cx={x} cy={y} r="8" fill="#6366F1" />
+              <line x1={x} y1={y} x2="130" y2="34" stroke="#C9B5E0" strokeWidth="2" />
+              <line x1={x} y1={y} x2="130" y2="62" stroke="#C9B5E0" strokeWidth="2" />
+              <circle cx={x} cy={y} r="8" fill="#7475C4" />
             </g>
           ))}
           {[[130, 34], [130, 62]].map(([x, y], i) => (
             <g key={`l2-${i}`}>
-              <line x1={x} y1={y} x2="196" y2="48" stroke="#818CF8" strokeWidth="2.5" />
-              <circle cx={x} cy={y} r="10" fill="#4F46E5" />
+              <line x1={x} y1={y} x2="196" y2="48" stroke="#9C9AD8" strokeWidth="2.5" />
+              <circle cx={x} cy={y} r="10" fill="#6061B6" />
             </g>
           ))}
-          <circle cx="196" cy="48" r="14" fill="#14B8A6" />
+          <circle cx="196" cy="48" r="14" fill="#4D9BE0" />
           <path d="M190 48l4 4 9-9" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
@@ -280,10 +280,10 @@ export function SlideSceneArt({ kind }) {
       return (
         <svg viewBox="0 0 280 104" className="u1-scene-svg" aria-hidden="true">
           <rect width="280" height="104" rx="14" fill="#FFFBEB" />
-          <rect x="74" y="18" width="132" height="68" rx="12" fill="#1E293B" />
+          <rect x="74" y="18" width="132" height="68" rx="12" fill="#14205E" />
           {[0, 1, 2, 3].map(r =>
             [0, 1, 2, 3, 4, 5].map(c => (
-              <rect key={`${r}-${c}`} x={88 + c * 18} y={28 + r * 13} width="12" height="9" rx="2.5" fill={(r + c) % 2 === 0 ? "#F59E0B" : "#38BDF8"} />
+              <rect key={`${r}-${c}`} x={88 + c * 18} y={28 + r * 13} width="12" height="9" rx="2.5" fill={(r + c) % 2 === 0 ? "#F59E0B" : "#7DB8FF"} />
             ))
           )}
           {[28, 46, 64].map(y => (
@@ -297,23 +297,23 @@ export function SlideSceneArt({ kind }) {
     case "deep-net":
       return (
         <svg viewBox="0 0 280 104" className="u1-scene-svg" aria-hidden="true">
-          <rect width="280" height="104" rx="14" fill="#F5F3FF" />
+          <rect width="280" height="104" rx="14" fill="#F7F3FB" />
           {[[48, 24], [48, 52], [48, 80]].map(([x, y], i) =>
             [[112, 20], [112, 42], [112, 64], [112, 86]].map(([x2, y2], j) => (
-              <line key={`a-${i}-${j}`} x1={x} y1={y} x2={x2} y2={y2} stroke="#C4B5FD" strokeWidth="1.6" />
+              <line key={`a-${i}-${j}`} x1={x} y1={y} x2={x2} y2={y2} stroke="#C9B5E0" strokeWidth="1.6" />
             ))
           )}
           {[[112, 20], [112, 42], [112, 64], [112, 86]].map(([x, y], i) =>
             [[176, 30], [176, 52], [176, 74]].map(([x2, y2], j) => (
-              <line key={`b-${i}-${j}`} x1={x} y1={y} x2={x2} y2={y2} stroke="#A78BFA" strokeWidth="1.8" />
+              <line key={`b-${i}-${j}`} x1={x} y1={y} x2={x2} y2={y2} stroke="#B49FDA" strokeWidth="1.8" />
             ))
           )}
           {[[176, 30], [176, 52], [176, 74]].map(([x, y], i) => (
-            <line key={`c-${i}`} x1={x} y1={y} x2="232" y2="52" stroke="#7C3AED" strokeWidth="2.4" />
+            <line key={`c-${i}`} x1={x} y1={y} x2="232" y2="52" stroke="#6E55B0" strokeWidth="2.4" />
           ))}
-          {[24, 52, 80].map(y => <circle key={`n1-${y}`} cx="48" cy={y} r="7" fill="#6366F1" />)}
-          {[20, 42, 64, 86].map(y => <circle key={`n2-${y}`} cx="112" cy={y} r="7" fill="#7C3AED" />)}
-          {[30, 52, 74].map(y => <circle key={`n3-${y}`} cx="176" cy={y} r="7" fill="#8B5CF6" />)}
+          {[24, 52, 80].map(y => <circle key={`n1-${y}`} cx="48" cy={y} r="7" fill="#7475C4" />)}
+          {[20, 42, 64, 86].map(y => <circle key={`n2-${y}`} cx="112" cy={y} r="7" fill="#6E55B0" />)}
+          {[30, 52, 74].map(y => <circle key={`n3-${y}`} cx="176" cy={y} r="7" fill="#8C74C6" />)}
           <circle cx="232" cy="52" r="12" fill="#10B981" />
         </svg>
       );
@@ -350,10 +350,10 @@ export function SlideSceneArt({ kind }) {
     case "asi-core":
       return (
         <svg viewBox="0 0 280 112" className="u1-scene-svg" aria-hidden="true">
-          <rect width="280" height="112" rx="14" fill="#F5F3FF" />
-          <ellipse cx="140" cy="56" rx="78" ry="26" fill="none" stroke="#A78BFA" strokeWidth="2" transform="rotate(-14 140 56)" />
-          <ellipse cx="140" cy="56" rx="78" ry="26" fill="none" stroke="#38BDF8" strokeWidth="2" transform="rotate(14 140 56)" />
-          <circle cx="140" cy="56" r="24" fill="#6D28D9" />
+          <rect width="280" height="112" rx="14" fill="#F7F3FB" />
+          <ellipse cx="140" cy="56" rx="78" ry="26" fill="none" stroke="#B49FDA" strokeWidth="2" transform="rotate(-14 140 56)" />
+          <ellipse cx="140" cy="56" rx="78" ry="26" fill="none" stroke="#7DB8FF" strokeWidth="2" transform="rotate(14 140 56)" />
+          <circle cx="140" cy="56" r="24" fill="#5B4397" />
           <polygon points="140,38 145,51 158,56 145,61 140,74 135,61 122,56 135,51" fill="#FDE68A" />
         </svg>
       );

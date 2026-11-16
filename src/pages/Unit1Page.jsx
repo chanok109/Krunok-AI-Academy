@@ -63,18 +63,18 @@ function AIFoundationStage({ completed }) {
           >
             <defs>
               <radialGradient id="u1StageGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#6366F1" stopOpacity="0.22" />
-                <stop offset="60%" stopColor="#38BDF8" stopOpacity="0.10" />
+                <stop offset="0%" stopColor="#7475C4" stopOpacity="0.22" />
+                <stop offset="60%" stopColor="#7DB8FF" stopOpacity="0.10" />
                 <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
               </radialGradient>
               <linearGradient id="u1OrbitStroke1" x1="30" y1="20" x2="330" y2="296" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#3B82F6" stopOpacity="0.55" />
-                <stop offset="0.5" stopColor="#8B5CF6" stopOpacity="0.45" />
-                <stop offset="1" stopColor="#06B6D4" stopOpacity="0.55" />
+                <stop offset="0.5" stopColor="#8C74C6" stopOpacity="0.45" />
+                <stop offset="1" stopColor="#4D9BE0" stopOpacity="0.55" />
               </linearGradient>
               <linearGradient id="u1OrbitStroke2" x1="70" y1="60" x2="290" y2="256" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#6366F1" stopOpacity="0.65" />
-                <stop offset="1" stopColor="#14B8A6" stopOpacity="0.65" />
+                <stop stopColor="#7475C4" stopOpacity="0.65" />
+                <stop offset="1" stopColor="#4D9BE0" stopOpacity="0.65" />
               </linearGradient>
             </defs>
 
@@ -83,10 +83,10 @@ function AIFoundationStage({ completed }) {
             {/* วงซ้อนชั้น AI > ML > DL > GenAI */}
             <circle cx="180" cy="158" r="128" stroke="url(#u1OrbitStroke1)" strokeWidth="1.8" strokeDasharray="6 6" fill="rgba(255,255,255,0.38)" />
             <circle cx="180" cy="158" r="98" stroke="url(#u1OrbitStroke2)" strokeWidth="1.8" fill="rgba(238,242,255,0.45)" />
-            <circle cx="180" cy="158" r="68" stroke="#38BDF8" strokeOpacity="0.65" strokeWidth="1.8" strokeDasharray="4 4" fill="rgba(224,242,254,0.48)" />
+            <circle cx="180" cy="158" r="68" stroke="#7DB8FF" strokeOpacity="0.65" strokeWidth="1.8" strokeDasharray="4 4" fill="rgba(224,242,254,0.48)" />
 
             {/* เส้นโครงข่ายประสาทเทียมประดับฉาก */}
-            <g stroke="#818CF8" strokeOpacity="0.38" strokeWidth="1.3">
+            <g stroke="#9C9AD8" strokeOpacity="0.38" strokeWidth="1.3">
               <line x1="66" y1="98" x2="114" y2="126" />
               <line x1="294" y1="98" x2="246" y2="126" />
               <line x1="72" y1="222" x2="118" y2="192" />
@@ -98,8 +98,8 @@ function AIFoundationStage({ completed }) {
             <circle cx="294" cy="98" r="5.5" fill="#F59E0B" />
             <circle cx="72" cy="222" r="5.5" fill="#10B981" />
             <circle cx="288" cy="222" r="5.5" fill="#F43F5E" />
-            <circle cx="180" cy="30" r="5" fill="#6366F1" />
-            <circle cx="180" cy="286" r="5" fill="#0EA5E9" />
+            <circle cx="180" cy="30" r="5" fill="#7475C4" />
+            <circle cx="180" cy="286" r="5" fill="#4D9BE0" />
           </svg>
 
           <div className="u1-stage-mascot-wrap">
@@ -412,7 +412,7 @@ function Unit1Page() {
               </div>
               <div className="u1-aira-guide-text">
                 <div className="u1-aira-guide-title">
-                  <Icon name="sparkle" size={16} style={{ color: "#4F46E5" }} />
+                  <Icon name="sparkle" size={16} style={{ color: "#6061B6" }} />
                   <span>คำแนะนำการเรียนจากน้อง AIra</span>
                 </div>
                 <p className="u1-aira-guide-steps">
@@ -434,7 +434,7 @@ function Unit1Page() {
                   <Icon name="sparkle" size={13} /> CURRICULUM ROADMAP
                 </span>
                 <h2>
-                  <Icon name="book" size={24} style={{ color: "#6366F1" }} />
+                  <Icon name="book" size={24} style={{ color: "#7475C4" }} />
                   เลือกชุดการเรียนรู้ตามลำดับขั้น
                 </h2>
               </div>

@@ -700,8 +700,8 @@ function ScatterPlot({
     y: "10",
     width: W - P - 10,
     height: H - P - 10,
-    fill: "#F8FAFC",
-    stroke: "#CBD5E1"
+    fill: "#FFFDF6",
+    stroke: "#D6D0E6"
   }), cells.map((c, i) => React.createElement("rect", {
     key: i,
     x: c.x,
@@ -717,13 +717,13 @@ function ScatterPlot({
     x2: sx(v),
     y1: "10",
     y2: H - P,
-    stroke: "#E2E8F0"
+    stroke: "#E2DCEC"
   }), React.createElement("text", {
     x: sx(v),
     y: H - P + 14,
     textAnchor: "middle",
     fontSize: "10",
-    fill: "#475569"
+    fill: "#474D7A"
   }, fmt(fx, v)))), ticks(fy).map(v => React.createElement("g", {
     key: "y" + v
   }, React.createElement("line", {
@@ -731,25 +731,25 @@ function ScatterPlot({
     x2: W - 10,
     y1: sy(v),
     y2: sy(v),
-    stroke: "#E2E8F0"
+    stroke: "#E2DCEC"
   }), React.createElement("text", {
     x: P - 5,
     y: sy(v) + 3,
     textAnchor: "end",
     fontSize: "10",
-    fill: "#475569"
+    fill: "#474D7A"
   }, fmt(fy, v)))), React.createElement("text", {
     x: (W + P) / 2,
     y: H - 4,
     textAnchor: "middle",
     fontSize: "11",
-    fill: "#0F172A"
+    fill: "#00105B"
   }, fx.name, fx.unit ? ` (${fx.unit})` : ""), React.createElement("text", {
     x: "10",
     y: (H - P) / 2,
     textAnchor: "middle",
     fontSize: "11",
-    fill: "#0F172A",
+    fill: "#00105B",
     transform: `rotate(-90 10 ${(H - P) / 2})`
   }, fy.name.replace(/ \(.+\)/, ""), fy.unit ? ` (${fy.unit})` : ""), pred && query && model && pred.neighbors.map((n, i) => {
     const e = model.ex[n.i];
@@ -759,7 +759,7 @@ function ScatterPlot({
       y1: sy(query[1]),
       x2: sx(e.x[0]),
       y2: sy(e.x[1]),
-      stroke: "#334155",
+      stroke: "#2E3566",
       strokeDasharray: "3 3",
       opacity: ".7"
     });
@@ -789,7 +789,7 @@ function ScatterPlot({
       cy: y,
       r: hl ? 7 : 4.5,
       fill: clsColor(classes, it.label),
-      stroke: hl ? "#0F172A" : "#FFFFFF",
+      stroke: hl ? "#00105B" : "#FFFFFF",
       strokeWidth: hl ? 2.5 : 1
     }));
   }), query && React.createElement("g", null, React.createElement("circle", {
@@ -797,13 +797,13 @@ function ScatterPlot({
     cy: sy(query[1]),
     r: "9",
     fill: "none",
-    stroke: "#0F172A",
+    stroke: "#00105B",
     strokeWidth: "2.5"
   }), React.createElement("circle", {
     cx: sx(query[0]),
     cy: sy(query[1]),
     r: "3",
-    fill: "#0F172A"
+    fill: "#00105B"
   })));
 }
 function ConfBars({
@@ -1759,7 +1759,7 @@ function Manikin({
     cx: x,
     cy: i === 0 ? y : y,
     r: i === 0 ? 3.5 : 4,
-    fill: "#0F172A"
+    fill: "#00105B"
   })));
 }
 
@@ -2092,7 +2092,7 @@ function HandView({
       cx: q[0],
       cy: q[1],
       r: i === 0 ? 5 : 3,
-      fill: "#0F172A"
+      fill: "#00105B"
     });
   }));
 }

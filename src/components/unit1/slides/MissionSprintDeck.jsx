@@ -23,7 +23,7 @@ const ACT11_TOPICS = {
     slug: "AI-Foundations",
     th: "ความหมายและแนวคิดเกี่ยวกับ AI",
     tone: "cyan",
-    color: "#0284C7",
+    color: "#2F7FD1",
     items: [
       "ความหมายของปัญญาประดิษฐ์ (Artificial Intelligence)",
       "นิยาม AI ของ John McCarthy (ค.ศ. 1956)",
@@ -53,7 +53,7 @@ const ACT11_TOPICS = {
     slug: "AI-Ethics",
     th: "จริยธรรมและการใช้ AI อย่างรับผิดชอบ",
     tone: "purple",
-    color: "#4F46E5",
+    color: "#6061B6",
     items: [
       "หลักจริยธรรม AI อย่างน้อย 3 ประการ",
       "อคติของข้อมูลและอัลกอริทึม (Data Bias)",
@@ -127,13 +127,13 @@ export default function MissionSprintDeck({ onBack }) {
         <div className="infographic-split">
           <div className="info-left-col">
             <div className="info-hero-banner cyan" style={{ fontSize: "clamp(16px, 1.2vw, 19px)", lineHeight: 1.65 }}>
-              <Icon name="bot" size={24} style={{ color: "#0284C7", marginRight: 8, verticalAlign: "middle" }} />
+              <Icon name="bot" size={24} style={{ color: "#2F7FD1", marginRight: 8, verticalAlign: "middle" }} />
               <b>AIra ชวนทำภารกิจรายบุคคล:</b> นักเรียนแต่ละเลขที่จะได้รับหัวข้อค้นคว้า AI คนละ 1 หัวข้อ (จาก 3 หัวข้อหลัก) เพื่อจัดทำ <b>รายงาน 1 หน้า A4</b> และ <b>โปสเตอร์อินโฟกราฟิก 1 หน้า A4</b> ส่งใน Google Classroom
             </div>
             <div className="chips-grid" style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 14 }}>
               {[
-                ["3", "หัวข้อค้นคว้า", "#0284C7", "layers"],
-                ["2", "ชิ้นงาน A4", "#4F46E5", "fileText"],
+                ["3", "หัวข้อค้นคว้า", "#2F7FD1", "layers"],
+                ["2", "ชิ้นงาน A4", "#6061B6", "fileText"],
                 ["100", "นาที (2 คาบ)", "#15803D", "clock"],
                 ["20", "คะแนนเต็ม", "#B45309", "trophy"]
               ].map(([num, label, col, ic]) => (
@@ -141,7 +141,7 @@ export default function MissionSprintDeck({ onBack }) {
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                     <span style={{ color: col, opacity: 0.9 }}><Icon name={ic} size={24} /></span>
                     <b style={{ fontSize: "clamp(28px, 2.4vw, 38px)", color: col, display: "block", lineHeight: 1.05 }}>{num}</b>
-                    <span style={{ fontSize: "clamp(14.5px, 1.05vw, 17px)", fontWeight: 700, color: "#334155" }}>{label}</span>
+                    <span style={{ fontSize: "clamp(14.5px, 1.05vw, 17px)", fontWeight: 700, color: "#2E3566" }}>{label}</span>
                   </div>
                 </div>
               ))}
@@ -150,12 +150,12 @@ export default function MissionSprintDeck({ onBack }) {
           <div className="info-right-col">
             <div className="info-takeaway-box purple">
               <div className="takeaway-header">
-                <Icon name="sparkle" size={22} style={{ color: "#4338CA" }} />
-                <h4 style={{ color: "#4338CA", fontSize: "clamp(19px, 1.4vw, 23px)" }}>3 ขั้นตอนสั้น ๆ ในการทำกิจกรรม</h4>
+                <Icon name="sparkle" size={22} style={{ color: "#4E4F9E" }} />
+                <h4 style={{ color: "#4E4F9E", fontSize: "clamp(19px, 1.4vw, 23px)" }}>3 ขั้นตอนสั้น ๆ ในการทำกิจกรรม</h4>
               </div>
               <ul className="takeaway-points" style={{ fontSize: "clamp(15.5px, 1.15vw, 18.5px)", lineHeight: 1.65 }}>
-                <li><Icon name="check" size={18} style={{ color: "#0284C7", marginTop: 3 }} /><span><b>สไลด์ 2–4:</b> กดเลขที่ของตนเอง (1–24) เพื่อดูทีมและประเด็นที่ต้องค้นคว้า</span></li>
-                <li><Icon name="check" size={18} style={{ color: "#4F46E5", marginTop: 3 }} /><span><b>สไลด์ 5–6:</b> ดูโครงสร้างชิ้นงานทั้ง 2 ชิ้น และคัดลอก Prompt สร้างโปสเตอร์</span></li>
+                <li><Icon name="check" size={18} style={{ color: "#2F7FD1", marginTop: 3 }} /><span><b>สไลด์ 2–4:</b> กดเลขที่ของตนเอง (1–24) เพื่อดูทีมและประเด็นที่ต้องค้นคว้า</span></li>
+                <li><Icon name="check" size={18} style={{ color: "#6061B6", marginTop: 3 }} /><span><b>สไลด์ 5–6:</b> ดูโครงสร้างชิ้นงานทั้ง 2 ชิ้น และคัดลอก Prompt สร้างโปสเตอร์</span></li>
                 <li><Icon name="check" size={18} style={{ color: "#15803D", marginTop: 3 }} /><span><b>สไลด์ 7–8:</b> ตรวจเช็กลิสต์ 8 ข้อ คัดลอกชื่อไฟล์อัตโนมัติ และส่งงาน</span></li>
               </ul>
               <div style={{ marginTop: 14 }}>
@@ -196,7 +196,7 @@ export default function MissionSprintDeck({ onBack }) {
                     setRoomCode(e.target.value);
                     try { localStorage.setItem("krunok_act11_room", e.target.value); } catch {}
                   }}
-                  style={{ width: 82, padding: "6px 10px", borderRadius: 8, border: "1.5px solid #CBD5E1", textAlign: "center", fontWeight: 700, fontSize: 15 }}
+                  style={{ width: 82, padding: "6px 10px", borderRadius: 8, border: "1.5px solid #D6D0E6", textAlign: "center", fontWeight: 700, fontSize: 15 }}
                 />
               </label>
             </div>
@@ -212,9 +212,9 @@ export default function MissionSprintDeck({ onBack }) {
                     fontWeight: 800,
                     fontSize: 17,
                     cursor: "pointer",
-                    border: studentNo === n ? "2px solid #0284C7" : "1.5px solid #CBD5E1",
-                    background: studentNo === n ? "#0284C7" : "#FFFFFF",
-                    color: studentNo === n ? "#FFFFFF" : "#0F172A"
+                    border: studentNo === n ? "2px solid #2F7FD1" : "1.5px solid #D6D0E6",
+                    background: studentNo === n ? "#2F7FD1" : "#FFFFFF",
+                    color: studentNo === n ? "#FFFFFF" : "#00105B"
                   }}
                 >
                   {n}
@@ -225,8 +225,8 @@ export default function MissionSprintDeck({ onBack }) {
           <div className="info-right-col">
             {!myTopic ? (
               <div className="info-takeaway-box cyan" style={{ textAlign: "center", padding: 36 }}>
-                <Icon name="target" size={42} style={{ color: "#0284C7", marginBottom: 10 }} />
-                <h4 style={{ color: "#0284C7", marginBottom: 8, fontSize: 22 }}>👆 เลือกเลขที่ 1–24 ด้านซ้าย</h4>
+                <Icon name="target" size={42} style={{ color: "#2F7FD1", marginBottom: 10 }} />
+                <h4 style={{ color: "#2F7FD1", marginBottom: 8, fontSize: 22 }}>👆 เลือกเลขที่ 1–24 ด้านซ้าย</h4>
                 <p className="takeaway-body" style={{ fontSize: 17 }}>เพื่อแสดงกลุ่ม หัวข้อค้นคว้า และคำถามชวนคิดประจำตัวของคุณ</p>
               </div>
             ) : (
@@ -266,7 +266,7 @@ export default function MissionSprintDeck({ onBack }) {
                   key={tObj.team}
                   className="list-card"
                   style={{
-                    border: isMine ? `2.5px solid ${tp.color}` : "1.5px solid #CBD5E1",
+                    border: isMine ? `2.5px solid ${tp.color}` : "1.5px solid #D6D0E6",
                     background: "#FFFFFF",
                     padding: 20,
                     borderRadius: 18
@@ -276,8 +276,8 @@ export default function MissionSprintDeck({ onBack }) {
                     <span className={`hl-pill ${tp.tone}`}>TEAM {tObj.team} · {tp.code}</span>
                     {isMine && <span className="hl-pill green">ทีมของฉัน</span>}
                   </div>
-                  <h4 style={{ margin: "6px 0", color: "#0F172A", fontSize: 20 }}>{tp.th}</h4>
-                  <p style={{ fontSize: 15, color: "#475569", marginBottom: 12 }}>สมาชิก {tObj.numbers.length} คน (คลิกเลขที่เพื่อเลือก):</p>
+                  <h4 style={{ margin: "6px 0", color: "#00105B", fontSize: 20 }}>{tp.th}</h4>
+                  <p style={{ fontSize: 15, color: "#474D7A", marginBottom: 12 }}>สมาชิก {tObj.numbers.length} คน (คลิกเลขที่เพื่อเลือก):</p>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
                     {tObj.numbers.map(num => (
                       <button
@@ -290,9 +290,9 @@ export default function MissionSprintDeck({ onBack }) {
                           fontWeight: 700,
                           fontSize: 15,
                           cursor: "pointer",
-                          border: studentNo === num ? `2px solid ${tp.color}` : "1px solid #CBD5E1",
-                          background: studentNo === num ? tp.color : "#F8FAFC",
-                          color: studentNo === num ? "#FFFFFF" : "#0F172A"
+                          border: studentNo === num ? `2px solid ${tp.color}` : "1px solid #D6D0E6",
+                          background: studentNo === num ? tp.color : "#FFFDF6",
+                          color: studentNo === num ? "#FFFFFF" : "#00105B"
                         }}
                       >
                         #{num}
@@ -402,7 +402,7 @@ export default function MissionSprintDeck({ onBack }) {
                 try { localStorage.setItem("krunok_act11_summary", e.target.value); } catch {}
               }}
               placeholder="พิมพ์ประเด็นสำคัญ 3-5 ข้อที่ตรวจสอบแล้วที่นี่..."
-              style={{ width: "100%", padding: 14, borderRadius: 12, border: "1.5px solid #CBD5E1", fontSize: 16 }}
+              style={{ width: "100%", padding: 14, borderRadius: 12, border: "1.5px solid #D6D0E6", fontSize: 16 }}
             />
             <Callout tone="info" title="ปรับแต่ง Prompt ได้ตามต้องการ">
               สามารถระบุโทนสี สไตล์ภาพ หรือการจัดวางเพิ่มเติมได้ แต่ห้ามให้ AI เพิ่มข้อเท็จจริงหรือแหล่งอ้างอิงที่ไม่มีอยู่จริง
@@ -411,12 +411,12 @@ export default function MissionSprintDeck({ onBack }) {
           <div className="info-right-col">
             <div className="info-takeaway-box cyan">
               <div className="takeaway-header" style={{ justifyContent: "space-between" }}>
-                <h4 style={{ color: "#0284C7", fontSize: 20 }}>Prompt สำหรับ {studentNo ? `เลขที่ ${studentNo}` : "คุณ"}</h4>
+                <h4 style={{ color: "#2F7FD1", fontSize: 20 }}>Prompt สำหรับ {studentNo ? `เลขที่ ${studentNo}` : "คุณ"}</h4>
                 <Button size="sm" icon="copy" onClick={() => doCopy(promptString, "คัดลอก Prompt แล้ว!")}>
                   คัดลอก Prompt
                 </Button>
               </div>
-              <p className="takeaway-body" style={{ background: "#FFFFFF", padding: 16, borderRadius: 12, border: "1.5px solid #BAE6FD", fontSize: 16, lineHeight: 1.65 }}>
+              <p className="takeaway-body" style={{ background: "#FFFFFF", padding: 16, borderRadius: 12, border: "1.5px solid #BFD9F5", fontSize: 16, lineHeight: 1.65 }}>
                 {promptString}
               </p>
               {copiedMsg && <div style={{ color: "#15803D", fontWeight: 700, fontSize: 15, marginTop: 8 }}>✓ {copiedMsg}</div>}
@@ -469,7 +469,7 @@ export default function MissionSprintDeck({ onBack }) {
               <button
                 type="button"
                 onClick={() => { setChk({}); try { localStorage.setItem("krunok_act11_checks", "{}"); } catch {} }}
-                style={{ fontSize: 14, color: "#64748B", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                style={{ fontSize: 14, color: "#5A5F8C", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
               >
                 ล้างเครื่องหมาย
               </button>
@@ -498,11 +498,11 @@ export default function MissionSprintDeck({ onBack }) {
                 <h4 style={{ color: "#15803D", fontSize: 20 }}>ชื่อไฟล์มาตรฐานสำหรับส่งงาน</h4>
               </div>
               <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #CBD5E1" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #D6D0E6" }}>
                   <code style={{ fontSize: 15, fontWeight: 700 }}>{reportFileName}</code>
                   <Button size="sm" variant="ghost" onClick={() => doCopy(reportFileName, "คัดลอกชื่อไฟล์รายงานแล้ว!")}>คัดลอก</Button>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #CBD5E1" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #D6D0E6" }}>
                   <code style={{ fontSize: 15, fontWeight: 700 }}>{posterFileName}</code>
                   <Button size="sm" variant="ghost" onClick={() => doCopy(posterFileName, "คัดลอกชื่อไฟล์โปสเตอร์แล้ว!")}>คัดลอก</Button>
                 </div>

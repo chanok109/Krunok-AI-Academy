@@ -91,13 +91,13 @@ export function createSlidesSet1({ finishSlideSet }) {
           <svg viewBox="0 0 360 300" className="ref-illus-svg" aria-hidden="true">
             <defs>
               <linearGradient id="u1WakeBg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#EEF2FF" />
-                <stop offset="100%" stopColor="#E0F2FE" />
+                <stop offset="0%" stopColor="#F1EDF9" />
+                <stop offset="100%" stopColor="#E3EFFB" />
               </linearGradient>
             </defs>
             <circle cx="185" cy="152" r="126" fill="url(#u1WakeBg)" />
             <circle cx="76" cy="54" r="24" fill="#FBBF24" />
-            <rect x="132" y="54" width="96" height="172" rx="18" fill="#1E293B" />
+            <rect x="132" y="54" width="96" height="172" rx="18" fill="#14205E" />
             <rect x="141" y="68" width="78" height="142" rx="11" fill="#FFFFFF" />
             <circle cx="180" cy="118" r="22" fill="#DBEAFE" />
             <circle cx="180" cy="112" r="9" fill="#2563EB" />
@@ -105,7 +105,7 @@ export function createSlidesSet1({ finishSlideSet }) {
             <rect x="155" y="152" width="50" height="8" rx="4" fill="#10B981" />
             <rect x="52" y="110" width="66" height="46" rx="12" fill="#E11D48" />
             <polygon points="78,123 78,143 96,133" fill="#FFFFFF" />
-            <rect x="242" y="66" width="84" height="52" rx="14" fill="#4F46E5" />
+            <rect x="242" y="66" width="84" height="52" rx="14" fill="#6061B6" />
             <circle cx="264" cy="92" r="5" fill="#FFFFFF" />
             <circle cx="284" cy="92" r="5" fill="#FFFFFF" />
             <circle cx="304" cy="92" r="5" fill="#FFFFFF" />
@@ -297,8 +297,8 @@ export function createSlidesSet1({ finishSlideSet }) {
         <div className="u1-concentric-split">
           <div className="u1-concentric-visual">
             <svg viewBox="0 0 320 300" className="u1-rings-svg" aria-label="แผนภาพวงกลมซ้อน AI ML DL GenAI">
-              <circle cx="160" cy="152" r="138" fill="#F5F3FF" stroke="#7C3AED" strokeWidth="3" />
-              <text x="160" y="38" textAnchor="middle" fill="#5B21B6" fontSize="18" fontWeight="800">AI (ปัญญาประดิษฐ์)</text>
+              <circle cx="160" cy="152" r="138" fill="#F7F3FB" stroke="#6E55B0" strokeWidth="3" />
+              <text x="160" y="38" textAnchor="middle" fill="#4A3580" fontSize="18" fontWeight="800">AI (ปัญญาประดิษฐ์)</text>
               <circle cx="160" cy="170" r="105" fill="#EFF6FF" stroke="#2563EB" strokeWidth="3" />
               <text x="160" y="88" textAnchor="middle" fill="#1D4ED8" fontSize="16.5" fontWeight="800">Machine Learning</text>
               <circle cx="160" cy="188" r="72" fill="#ECFDF5" stroke="#059669" strokeWidth="3" />
@@ -497,7 +497,7 @@ export function createSlidesSet1({ finishSlideSet }) {
             <SlideSceneArt kind="asi-core" />
             <div className="ref-badge-row">
               <span className="ref-status-pill purple-solid">✦ แนวคิดในอนาคต</span>
-              <Icon name="sparkle" size={24} style={{ color: "#4F46E5" }} />
+              <Icon name="sparkle" size={24} style={{ color: "#6061B6" }} />
             </div>
             <h4>3. AI เหนือมนุษย์ (ASI)</h4>
             <div className="ref-card-kicker purple">Artificial Super Intelligence</div>
@@ -533,7 +533,7 @@ export function createSlidesSet1({ finishSlideSet }) {
               <li><b>ตอบสนองอย่างเดียว (Reactive):</b> ดูแค่สถานการณ์ตรงหน้า ไม่จำอดีต เช่น Deep Blue เดินหมากรุก <span className="hl-green">(มีแล้ว)</span></li>
               <li><b>ความจำช่วงสั้น (Limited Memory):</b> จำบริบทล่าสุดมาช่วยตัดสินใจ เช่น รถไร้คนขับ แชตบอต <span className="hl-green">(AI ส่วนใหญ่ในปัจจุบัน)</span></li>
               <li><b>เข้าใจจิตใจคน (Theory of Mind):</b> เข้าใจอารมณ์และความตั้งใจของมนุษย์จริง ๆ <span className="hl-gold">(กำลังวิจัย)</span></li>
-              <li><b>ตระหนักรู้ตนเอง (Self-Aware):</b> มีความรู้สึกนึกคิดเป็นของตัวเอง <span style={{ color: "#64748B" }}>(ยังเป็นแนวคิด)</span></li>
+              <li><b>ตระหนักรู้ตนเอง (Self-Aware):</b> มีความรู้สึกนึกคิดเป็นของตัวเอง <span style={{ color: "#5A5F8C" }}>(ยังเป็นแนวคิด)</span></li>
             </ol>
           </div>
           <div className="ref-top-card green">

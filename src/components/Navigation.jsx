@@ -279,7 +279,7 @@ function Sidebar({ collapsed, onToggle }) {
   }, React.createElement("span", {
     style: {
       fontSize: 12.5,
-      color: "#E2E8F0"
+      color: "#E2DCEC"
     }
   }, "\u0E25\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E01\u0E49\u0E32\u0E27\u0E2B\u0E19\u0E49\u0E32\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14?"), React.createElement("div", {
     style: {

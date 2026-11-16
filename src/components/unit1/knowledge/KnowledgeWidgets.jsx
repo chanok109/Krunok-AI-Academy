@@ -229,14 +229,14 @@ export function KsSceneGraphic({ kind }) {
         <svg viewBox="0 0 280 150" className="u1ks-illust-svg" aria-hidden="true">
           <defs>
             <linearGradient id="ksWin1" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#1E293B" />
-              <stop offset="100%" stopColor="#334155" />
+              <stop offset="0%" stopColor="#14205E" />
+              <stop offset="100%" stopColor="#2E3566" />
             </linearGradient>
           </defs>
           <rect width="280" height="150" fill="url(#ksWin1)" />
-          <circle cx="236" cy="28" r="44" fill="#38BDF8" opacity="0.12" />
-          <rect x="34" y="32" width="96" height="68" rx="10" fill="#0F172A" stroke="#64748B" strokeWidth="2" />
-          <text x="82" y="62" textAnchor="middle" fill="#94A3B8" fontSize="13" fontWeight="800" fontFamily="Prompt, sans-serif">RAM ต่ำ</text>
+          <circle cx="236" cy="28" r="44" fill="#7DB8FF" opacity="0.12" />
+          <rect x="34" y="32" width="96" height="68" rx="10" fill="#00105B" stroke="#5A5F8C" strokeWidth="2" />
+          <text x="82" y="62" textAnchor="middle" fill="#9A9BBE" fontSize="13" fontWeight="800" fontFamily="Prompt, sans-serif">RAM ต่ำ</text>
           <text x="82" y="81" textAnchor="middle" fill="#F97316" fontSize="11.5" fontWeight="700" fontFamily="Prompt, sans-serif">คำนวณช้า</text>
           <path d="M150 44l28 24 22-10 42 38" fill="none" stroke="#FB923C" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           <polygon points="246,100 232,98 242,87" fill="#FB923C" />
@@ -250,13 +250,13 @@ export function KsSceneGraphic({ kind }) {
         <svg viewBox="0 0 280 150" className="u1ks-illust-svg" aria-hidden="true">
           <defs>
             <linearGradient id="ksWin2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#1E1B4B" />
-              <stop offset="100%" stopColor="#312E81" />
+              <stop offset="0%" stopColor="#00105B" />
+              <stop offset="100%" stopColor="#2A2F86" />
             </linearGradient>
           </defs>
           <rect width="280" height="150" fill="url(#ksWin2)" />
-          <rect x="28" y="26" width="122" height="26" rx="7" fill="rgba(255,255,255,0.1)" stroke="#818CF8" strokeWidth="1.5" />
-          <text x="89" y="43" textAnchor="middle" fill="#E0E7FF" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">IF... THEN... (กฎซับซ้อน)</text>
+          <rect x="28" y="26" width="122" height="26" rx="7" fill="rgba(255,255,255,0.1)" stroke="#9C9AD8" strokeWidth="1.5" />
+          <text x="89" y="43" textAnchor="middle" fill="#E8E1F4" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">IF... THEN... (กฎซับซ้อน)</text>
           <rect x="28" y="60" width="122" height="26" rx="7" fill="rgba(255,255,255,0.1)" stroke="#FDBA74" strokeWidth="1.5" />
           <text x="89" y="77" textAnchor="middle" fill="#FED7AA" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">ดูแลรักษายาก · ต้นทุนสูง</text>
           <circle cx="206" cy="60" r="28" fill="rgba(251, 146, 60, 0.18)" stroke="#FB923C" strokeWidth="2" />
@@ -342,20 +342,20 @@ export function KsSceneGraphic({ kind }) {
         <svg viewBox="0 0 280 104" className="u1ks-illust-svg" aria-hidden="true">
           <defs>
             <linearGradient id="te4Bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#EEF2FF" />
-              <stop offset="100%" stopColor="#E0E7FF" />
+              <stop offset="0%" stopColor="#F1EDF9" />
+              <stop offset="100%" stopColor="#E8E1F4" />
             </linearGradient>
           </defs>
           <rect width="280" height="104" rx="12" fill="url(#te4Bg)" />
           {/* โล่และแม่กุญแจเข้ารหัส */}
-          <path d="M78 18l34 12v22c0 21-14 34-34 40-20-6-34-19-34-40V30l34-12z" fill="#4F46E5" />
+          <path d="M78 18l34 12v22c0 21-14 34-34 40-20-6-34-19-34-40V30l34-12z" fill="#6061B6" />
           <rect x="66" y="48" width="24" height="19" rx="4" fill="#FFFFFF" />
           <path d="M71 48v-6a7 7 0 0 1 14 0v6" fill="none" stroke="#FFFFFF" strokeWidth="2.8" />
           {/* แถบเข้ารหัส */}
-          <rect x="132" y="24" width="122" height="24" rx="8" fill="#FFFFFF" stroke="#818CF8" strokeWidth="1.8" />
-          <text x="193" y="40" textAnchor="middle" fill="#3730A3" fontSize="11" fontWeight="800" fontFamily="Prompt, sans-serif">🔒 เข้ารหัสข้อมูล</text>
-          <rect x="132" y="56" width="122" height="24" rx="8" fill="#FFFFFF" stroke="#A5B4FC" strokeWidth="1.8" />
-          <text x="193" y="72" textAnchor="middle" fill="#4338CA" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">จำกัดสิทธิ์เข้าถึง</text>
+          <rect x="132" y="24" width="122" height="24" rx="8" fill="#FFFFFF" stroke="#9C9AD8" strokeWidth="1.8" />
+          <text x="193" y="40" textAnchor="middle" fill="#3D3F96" fontSize="11" fontWeight="800" fontFamily="Prompt, sans-serif">🔒 เข้ารหัสข้อมูล</text>
+          <rect x="132" y="56" width="122" height="24" rx="8" fill="#FFFFFF" stroke="#C9B5E0" strokeWidth="1.8" />
+          <text x="193" y="72" textAnchor="middle" fill="#4E4F9E" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">จำกัดสิทธิ์เข้าถึง</text>
         </svg>
       );
 
@@ -364,19 +364,19 @@ export function KsSceneGraphic({ kind }) {
         <svg viewBox="0 0 280 104" className="u1ks-illust-svg" aria-hidden="true">
           <defs>
             <linearGradient id="te5Bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#F5F3FF" />
-              <stop offset="100%" stopColor="#EDE9FE" />
+              <stop offset="0%" stopColor="#F7F3FB" />
+              <stop offset="100%" stopColor="#EFE9F7" />
             </linearGradient>
           </defs>
           <rect width="280" height="104" rx="12" fill="url(#te5Bg)" />
           {/* ผู้คนหลากหลายกลุ่มยืนบนฐานเท่าเทียมกัน */}
-          <circle cx="82" cy="36" r="11" fill="#7C3AED" />
-          <path d="M66 64c3-11 29-11 32 0" fill="#8B5CF6" />
-          <circle cx="140" cy="36" r="11" fill="#0D9488" />
-          <path d="M124 64c3-11 29-11 32 0" fill="#14B8A6" />
+          <circle cx="82" cy="36" r="11" fill="#6E55B0" />
+          <path d="M66 64c3-11 29-11 32 0" fill="#8C74C6" />
+          <circle cx="140" cy="36" r="11" fill="#2F7FD1" />
+          <path d="M124 64c3-11 29-11 32 0" fill="#4D9BE0" />
           <circle cx="198" cy="36" r="11" fill="#2563EB" />
           <path d="M182 64c3-11 29-11 32 0" fill="#3B82F6" />
-          <rect x="46" y="68" width="188" height="22" rx="11" fill="#6D28D9" />
+          <rect x="46" y="68" width="188" height="22" rx="11" fill="#5B4397" />
           <text x="140" y="83" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="800" fontFamily="Prompt, sans-serif">เข้าถึงเท่าเทียม · ไม่เลือกปฏิบัติ</text>
         </svg>
       );
@@ -386,19 +386,19 @@ export function KsSceneGraphic({ kind }) {
         <svg viewBox="0 0 280 104" className="u1ks-illust-svg" aria-hidden="true">
           <defs>
             <linearGradient id="te6Bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#F0FDFA" />
-              <stop offset="100%" stopColor="#CCFBF1" />
+              <stop offset="0%" stopColor="#F2F7FD" />
+              <stop offset="100%" stopColor="#DCEBFB" />
             </linearGradient>
           </defs>
           <rect width="280" height="104" rx="12" fill="url(#te6Bg)" />
           {/* มาตรวัดความแม่นยำและการตรวจติดตาม */}
-          <circle cx="76" cy="52" r="30" fill="#0D9488" />
+          <circle cx="76" cy="52" r="30" fill="#2F7FD1" />
           <path d="M63 52l9 9 18-18" fill="none" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-          <rect x="124" y="22" width="132" height="28" rx="9" fill="#FFFFFF" stroke="#2DD4BF" strokeWidth="1.8" />
-          <text x="190" y="40" textAnchor="middle" fill="#115E59" fontSize="11.5" fontWeight="800" fontFamily="Prompt, sans-serif">ผ่านการทดสอบแม่นยำ</text>
-          <rect x="124" y="56" width="132" height="28" rx="9" fill="#FFFFFF" stroke="#5EEAD4" strokeWidth="1.8" />
-          <path d="M138 70h16l6-8 8 16 6-8h18" fill="none" stroke="#0D9488" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-          <text x="224" y="74" textAnchor="middle" fill="#0F766E" fontSize="10.5" fontWeight="700" fontFamily="Prompt, sans-serif">ตรวจซ้ำ</text>
+          <rect x="124" y="22" width="132" height="28" rx="9" fill="#FFFFFF" stroke="#7DB8FF" strokeWidth="1.8" />
+          <text x="190" y="40" textAnchor="middle" fill="#185596" fontSize="11.5" fontWeight="800" fontFamily="Prompt, sans-serif">ผ่านการทดสอบแม่นยำ</text>
+          <rect x="124" y="56" width="132" height="28" rx="9" fill="#FFFFFF" stroke="#9CC8F5" strokeWidth="1.8" />
+          <path d="M138 70h16l6-8 8 16 6-8h18" fill="none" stroke="#2F7FD1" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          <text x="224" y="74" textAnchor="middle" fill="#1F67B3" fontSize="10.5" fontWeight="700" fontFamily="Prompt, sans-serif">ตรวจซ้ำ</text>
         </svg>
       );
 
@@ -413,11 +413,11 @@ export function KsSceneGraphic({ kind }) {
           <text x="41" y="32" fill="#1E3A8A" fontSize="12" fontWeight="700" fontFamily="Prompt, sans-serif">รูปภาพ / กล้อง</text>
 
           <rect x="16" y="44" width="114" height="24" rx="8" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="1.6" />
-          <circle cx="30" cy="56" r="5" fill="#0284C7" />
+          <circle cx="30" cy="56" r="5" fill="#2F7FD1" />
           <text x="41" y="60" fill="#1E3A8A" fontSize="12" fontWeight="700" fontFamily="Prompt, sans-serif">เสียงพูด / เพลง</text>
 
           <rect x="16" y="72" width="114" height="24" rx="8" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="1.6" />
-          <circle cx="30" cy="84" r="5" fill="#4F46E5" />
+          <circle cx="30" cy="84" r="5" fill="#6061B6" />
           <text x="41" y="88" fill="#1E3A8A" fontSize="12" fontWeight="700" fontFamily="Prompt, sans-serif">ข้อความ / คำสั่ง</text>
 
           {/* ลูกศรส่งเข้าเซ็นเซอร์รับข้อมูล */}
@@ -434,31 +434,31 @@ export function KsSceneGraphic({ kind }) {
     case 'ks-flow-model':
       return (
         <svg viewBox="0 0 280 112" className="u1ks-illust-svg" aria-hidden="true">
-          <rect width="280" height="112" rx="12" fill="#EEF2FF" />
+          <rect width="280" height="112" rx="12" fill="#F1EDF9" />
           {/* เส้นเชื่อมโครงข่ายประสาทเทียม */}
-          <line x1="54" y1="28" x2="138" y2="38" stroke="#818CF8" strokeWidth="2" />
-          <line x1="54" y1="56" x2="138" y2="38" stroke="#818CF8" strokeWidth="2" />
-          <line x1="54" y1="56" x2="138" y2="74" stroke="#818CF8" strokeWidth="2" />
-          <line x1="54" y1="84" x2="138" y2="74" stroke="#818CF8" strokeWidth="2" />
-          <line x1="138" y1="38" x2="222" y2="56" stroke="#6366F1" strokeWidth="2.4" />
-          <line x1="138" y1="74" x2="222" y2="56" stroke="#6366F1" strokeWidth="2.4" />
+          <line x1="54" y1="28" x2="138" y2="38" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="54" y1="56" x2="138" y2="38" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="54" y1="56" x2="138" y2="74" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="54" y1="84" x2="138" y2="74" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="138" y1="38" x2="222" y2="56" stroke="#7475C4" strokeWidth="2.4" />
+          <line x1="138" y1="74" x2="222" y2="56" stroke="#7475C4" strokeWidth="2.4" />
 
           {/* โหนดชั้นรับข้อมูล */}
-          <circle cx="54" cy="28" r="8" fill="#6366F1" />
-          <circle cx="54" cy="56" r="8" fill="#6366F1" />
-          <circle cx="54" cy="84" r="8" fill="#6366F1" />
+          <circle cx="54" cy="28" r="8" fill="#7475C4" />
+          <circle cx="54" cy="56" r="8" fill="#7475C4" />
+          <circle cx="54" cy="84" r="8" fill="#7475C4" />
 
           {/* โหนดชั้นวิเคราะห์รูปแบบ */}
-          <circle cx="138" cy="38" r="12" fill="#4F46E5" />
-          <circle cx="138" cy="74" r="12" fill="#4F46E5" />
+          <circle cx="138" cy="38" r="12" fill="#6061B6" />
+          <circle cx="138" cy="74" r="12" fill="#6061B6" />
 
           {/* โหนดสรุปการอนุมาน */}
-          <circle cx="222" cy="56" r="22" fill="#3730A3" stroke="#A5B4FC" strokeWidth="3" />
+          <circle cx="222" cy="56" r="22" fill="#3D3F96" stroke="#C9B5E0" strokeWidth="3" />
           <text x="222" y="53" textAnchor="middle" fill="#FFFFFF" fontSize="10.5" fontWeight="800" fontFamily="Prompt, sans-serif">AI</text>
-          <text x="222" y="66" textAnchor="middle" fill="#E0E7FF" fontSize="9.5" fontWeight="700" fontFamily="Prompt, sans-serif">อนุมาน</text>
+          <text x="222" y="66" textAnchor="middle" fill="#E8E1F4" fontSize="9.5" fontWeight="700" fontFamily="Prompt, sans-serif">อนุมาน</text>
 
-          <rect x="74" y="88" width="132" height="19" rx="9.5" fill="#FFFFFF" stroke="#A5B4FC" strokeWidth="1.2" />
-          <text x="140" y="101" textAnchor="middle" fill="#312E81" fontSize="10.5" fontWeight="700" fontFamily="Prompt, sans-serif">เทียบกับรูปแบบที่ฝึกมา</text>
+          <rect x="74" y="88" width="132" height="19" rx="9.5" fill="#FFFFFF" stroke="#C9B5E0" strokeWidth="1.2" />
+          <text x="140" y="101" textAnchor="middle" fill="#2A2F86" fontSize="10.5" fontWeight="700" fontFamily="Prompt, sans-serif">เทียบกับรูปแบบที่ฝึกมา</text>
         </svg>
       );
 
@@ -475,7 +475,7 @@ export function KsSceneGraphic({ kind }) {
 
           <rect x="96" y="60" width="168" height="34" rx="10" fill="#FFFFFF" stroke="#6EE7B7" strokeWidth="1.6" />
           <circle cx="114" cy="77" r="6" fill="#F59E0B" />
-          <text x="128" y="81" fill="#0F766E" fontSize="12" fontWeight="700" fontFamily="Prompt, sans-serif">ทำนาย / สร้างคำตอบใหม่</text>
+          <text x="128" y="81" fill="#1F67B3" fontSize="12" fontWeight="700" fontFamily="Prompt, sans-serif">ทำนาย / สร้างคำตอบใหม่</text>
         </svg>
       );
 
@@ -490,7 +490,7 @@ export function KsSceneGraphic({ kind }) {
           <rect x="88" y="22" width="44" height="32" rx="8" fill="#3B82F6" />
           <text x="110" y="42" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800">ขั้น 2</text>
           <path d="M138 38h16" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" />
-          <rect x="158" y="22" width="44" height="32" rx="8" fill="#0284C7" />
+          <rect x="158" y="22" width="44" height="32" rx="8" fill="#2F7FD1" />
           <text x="180" y="42" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800">ขั้น 3</text>
         </svg>
       );
@@ -498,34 +498,34 @@ export function KsSceneGraphic({ kind }) {
     case 'vocab-data':
       return (
         <svg viewBox="0 0 220 76" className="u1ks-illust-svg" aria-hidden="true">
-          <rect width="220" height="76" rx="12" fill="#F0FDFA" />
-          <rect x="24" y="16" width="48" height="44" rx="8" fill="#FFFFFF" stroke="#5EEAD4" strokeWidth="2" />
-          <circle cx="48" cy="33" r="7" fill="#14B8A6" />
-          <rect x="34" y="46" width="28" height="5" rx="2.5" fill="#0D9488" />
-          <rect x="86" y="16" width="48" height="44" rx="8" fill="#FFFFFF" stroke="#5EEAD4" strokeWidth="2" />
-          <rect x="96" y="27" width="28" height="5" rx="2.5" fill="#0F766E" />
-          <rect x="96" y="37" width="22" height="5" rx="2.5" fill="#14B8A6" />
-          <rect x="96" y="47" width="26" height="5" rx="2.5" fill="#5EEAD4" />
-          <rect x="148" y="16" width="48" height="44" rx="8" fill="#0D9488" />
+          <rect width="220" height="76" rx="12" fill="#F2F7FD" />
+          <rect x="24" y="16" width="48" height="44" rx="8" fill="#FFFFFF" stroke="#9CC8F5" strokeWidth="2" />
+          <circle cx="48" cy="33" r="7" fill="#4D9BE0" />
+          <rect x="34" y="46" width="28" height="5" rx="2.5" fill="#2F7FD1" />
+          <rect x="86" y="16" width="48" height="44" rx="8" fill="#FFFFFF" stroke="#9CC8F5" strokeWidth="2" />
+          <rect x="96" y="27" width="28" height="5" rx="2.5" fill="#1F67B3" />
+          <rect x="96" y="37" width="22" height="5" rx="2.5" fill="#4D9BE0" />
+          <rect x="96" y="47" width="26" height="5" rx="2.5" fill="#9CC8F5" />
+          <rect x="148" y="16" width="48" height="44" rx="8" fill="#2F7FD1" />
           <text x="172" y="38" textAnchor="middle" fill="#FFFFFF" fontSize="11.5" fontWeight="800">DATA</text>
-          <text x="172" y="51" textAnchor="middle" fill="#CCFBF1" fontSize="10" fontWeight="700">10,000+</text>
+          <text x="172" y="51" textAnchor="middle" fill="#DCEBFB" fontSize="10" fontWeight="700">10,000+</text>
         </svg>
       );
 
     case 'vocab-model':
       return (
         <svg viewBox="0 0 220 76" className="u1ks-illust-svg" aria-hidden="true">
-          <rect width="220" height="76" rx="12" fill="#EEF2FF" />
-          <line x1="56" y1="22" x2="110" y2="38" stroke="#818CF8" strokeWidth="2" />
-          <line x1="56" y1="54" x2="110" y2="38" stroke="#818CF8" strokeWidth="2" />
-          <line x1="110" y1="38" x2="164" y2="22" stroke="#818CF8" strokeWidth="2" />
-          <line x1="110" y1="38" x2="164" y2="54" stroke="#818CF8" strokeWidth="2" />
-          <circle cx="56" cy="22" r="7" fill="#6366F1" />
-          <circle cx="56" cy="54" r="7" fill="#6366F1" />
-          <circle cx="110" cy="38" r="18" fill="#4F46E5" />
+          <rect width="220" height="76" rx="12" fill="#F1EDF9" />
+          <line x1="56" y1="22" x2="110" y2="38" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="56" y1="54" x2="110" y2="38" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="110" y1="38" x2="164" y2="22" stroke="#9C9AD8" strokeWidth="2" />
+          <line x1="110" y1="38" x2="164" y2="54" stroke="#9C9AD8" strokeWidth="2" />
+          <circle cx="56" cy="22" r="7" fill="#7475C4" />
+          <circle cx="56" cy="54" r="7" fill="#7475C4" />
+          <circle cx="110" cy="38" r="18" fill="#6061B6" />
           <text x="110" y="42" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="800">AI</text>
-          <circle cx="164" cy="22" r="7" fill="#14B8A6" />
-          <circle cx="164" cy="54" r="7" fill="#14B8A6" />
+          <circle cx="164" cy="22" r="7" fill="#4D9BE0" />
+          <circle cx="164" cy="54" r="7" fill="#4D9BE0" />
         </svg>
       );
 
@@ -745,20 +745,20 @@ export function MatryoshkaDiagram() {
             </text>
 
             {/* 2nd: ML */}
-            <circle cx="210" cy="214" r="132" fill="#E0F2FE" stroke="#0284C7" strokeWidth="3" />
-            <text x="210" y="114" textAnchor="middle" fill="#075985" fontSize="17.5" fontWeight="800" fontFamily="Prompt, sans-serif">
+            <circle cx="210" cy="214" r="132" fill="#E3EFFB" stroke="#2F7FD1" strokeWidth="3" />
+            <text x="210" y="114" textAnchor="middle" fill="#185596" fontSize="17.5" fontWeight="800" fontFamily="Prompt, sans-serif">
               Machine Learning (ML)
             </text>
-            <text x="210" y="134" textAnchor="middle" fill="#0369A1" fontSize="12.5" fontWeight="600" fontFamily="Sarabun, sans-serif">
+            <text x="210" y="134" textAnchor="middle" fill="#1F67B3" fontSize="12.5" fontWeight="600" fontFamily="Sarabun, sans-serif">
               เช่น ตัวกรองอีเมลขยะ
             </text>
 
             {/* 3rd: DL */}
-            <circle cx="210" cy="240" r="92" fill="#CCFBF1" stroke="#0D9488" strokeWidth="3" />
-            <text x="210" y="180" textAnchor="middle" fill="#115E59" fontSize="16.5" fontWeight="800" fontFamily="Prompt, sans-serif">
+            <circle cx="210" cy="240" r="92" fill="#DCEBFB" stroke="#2F7FD1" strokeWidth="3" />
+            <text x="210" y="180" textAnchor="middle" fill="#185596" fontSize="16.5" fontWeight="800" fontFamily="Prompt, sans-serif">
               Deep Learning (DL)
             </text>
-            <text x="210" y="199" textAnchor="middle" fill="#0F766E" fontSize="12" fontWeight="600" fontFamily="Sarabun, sans-serif">
+            <text x="210" y="199" textAnchor="middle" fill="#1F67B3" fontSize="12" fontWeight="600" fontFamily="Sarabun, sans-serif">
               เช่น ระบบสแกนใบหน้า
             </text>
 
@@ -840,9 +840,9 @@ export function RiskPyramidDiagram() {
       <div className="u1ks-pyramid-visual">
         <svg viewBox="0 0 360 270" className="u1ks-pyramid-svg" role="img" aria-label="พีระมิดระดับความเสี่ยงของ AI 4 ระดับ">
           {/* Arrow indicator */}
-          <line x1="26" y1="242" x2="26" y2="28" stroke="#64748B" strokeWidth="2.5" strokeDasharray="4 4" />
+          <line x1="26" y1="242" x2="26" y2="28" stroke="#5A5F8C" strokeWidth="2.5" strokeDasharray="4 4" />
           <polygon points="26,18 20,32 32,32" fill="#DC2626" />
-          <text x="26" y="260" textAnchor="middle" fill="#475569" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">คุมเข้มขึ้น</text>
+          <text x="26" y="260" textAnchor="middle" fill="#474D7A" fontSize="11" fontWeight="700" fontFamily="Prompt, sans-serif">คุมเข้มขึ้น</text>
 
           {/* Tier 1 Top */}
           <polygon points="195,18 145,74 245,74" fill="#FEE2E2" stroke="#DC2626" strokeWidth="2.5" />

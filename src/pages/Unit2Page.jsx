@@ -38,14 +38,14 @@ function VisionStage({ mood = "happy" }) {
         <defs>
           <linearGradient id="cvCardGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#F5F8FF" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#EEF2FF" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#F1EDF9" stopOpacity="0.75" />
           </linearGradient>
 
           <radialGradient id="cvIrisRad" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#00F0FF" />
-            <stop offset="35%" stopColor="#38BDF8" />
-            <stop offset="70%" stopColor="#6366F1" />
-            <stop offset="100%" stopColor="#1E1B4B" />
+            <stop offset="35%" stopColor="#7DB8FF" />
+            <stop offset="70%" stopColor="#7475C4" />
+            <stop offset="100%" stopColor="#00105B" />
           </radialGradient>
 
           <filter id="cvGlow" x="-20%" y="-20%" width="140%" height="140%">
@@ -57,7 +57,7 @@ function VisionStage({ mood = "happy" }) {
           </filter>
 
           <pattern id="cvDots" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1.2" fill="rgba(99, 102, 241, 0.22)" />
+            <circle cx="2" cy="2" r="1.2" fill="rgba(116, 117, 196, 0.22)" />
           </pattern>
 
           <clipPath id="cvEyeClip">
@@ -67,7 +67,7 @@ function VisionStage({ mood = "happy" }) {
           <linearGradient id="cvLaserGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#00E5FF" stopOpacity="0" />
             <stop offset="35%" stopColor="#00E5FF" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.85" />
+            <stop offset="50%" stopColor="#7DB8FF" stopOpacity="0.85" />
             <stop offset="65%" stopColor="#00E5FF" stopOpacity="0.4" />
             <stop offset="100%" stopColor="#00E5FF" stopOpacity="0" />
           </linearGradient>
@@ -83,20 +83,20 @@ function VisionStage({ mood = "happy" }) {
           fill="url(#cvCardGrad)"
           stroke="rgba(165, 180, 252, 0.45)"
           strokeWidth="1.5"
-          filter="drop-shadow(0 12px 28px rgba(99, 102, 241, 0.08))"
+          filter="drop-shadow(0 12px 28px rgba(116, 117, 196, 0.08))"
         />
         <rect x="12" y="14" width="456" height="356" rx="26" fill="url(#cvDots)" />
 
         {/* 2. Pixel Matrix (Left side: 5x7 grid) */}
         <g transform="translate(36, 68)">
           {[
-            ["#C7D2FE", "#E0E7FF", "#BAE6FD", "#C7D2FE", "#7DD3FC"],
-            ["#E0E7FF", "#C7D2FE", "#C7D2FE", "#DDD6FE", "#BAE6FD"],
-            ["#BAE6FD", "#C7D2FE", "#A5B4FC", "#C7D2FE", "#E0E7FF"],
-            ["#C7D2FE", "#38BDF8", "#C7D2FE", "#E0E7FF", "#C7D2FE"],
-            ["#E0E7FF", "#C7D2FE", "#E0E7FF", "#C7D2FE", "#BAE6FD"],
-            ["#BAE6FD", "#E0E7FF", "#C7D2FE", "#A5B4FC", "#C7D2FE"],
-            ["#C7D2FE", "#BAE6FD", "#E0E7FF", "#C7D2FE", "#38BDF8"]
+            ["#D9CDEE", "#E8E1F4", "#BFD9F5", "#D9CDEE", "#9CC8F5"],
+            ["#E8E1F4", "#D9CDEE", "#D9CDEE", "#E2D7F0", "#BFD9F5"],
+            ["#BFD9F5", "#D9CDEE", "#C9B5E0", "#D9CDEE", "#E8E1F4"],
+            ["#D9CDEE", "#7DB8FF", "#D9CDEE", "#E8E1F4", "#D9CDEE"],
+            ["#E8E1F4", "#D9CDEE", "#E8E1F4", "#D9CDEE", "#BFD9F5"],
+            ["#BFD9F5", "#E8E1F4", "#D9CDEE", "#C9B5E0", "#D9CDEE"],
+            ["#D9CDEE", "#BFD9F5", "#E8E1F4", "#D9CDEE", "#7DB8FF"]
           ].map((row, r) =>
             row.map((color, c) => (
               <rect
@@ -122,14 +122,14 @@ function VisionStage({ mood = "happy" }) {
             height="26"
             rx="7"
             fill="#FFFFFF"
-            stroke="#C7D2FE"
+            stroke="#D9CDEE"
             strokeWidth="1.2"
-            filter="drop-shadow(0 3px 8px rgba(79, 70, 229, 0.08))"
+            filter="drop-shadow(0 3px 8px rgba(96, 97, 182, 0.08))"
           />
           <text
             x="10"
             y="17"
-            fill="#334155"
+            fill="#2E3566"
             fontSize="10.5"
             fontFamily="JetBrains Mono, monospace"
             fontWeight="700"
@@ -143,14 +143,14 @@ function VisionStage({ mood = "happy" }) {
         <path
           d="M125 155 Q265 65 405 155 Q265 245 125 155 Z"
           fill="#100C26"
-          stroke="#4F46E5"
+          stroke="#6061B6"
           strokeWidth="3"
           filter="url(#cvGlow)"
         />
         <path
           d="M142 155 Q265 80 388 155 Q265 230 142 155 Z"
           fill="none"
-          stroke="rgba(56, 189, 248, 0.35)"
+          stroke="rgba(125, 184, 255, 0.35)"
           strokeWidth="1.2"
         />
 
@@ -173,7 +173,7 @@ function VisionStage({ mood = "happy" }) {
         />
         <circle cx="265" cy="155" r="19" fill="#0A071B" />
         <circle cx="253" cy="144" r="6.5" fill="#FFFFFF" opacity="0.95" />
-        <circle cx="277" cy="165" r="2.5" fill="#38BDF8" opacity="0.85" />
+        <circle cx="277" cy="165" r="2.5" fill="#7DB8FF" opacity="0.85" />
 
         {/* Laser Scanning Beam */}
         <g clipPath="url(#cvEyeClip)">
@@ -234,15 +234,15 @@ function VisionStage({ mood = "happy" }) {
             height="27"
             rx="7"
             fill="#FFFFFF"
-            stroke="#BAE6FD"
+            stroke="#BFD9F5"
             strokeWidth="1.2"
-            filter="drop-shadow(0 3px 10px rgba(14, 165, 233, 0.12))"
+            filter="drop-shadow(0 3px 10px rgba(77, 155, 224, 0.12))"
           />
           <text
             x="75"
             y="17.5"
             textAnchor="middle"
-            fill="#0369A1"
+            fill="#1F67B3"
             fontSize="10.5"
             fontFamily="JetBrains Mono, monospace"
             fontWeight="700"

@@ -149,7 +149,7 @@ function UnitArt({ id }) {
         </g>
 
         {/* Bottom HUD Telemetry */}
-        <text x="18" y="196" fill="#7A8699" fontSize="8" fontFamily="JetBrains Mono, monospace">
+        <text x="18" y="196" fill="#7A7EA3" fontSize="8" fontFamily="JetBrains Mono, monospace">
           TENSORS: 4D | WEIGHT_NORM: L2
         </text>
         <text x="342" y="196" textAnchor="end" fill="#57CCF2" fontSize="8" fontFamily="JetBrains Mono, monospace">
@@ -398,7 +398,7 @@ function UnitArt({ id }) {
             x={layer.x}
             y="182"
             textAnchor="middle"
-            fill={idx === 3 ? "#FFD66D" : "#7A8699"}
+            fill={idx === 3 ? "#FFD66D" : "#7A7EA3"}
             fontSize="8"
             fontFamily="JetBrains Mono, monospace"
             fontWeight="600"
@@ -505,7 +505,7 @@ function UnitArt({ id }) {
         </g>
 
         {/* Bulb Screw Base */}
-        <rect x="103" y="158" width="30" height="9" rx="3" fill="#E6E8F5" stroke="#CBD5E1" strokeWidth="1" />
+        <rect x="103" y="158" width="30" height="9" rx="3" fill="#E6E8F5" stroke="#D6D0E6" strokeWidth="1" />
         <rect x="106" y="168" width="24" height="8" rx="3" fill="#C9C3EE" />
 
         {/* Sparkles */}
@@ -561,7 +561,7 @@ function UnitArt({ id }) {
         <radialGradient id={`${uid}iris`} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#00E5FF" />
           <stop offset="45%" stopColor="#57CCF2" />
-          <stop offset="75%" stopColor="#8B5CF6" />
+          <stop offset="75%" stopColor="#8C74C6" />
           <stop offset="100%" stopColor="#4C1D95" />
         </radialGradient>
 
