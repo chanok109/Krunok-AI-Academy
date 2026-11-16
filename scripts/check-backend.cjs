@@ -86,10 +86,14 @@ const allRight = Object.fromEntries(mod.exports.U1_QUIZ.map(q => [q.id, q.answer
 const quiz = post({ action: 'quiz/submit', unitId: 'unit1', answers: allRight, durationSeconds: 90, attemptId: 'ATT-x' });
 assert.ok(quiz.success, quiz.error); assert.deepStrictEqual([quiz.result.score, quiz.result.maxScore, quiz.result.passed], [10, 10, true]);
 post({ action: 'quiz/submit', unitId: 'unit1', answers: allRight, durationSeconds: 90, attemptId: 'ATT-x' }); // retry: no second log row
+// Unit 1 pass mark is 6/10
+const rightFirst = n => Object.fromEntries(mod.exports.U1_QUIZ.map((q, i) => [q.id, i < n ? q.answer : 'z']));
+assert.strictEqual(post({ action: 'quiz/submit', unitId: 'unit1', answers: rightFirst(6), durationSeconds: 1, attemptId: 'ATT-6' }).result.passed, true);
+assert.strictEqual(post({ action: 'quiz/submit', unitId: 'unit1', answers: rightFirst(5), durationSeconds: 1, attemptId: 'ATT-5' }).result.passed, false);
 assert.ok(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 4, max: 6 }).success);
 assert.match(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 9, max: 6 }).error, /คะแนนไม่ถูกต้อง/);
 assert.match(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 1, max: 6, sessionToken: 'x' }).error, /SESSION_EXPIRED/);
-const log = db.ScoreLog.rows.slice(1).map(r => [r[2], r[4], r[6], r[8], r[9], r[10], r[11], r[12]]);
+const log = db.ScoreLog.rows.slice(1).filter(r => r[9] !== 6 && r[9] !== 5).map(r => [r[2], r[4], r[6], r[8], r[9], r[10], r[11], r[12]]);
 assert.deepStrictEqual(log, [
   ['06999', 'ม.5/1', 'POSTTEST', 'แบบทดสอบหลังเรียน', 10, 10, 100, true],
   ['06999', 'ม.5/1', 'MINIGAME', 'ด่าน 2: Timeline Challenge', 4, 6, 67, ''],

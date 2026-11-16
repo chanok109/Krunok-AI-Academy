@@ -28,8 +28,8 @@ const APP = {
   propDbId: 'DB_SPREADSHEET_ID',
   propSchemaVersion: 'DB_SCHEMA_VERSION',
   lockWaitMs: 30000,
-  // สเปรดชีตเก็บคะแนน/ความก้าวหน้า ใช้เมื่อยังไม่ได้ตั้ง Script Property DB_SPREADSHEET_ID
-  defaultDbId: '11RfS0KoG_xIajpyn_K2euRGX5L0RVUgv_4ys6BjNvUo',
+  // KruNok_AI_Academy_DB (ไฟล์เดียวกับแท็บ Users สำหรับ login) ใช้เมื่อยังไม่ได้ตั้ง Script Property DB_SPREADSHEET_ID
+  defaultDbId: '19TFaVI3mof8KipcstjbtgfYL7Qmywo4xk7vxdnt9oNw',
   maxText: 2000,
 };
 
@@ -47,7 +47,8 @@ const ENUMS = {
  * validations = { ชื่อคอลัมน์: รายการค่าที่อนุญาต } (ใช้ Data Validation ของ Sheets)
  */
 const SCHEMA = {
-  Users: {
+  // บัญชีจาก Google Sign-In (แยกจากแท็บ Users ที่ใช้ login ด้วยรหัสประจำตัว ซึ่งอยู่ในไฟล์เดียวกัน)
+  GoogleUsers: {
     id: 'userId',
     headers: ['userId', 'googleSub', 'email', 'displayName', 'classroom', 'role', 'status', 'createdAt', 'updatedAt'],
     validations: { classroom: APP.classrooms, role: ENUMS.role, status: ENUMS.userStatus },
@@ -101,7 +102,7 @@ const SCHEMA = {
 
 /** ข้อมูลตั้งต้น — ตรงกับรหัสหน่วย/บทเรียนในเว็บไซต์เดิม (UNITS ใน React) */
 const SEED_UNITS = [
-  { unitId: 'unit1', unitName: 'แนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์', passingPercent: 70,
+  { unitId: 'unit1', unitName: 'แนวคิดเบื้องต้นเกี่ยวกับปัญญาประดิษฐ์', passingPercent: 60,
     lessons: ['ความหมายของ AI', 'ประวัติและวิวัฒนาการ AI', 'ประเภทและเทคโนโลยี AI', 'จริยธรรม AI', 'กฎหมายและธรรมาภิบาล AI', 'Deepfake และ AI Safety'], prefix: 'u1-l' },
   { unitId: 'unit2', unitName: 'พื้นฐานคอมพิวเตอร์วิทัศน์', passingPercent: 70,
     lessons: ['Introduction to Computer Vision', 'Digital Image Fundamentals', 'Python & OpenCV Basics', 'Image Processing', 'Face & Object Detection'], prefix: 'u2-l' },
@@ -436,10 +437,10 @@ function seedOwnerAsAdmin_(report) {
     report.problems.push('อ่านอีเมลผู้รันไม่ได้ — ยังไม่ได้เพิ่ม ADMIN (เพิ่มเองในชีต Users ได้)');
     return;
   }
-  const exists = readAll_('Users').some(function (u) { return String(u.email).toLowerCase() === email.toLowerCase(); });
+  const exists = readAll_('GoogleUsers').some(function (u) { return String(u.email).toLowerCase() === email.toLowerCase(); });
   if (exists) { report.skipped.push('admin:' + email + ' (มีอยู่แล้ว)'); return; }
   const t = nowIso_();
-  appendRecord_('Users', { userId: 'USR-' + Utilities.getUuid(), googleSub: '', email: email.toLowerCase(),
+  appendRecord_('GoogleUsers', { userId: 'USR-' + Utilities.getUuid(), googleSub: '', email: email.toLowerCase(),
     displayName: 'Kru Nok', classroom: '', role: 'ADMIN', status: 'ACTIVE', createdAt: t, updatedAt: t });
   report.seeded.push('admin:' + email);
 }
@@ -465,71 +466,71 @@ const OFFICIAL_QUIZ = {
       "id": "q1",
       "lesson": "u1-l1",
       "level": "ความรู้ความเข้าใจ",
-      "answer": "a",
-      "explain": "McCarthy นิยาม AI ว่าเป็นศาสตร์และวิศวกรรมของการสร้างเครื่องจักรที่ฉลาด โดยเฉพาะโปรแกรมคอมพิวเตอร์ที่ฉลาด ไม่จำเป็นต้องมีรูปร่างเป็นหุ่นยนต์"
+      "answer": "b",
+      "explain": "McCarthy นิยาม AI ว่าเป็นศาสตร์และวิศวกรรมของการสร้างเครื่องจักรที่ฉลาด โดยเฉพาะโปรแกรมคอมพิวเตอร์ที่ฉลาด AI จึงไม่จำเป็นต้องมีรูปร่างเป็นหุ่นยนต์ การคำนวณเร็วหรือเก็บข้อมูลได้มากอย่างเดียวก็ยังไม่ใช่ความฉลาด"
     },
     {
       "id": "q2",
       "lesson": "u1-l1",
       "level": "การประยุกต์ใช้",
       "answer": "d",
-      "explain": "การเลือกการกระทำที่ให้ผลลัพธ์ดีที่สุดตามเป้าหมาย (ไปถึงเร็วที่สุดภายใต้ข้อจำกัดจริง) คือแนวคิด Rational Agent หรือ Acting Rationally"
+      "explain": "แอปไม่ได้พยายามคิดหรือขับแบบคน แต่เลือกการกระทำที่ให้ผลดีที่สุดตามเป้าหมาย (ถึงเร็วที่สุดภายใต้สภาพจราจรจริง) ซึ่งคือแนวคิด Rational Agent หรือ Acting Rationally"
     },
     {
       "id": "q3",
       "lesson": "u1-l2",
       "level": "การวิเคราะห์",
-      "answer": "c",
-      "explain": "AI Winter เกิดจากข้อจำกัดด้านพลังคำนวณและข้อมูลทำให้ผลงานไม่เป็นไปตามคำโฆษณา จึงถูกตัดงบวิจัย ส่วนยุคปัจจุบันก้าวกระโดดด้วย 3 ปัจจัยหลักคือ Big Data, GPU และอัลกอริทึมที่ก้าวหน้า"
+      "answer": "a",
+      "explain": "AI Winter เกิดจากความคาดหวังสูงเกินขีดจำกัดของเทคโนโลยียุคนั้น (พลังคำนวณและข้อมูลไม่พอ) ผลงานจึงไม่เป็นไปตามที่โฆษณาและถูกตัดงบวิจัย ส่วนยุคปัจจุบันก้าวกระโดดด้วย 3 ปัจจัยหลัก คือ Big Data, พลังประมวลผล GPU และอัลกอริทึม Deep Learning"
     },
     {
       "id": "q4",
       "lesson": "u1-l3",
       "level": "ความรู้ความเข้าใจ",
-      "answer": "b",
-      "explain": "AI ที่ใช้งานจริงในปัจจุบันทั้งหมดยังเป็น ANI (Narrow AI) คือมีความสามารถสูงเฉพาะด้านที่ถูกฝึกมาเท่านั้น ยังไม่ใช่ AGI หรือ ASI"
+      "answer": "c",
+      "explain": "AI ที่ใช้งานจริงในปัจจุบันทั้งหมดยังเป็น ANI (Artificial Narrow Intelligence) คือเก่งเฉพาะงานที่ถูกฝึกมา แม้แชทบอทจะตอบได้หลายเรื่องก็ยังไม่ใช่ AGI ส่วน ASI และ AI ที่มีจิตสำนึกยังเป็นแนวคิดในอนาคต"
     },
     {
       "id": "q5",
       "lesson": "u1-l3",
       "level": "การวิเคราะห์",
-      "answer": "c",
-      "explain": "โครงสร้างซ้อนชั้นคือ AI ⊃ ML ⊃ DL ⊃ Generative AI โดย DL ใช้โครงข่ายประสาทเทียมหลายชั้น และเป็นรากฐานของ Generative AI ที่สร้างข้อความหรือภาพใหม่ได้"
+      "answer": "d",
+      "explain": "AI เป็นวงกว้างที่สุด ML เป็นส่วนย่อยของ AI และ DL เป็นส่วนย่อยของ ML โดยใช้โครงข่ายประสาทเทียมหลายชั้น Generative AI สมัยใหม่ที่สร้างข้อความหรือภาพใหม่ได้ส่วนใหญ่พัฒนาต่อยอดอยู่ภายใน DL"
     },
     {
       "id": "q6",
       "lesson": "u1-l4",
       "level": "การวิเคราะห์",
-      "answer": "a",
-      "explain": "เมื่อข้อมูลฝึกสอน (Training Data) มีความลำเอียงในอดีต โมเดลจะเรียนรู้และผลิตซ้ำอคตินั้น (Data Bias) ทำให้ผลการตัดสินใจขาดความเป็นธรรม (Fairness)"
+      "answer": "b",
+      "explain": "เมื่อข้อมูลฝึกสอน (Training Data) มีความลำเอียงในอดีต โมเดลจะเรียนรู้และผลิตซ้ำอคตินั้น (Data Bias) ทำให้ผลการตัดสินใจขาดความเป็นธรรม (Fairness) ปัญหานี้ไม่ได้เกิดจากการแต่งข้อมูล การรั่วไหลของข้อมูล หรือการโจมตีระบบ"
     },
     {
       "id": "q7",
       "lesson": "u1-l4",
       "level": "การประยุกต์ใช้",
-      "answer": "c",
-      "explain": "Generative AI ทำนายคำถัดไปตามความน่าจะเป็น จึงสามารถแต่งข้อมูลเท็จที่ฟังดูสมจริงขึ้นมาได้ (Hallucination) ผู้ใช้จึงต้องตรวจสอบกับแหล่งอ้างอิงต้นทางเสมอ"
+      "answer": "a",
+      "explain": "Generative AI ทำนายคำถัดไปตามความน่าจะเป็น จึงแต่งข้อมูลเท็จที่ฟังดูสมจริงได้ (Hallucination) และอาจยืนยันคำตอบผิดซ้ำได้ ผู้ใช้จึงต้องตรวจสอบกับแหล่งอ้างอิงต้นทางที่น่าเชื่อถือเสมอ ส่วนการตัดแหล่งอ้างอิงออกไม่ได้ทำให้เนื้อหาถูกต้องขึ้น"
     },
     {
       "id": "q8",
       "lesson": "u1-l5",
       "level": "การวิเคราะห์",
-      "answer": "b",
-      "explain": "หลักการสำคัญคือกฎหมายควบคุมเข้มงวดตามผลกระทบต่อสิทธิของมนุษย์ โดย Social Scoring ถูกห้ามใช้เด็ดขาด (Unacceptable Risk) ส่วน AI คัดเลือกการศึกษาเป็น High Risk ที่ต้องโปร่งใส ตรวจสอบได้ และมีมนุษย์กำกับ"
+      "answer": "c",
+      "explain": "EU AI Act ควบคุมตามผลกระทบต่อสิทธิของมนุษย์ Social Scoring จัดเป็นความเสี่ยงที่ยอมรับไม่ได้จึงห้ามใช้ ส่วน AI คัดเลือกเข้าศึกษาต่อเป็นความเสี่ยงสูง ใช้ได้แต่ต้องโปร่งใส ตรวจสอบได้ และมีมนุษย์กำกับดูแล"
     },
     {
       "id": "q9",
       "lesson": "u1-l5",
       "level": "ความรู้ความเข้าใจ",
-      "answer": "d",
-      "explain": "พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) มีผลบังคับใช้เต็มรูปแบบตั้งแต่วันที่ 1 มิ.ย. 2565 ข้อมูลชีวมิติและสุขภาพเป็นข้อมูลอ่อนไหว (มาตรา 26) และเจ้าของข้อมูลมีสิทธิเข้าถึง คัดค้าน หรือขอให้ลบข้อมูลได้"
+      "answer": "a",
+      "explain": "พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) มีผลบังคับใช้เต็มรูปแบบตั้งแต่ 1 มิ.ย. 2565 ใช้กับทั้งรัฐและเอกชน การเก็บและใช้ข้อมูลต้องมีฐานทางกฎหมายและแจ้งวัตถุประสงค์ แม้ข้อมูลจะเผยแพร่สาธารณะก็ตาม ข้อมูลชีวมิติและสุขภาพเป็นข้อมูลอ่อนไหว (มาตรา 26) และเจ้าของข้อมูลมีสิทธิถอนความยินยอม คัดค้าน หรือขอให้ลบข้อมูลได้"
     },
     {
       "id": "q10",
       "lesson": "u1-l6",
       "level": "การประยุกต์ใช้",
-      "answer": "c",
-      "explain": "เทคโนโลยี Deepfake และ AI Voice Cloning สามารถปลอมใบหน้าและเสียงแบบเรียลไทม์ได้ วิธีป้องกันที่ดีที่สุดคือหยุดความเร่งด่วน แล้วโทรกลับไปยืนยันผ่านช่องทางหลักที่เรารู้จักอยู่เดิม"
+      "answer": "d",
+      "explain": "Deepfake และ AI Voice Cloning ปลอมใบหน้าและเสียงแบบเรียลไทม์ได้จนดูเป็นธรรมชาติ ข้อมูลส่วนตัวอย่างชื่อเล่นหรือวันเกิดหาได้จากโซเชียลมีเดีย และรูปบัตรประชาชนก็ปลอมได้ วิธีที่ปลอดภัยที่สุดคือหยุดความเร่งด่วน แล้วติดต่อกลับผ่านช่องทางเดิมที่เรารู้จักเพื่อยืนยันตัวตนจริง"
     }
   ],
   "unit2": [
@@ -749,7 +750,7 @@ const OFFICIAL_QUIZ = {
 };
 
 /**
- * ตรวจข้อสอบฝั่งเซิร์ฟเวอร์ คำนวณคะแนน เกณฑ์ผ่าน 70% และบันทึกประวัติการสอบ
+ * ตรวจข้อสอบฝั่งเซิร์ฟเวอร์ คำนวณคะแนน เกณฑ์ผ่านตาม passingPercent ของหน่วย และบันทึกประวัติการสอบ
  * ป้องกันการส่งคำตอบซ้ำด้วย attemptId
  */
 function gradeQuizOnServer_(unitId, answers, durationSeconds, attemptId, userId) {
@@ -793,7 +794,8 @@ function gradeQuizOnServer_(unitId, answers, durationSeconds, attemptId, userId)
 
   const maxScore = qList.length;
   const percentage = Math.round((score / maxScore) * 100);
-  const passed = percentage >= (APP.passPercent || 70);
+  const unitDef = SEED_UNITS.filter(function (u) { return u.unitId === unitId; })[0];
+  const passed = percentage >= (unitDef ? unitDef.passingPercent : 70);
   const now = nowIso_();
 
   // บันทึกลง QuizAttempts
@@ -1049,7 +1051,7 @@ function authenticateAndResolveUser_(authPayload) {
   const email = verified.email;
   const sub = verified.sub;
 
-  const users = readAll_('Users');
+  const users = readAll_('GoogleUsers');
   let user = null;
 
   // ค้นหาตาม googleSub หรือ email
@@ -1089,7 +1091,7 @@ function authenticateAndResolveUser_(authPayload) {
       updatedAt: now
     };
 
-    appendRecord_('Users', newRecord);
+    appendRecord_('GoogleUsers', newRecord);
     writeAuditLog(userId, 'USER_REGISTER', email, 'SUCCESS');
     user = newRecord;
   } else {
@@ -1101,7 +1103,7 @@ function authenticateAndResolveUser_(authPayload) {
     }
     if (Object.keys(patch).length > 0) {
       patch.updatedAt = now;
-      user = updateRecord_('Users', user.userId, patch);
+      user = updateRecord_('GoogleUsers', user.userId, patch);
     }
   }
 
@@ -1247,7 +1249,7 @@ function doPost(e) {
       if (payload.classroom && isClassroom_(payload.classroom)) patch.classroom = payload.classroom;
       if (payload.displayName) patch.displayName = cleanText_(payload.displayName, 100);
       patch.updatedAt = nowIso_();
-      const updated = updateRecord_('Users', user.userId, patch);
+      const updated = updateRecord_('GoogleUsers', user.userId, patch);
       responseData = { success: true, user: updated };
     }
 
@@ -1377,7 +1379,7 @@ function doPost(e) {
       requireRole_(user, ['TEACHER', 'ADMIN']);
 
       const classroom = payload.classroom; // filter by classroom or 'all'
-      const allUsers = readAll_('Users').filter(function (u) {
+      const allUsers = readAll_('GoogleUsers').filter(function (u) {
         return u.role === 'STUDENT';
       });
 
@@ -1460,7 +1462,7 @@ function doPost(e) {
       const user = resolveUser_(payload);
       requireRole_(user, ['TEACHER', 'ADMIN']);
 
-      const users = readAll_('Users').filter(function (u) { return u.role === 'STUDENT'; });
+      const users = readAll_('GoogleUsers').filter(function (u) { return u.role === 'STUDENT'; });
       const attempts = readAll_('QuizAttempts');
       const projects = readAll_('Projects');
 

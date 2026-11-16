@@ -1,7 +1,7 @@
 // Quiz scoring and Progress calculation service
 import { UNITS, countItems, unitReady, QUIZ_PASS_PERCENT, ACHIEVEMENTS } from '../data/courseData.js';
 
-export function scoreQuiz(questions, answers) {
+export function scoreQuiz(questions, answers, passPercent = QUIZ_PASS_PERCENT) {
   const total = questions.length;
   const correct = questions.reduce((n, q) => n + (answers[q.id] === q.answer ? 1 : 0), 0);
   const percent = total ? Math.round((correct / total) * 100) : 0;
@@ -9,7 +9,7 @@ export function scoreQuiz(questions, answers) {
     correct,
     total,
     percent,
-    passed: total > 0 && correct * 100 >= QUIZ_PASS_PERCENT * total
+    passed: total > 0 && correct * 100 >= passPercent * total
   };
 }
 

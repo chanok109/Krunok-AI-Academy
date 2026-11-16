@@ -149,8 +149,9 @@ Deploy:
 
 ## 7. บันทึกคะแนนหน่วยที่ 1 ลง Google Sheet
 
-- ฐานข้อมูลเริ่มต้นคือสเปรดชีต `11RfS0Ko…` (`APP.defaultDbId` ใน `Code.gs`) ถ้าตั้ง Script Property `DB_SPREADSHEET_ID` ไว้ จะใช้ค่านั้นแทน
-- เว็บเรียก Web App ใหม่ `…AKfycbzmbPWG…/exec` (`API_CONFIG.gasEndpoint`)
+- ฐานข้อมูลคือไฟล์ `KruNok_AI_Academy_DB` (`19TFaVI3…`, `APP.defaultDbId` ใน `Code.gs`) ไฟล์เดียวกับแท็บ `Users` ที่ใช้ login ถ้าตั้ง Script Property `DB_SPREADSHEET_ID` ไว้ จะใช้ค่านั้นแทน
+- เว็บเรียก Web App `…AKfycbwn0TUH…/exec` (`API_CONFIG.gasEndpoint`)
+- แท็บบัญชี Google Sign-In ในสคีมาเปลี่ยนชื่อเป็น `GoogleUsers` เพื่อไม่ชนกับแท็บ `Users` (class, no, username, password…) ที่ใช้ login
 - ชีต `ScoreLog` เก็บ 1 แถวต่อการส่ง 1 ครั้ง: เวลา, รหัส, ชื่อ, ห้อง, หน่วย, ประเภท (`MINIGAME` / `POSTTEST`), ชื่อด่าน, คะแนน, คะแนนเต็ม, %, ผ่าน/ไม่ผ่าน
   - มินิเกม 5 ด่าน: action `activity/submit` ส่งทุกครั้งที่เล่นจบหนึ่งด่าน (เกมตรวจในเบราว์เซอร์ เซิร์ฟเวอร์ตรวจแค่ว่าคะแนนอยู่ในช่วง 0 ถึงคะแนนเต็ม)
   - แบบทดสอบหลังเรียน: เซิร์ฟเวอร์ตรวจเองใน `quiz/submit` แล้วบันทึก ส่งซ้ำด้วย `attemptId` เดิมไม่เกิดแถวซ้ำ
@@ -158,10 +159,11 @@ Deploy:
 - ยังไม่ได้ตรวจ: เฉลยหน่วยที่ 2–3 ฝั่งเซิร์ฟเวอร์
 
 Deploy:
-1. เปิด Apps Script ของ Web App `…AKfycbzmbPWG…` วางเนื้อหา `backend/Code.gs` ทั้งไฟล์ (ตอนนี้โปรเจกต์นั้นยังไม่มี `doGet`/`doPost`)
-2. รัน `setupDatabase()` หนึ่งครั้ง เพื่อสร้างชีต `ScoreLog`, `QuizAttempts`, `ProgressSnapshots` ฯลฯ ในสเปรดชีต `11RfS0Ko…` (ไม่ลบข้อมูลเดิม ถ้ามีแท็บชื่อซ้ำแต่หัวคอลัมน์ไม่ตรง จะหยุดและรายงาน)
-3. Deploy → Manage deployments → แก้ deployment เดิม → New version (Execute as: Me, Who has access: Anyone)
-4. บัญชีที่ deploy ต้องเปิดสเปรดชีต `Users` (`19TFaVI3…`) ที่ใช้ login ได้ด้วย
+1. เปิด Apps Script ของ Web App `…AKfycbwn0TUH…` วางเนื้อหา `backend/Code.gs` ทั้งไฟล์
+2. Project Settings → Script Properties: ถ้ามี `DB_SPREADSHEET_ID` ที่ไม่ใช่ `19TFaVI3mof8KipcstjbtgfYL7Qmywo4xk7vxdnt9oNw` ให้ลบหรือแก้ให้ตรง
+3. รัน `setupDatabase()` หนึ่งครั้ง เพื่อสร้างแท็บ `ScoreLog`, `QuizAttempts`, `ProgressSnapshots`, `GoogleUsers` ฯลฯ ใน `KruNok_AI_Academy_DB` (แท็บ `Users` เดิมไม่ถูกแตะ ถ้ามีแท็บชื่อซ้ำแต่หัวคอลัมน์ไม่ตรง จะหยุดและรายงาน)
+4. Deploy → Manage deployments → แก้ deployment เดิม → New version (Execute as: Me, Who has access: Anyone)
+5. ไฟล์ `AI_unit1` (`11RfS0Ko…`) และ Web App `…AKfycbzmbPWG…` ไม่ได้ใช้แล้ว
 
 ## 6. ความเสี่ยง
 

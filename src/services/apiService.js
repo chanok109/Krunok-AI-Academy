@@ -1,5 +1,5 @@
 // Authentication and API service adapter for KruNok AI Academy
-import { COURSE, KEYS, LEGACY_KEYS, API_CONFIG } from '../data/courseData.js';
+import { COURSE, KEYS, LEGACY_KEYS, API_CONFIG, quizPassPercent } from '../data/courseData.js';
 import { storage } from './storageService.js';
 import { scoreQuiz } from './quizService.js';
 
@@ -263,7 +263,7 @@ export const api = {
     }
 
     // Demo Mode fallback
-    const r = scoreQuiz(questions, answers);
+    const r = scoreQuiz(questions, answers, quizPassPercent(unitId));
     return {
       duplicate: false,
       attemptId,

@@ -17,6 +17,9 @@ export const COURSE = {
 };
 
 export const QUIZ_PASS_PERCENT = 70;
+// เกณฑ์ผ่านเฉพาะหน่วย (ต้องตรงกับ passingPercent ใน backend/Code.gs)
+export const QUIZ_PASS_BY_UNIT = { unit1: 60 };
+export const quizPassPercent = unitId => QUIZ_PASS_BY_UNIT[unitId] ?? QUIZ_PASS_PERCENT;
 
 export const UNITS = [
   {
@@ -191,7 +194,7 @@ export const NAV_ORDER = ["home", "unit1", "unit2", "unit3", "unit4"];
 export const API_CONFIG = {
   authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "sheets",
   dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "sheets",
-  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "https://script.google.com/macros/s/AKfycbzmbPWGV5DgyRbUnT_jh5HgKSiKPzWGxVyYrz7nOCZuG9CZi_rI0QRJ625tkRGkqu9N1g/exec",
+  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "https://script.google.com/macros/s/AKfycbwn0TUHLRizk49v3tS7X4296ZWd6CbkVaa3iM0Wr5U6OT_JE1WiavS7crdOYZeIi7vV/exec",
   googleClientId: typeof window !== 'undefined' && localStorage.getItem('krunok_google_client_id') ? localStorage.getItem('krunok_google_client_id') : ""
 };
 

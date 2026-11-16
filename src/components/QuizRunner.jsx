@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
-import { QUIZ_PASS_PERCENT } from '../data/courseData.js';
+import { quizPassPercent } from '../data/courseData.js';
 import { scoreQuiz } from '../services/quizService.js';
 import { api } from '../services/apiService.js';
 import { Icon, AIraBot, GlassCard, Button, Badge, ProgressBar, ProgressRing } from './UIPrimitives.jsx';
@@ -33,7 +33,8 @@ function QuizRunner({
   const [warn, setWarn] = useState(false);
   const [onlyWrong, setOnlyWrong] = useState(true);
   const topRef = useRef(null);
-  const need = Math.ceil(QUIZ_PASS_PERCENT / 100 * questions.length);
+  const passPct = quizPassPercent(unitId);
+  const need = Math.ceil(passPct / 100 * questions.length);
   const best = attempts.reduce((b, a) => !b || a.percent > b.percent ? a : b, null);
   const toTop = () => setTimeout(() => scrollToEl(topRef.current), 30);
   const start = () => {
@@ -105,7 +106,7 @@ function QuizRunner({
     className: "mono"
   }, questions.length), React.createElement("span", null, "\u0E04\u0E30\u0E41\u0E19\u0E19\u0E40\u0E15\u0E47\u0E21")), React.createElement("div", null, React.createElement("b", {
     className: "mono"
-  }, QUIZ_PASS_PERCENT, "%"), React.createElement("span", null, "\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E1C\u0E48\u0E32\u0E19 (", need, " \u0E02\u0E49\u0E2D\u0E02\u0E36\u0E49\u0E19\u0E44\u0E1B)")), React.createElement("div", null, React.createElement("b", {
+  }, passPct, "%"), React.createElement("span", null, "\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E1C\u0E48\u0E32\u0E19 (", need, " \u0E02\u0E49\u0E2D\u0E02\u0E36\u0E49\u0E19\u0E44\u0E1B)")), React.createElement("div", null, React.createElement("b", {
     className: "mono"
   }, attempts.length), React.createElement("span", null, "\u0E04\u0E23\u0E31\u0E49\u0E07\u0E17\u0E35\u0E48\u0E17\u0E33\u0E41\u0E25\u0E49\u0E27"))), React.createElement("p", {
     style: {
@@ -260,7 +261,7 @@ function QuizRunner({
   }, result.passed ? React.createElement(Badge, {
     tone: "ok",
     dot: true
-  }, "\u0E1C\u0E48\u0E32\u0E19\u0E40\u0E01\u0E13\u0E11\u0E4C ", QUIZ_PASS_PERCENT, "%") : React.createElement(Badge, {
+  }, "\u0E1C\u0E48\u0E32\u0E19\u0E40\u0E01\u0E13\u0E11\u0E4C ", passPct, "%") : React.createElement(Badge, {
     tone: "demo",
     dot: true
   }, "\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E1C\u0E48\u0E32\u0E19 \u0E15\u0E49\u0E2D\u0E07\u0E44\u0E14\u0E49 ", need, " \u0E02\u0E49\u0E2D\u0E02\u0E36\u0E49\u0E19\u0E44\u0E1B"), React.createElement(Badge, null, React.createElement(Icon, {
@@ -275,7 +276,10 @@ function QuizRunner({
     mood: result.passed ? "cheer" : "think",
     float: false,
     title: ""
-  }))), reviewLessons.length > 0 && React.createElement("div", {
+  }))), React.createElement("div", {
+    className: "q-card",
+    role: "status"
+  }, result.passed ? React.createElement(React.Fragment, null, React.createElement("strong", null, "พี่ AIra ขอแสดงความยินดีด้วย! ได้ ", result.correct, "/", result.total, " คะแนน"), React.createElement("span", null, "เธอเข้าใจเนื้อหาหน่วยนี้ดีมาก พี่ภูมิใจในตัวเธอนะ")) : React.createElement(React.Fragment, null, React.createElement("strong", null, "ได้ ", result.correct, "/", result.total, " คะแนน พี่ AIra เป็นกำลังใจให้นะ"), React.createElement("span", null, "อีกแค่ ", Math.max(need - result.correct, 1), " คะแนนก็ผ่านแล้ว ลองอ่านคำอธิบายข้อที่ผิดด้านล่าง แล้วทำใหม่ได้เลย"), React.createElement("span", null, "ข้อที่ตอบผิด: ", wrongQs.map(q => "ข้อ " + (order.indexOf(q) + 1)).join(", ")))), reviewLessons.length > 0 && React.createElement("div", {
     className: "q-card"
   }, React.createElement("strong", null, "\u0E2B\u0E31\u0E27\u0E02\u0E49\u0E2D\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19"), React.createElement("span", {
     className: "hint"
