@@ -31,6 +31,7 @@ function QuizRunner({
   const [startAt, setStartAt] = useState(0);
   const [result, setResult] = useState(null);
   const [warn, setWarn] = useState(false);
+  const [sending, setSending] = useState(false);
   const topRef = useRef(null);
   const passPct = quizPassPercent(unitId);
   const need = Math.ceil(passPct / 100 * questions.length);
@@ -55,6 +56,8 @@ function QuizRunner({
       setWarn(true);
       return;
     }
+    if (sending) return; // กันกดซ้ำ: แต่ละครั้งสร้าง attemptId ใหม่ จะได้คะแนนซ้ำในชีต
+    setSending(true);
     const durationSec = Math.round((Date.now() - startAt) / 1000);
     const attemptId = 'ATT-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
     try {
@@ -91,6 +94,8 @@ function QuizRunner({
         title: "เกิดข้อผิดพลาดในการส่งข้อสอบ",
         message: err.message || "กรุณาลองใหม่อีกครั้ง"
       });
+    } finally {
+      setSending(false);
     }
   };
   if (phase === "intro") return React.createElement("div", {
@@ -124,104 +129,83 @@ function QuizRunner({
   if (phase === "run") {
     const q = order[i];
     const answeredCount = order.length - unanswered.length;
-    return React.createElement("div", {
-      className: "act",
-      ref: topRef
-    }, React.createElement("div", {
-      className: "quiz-top"
-    }, React.createElement("span", {
-      className: "qnum"
-    }, "\u0E02\u0E49\u0E2D ", i + 1, " / ", order.length), React.createElement(Badge, {
-      tone: LEVEL_TONE[q.level]
-    }, q.level)), React.createElement("div", {
-      style: {
-        display: "grid",
-        gap: 6
-      }
-    }, React.createElement(ProgressBar, {
-      value: Math.round(answeredCount / order.length * 100),
-      label: "\u0E08\u0E33\u0E19\u0E27\u0E19\u0E02\u0E49\u0E2D\u0E17\u0E35\u0E48\u0E15\u0E2D\u0E1A\u0E41\u0E25\u0E49\u0E27"
-    }), React.createElement("span", {
-      className: "hint"
-    }, "\u0E15\u0E2D\u0E1A\u0E41\u0E25\u0E49\u0E27 ", answeredCount, "/", order.length, " \u0E02\u0E49\u0E2D")), React.createElement("fieldset", {
-      className: "q-card quiz-q",
-      key: q.id
-    }, React.createElement("legend", {
-      className: "qtext"
-    }, q.q), q.code && React.createElement(CodeBlock, {
-      code: q.code
-    }), React.createElement("div", {
-      className: "opts col"
-    }, q.opts.map((o, k) => React.createElement("button", {
-      key: o.id,
-      type: "button",
-      className: "opt",
-      "aria-pressed": ans[q.id] === o.id,
-      onClick: () => {
-        setAns(s => ({
-          ...s,
-          [q.id]: o.id
-        }));
-        setWarn(false);
-      }
-    }, React.createElement("span", {
-      className: "opt-letter"
-    }, LETTERS[k]), React.createElement("span", {
-      style: {
-        flex: 1
-      }
-    }, o.text))))), React.createElement("div", {
-      className: "step-nav"
-    }, React.createElement(Button, {
-      variant: "ghost",
-      icon: "chevL",
-      disabled: i === 0,
-      onClick: () => setI(i - 1)
-    }, "\u0E02\u0E49\u0E2D\u0E01\u0E48\u0E2D\u0E19\u0E2B\u0E19\u0E49\u0E32"), i < order.length - 1 ? React.createElement(Button, {
-      iconRight: "chevR",
-      onClick: () => setI(i + 1)
-    }, "\u0E02\u0E49\u0E2D\u0E16\u0E31\u0E14\u0E44\u0E1B") : React.createElement(Button, {
-      icon: "check",
-      className: "btn-glow",
-      onClick: submit
-    }, "\u0E2A\u0E48\u0E07\u0E04\u0E33\u0E15\u0E2D\u0E1A")), React.createElement("div", {
-      style: {
-        display: "grid",
-        gap: 8
-      }
-    }, React.createElement("span", {
-      className: "hint"
-    }, "\u0E44\u0E1B\u0E22\u0E31\u0E07\u0E02\u0E49\u0E2D"), React.createElement("div", {
-      className: "palette"
-    }, order.map((x, k) => React.createElement("button", {
-      key: x.id,
-      type: "button",
-      className: ans[x.id] ? "ans" : "",
-      "aria-current": k === i ? "true" : undefined,
-      "aria-label": `ข้อ ${k + 1} ${ans[x.id] ? "ตอบแล้ว" : "ยังไม่ตอบ"}`,
-      onClick: () => setI(k)
-    }, k + 1)))), i < order.length - 1 && React.createElement(Button, {
-      variant: "ghost",
-      icon: "check",
-      onClick: submit,
-      style: {
-        alignSelf: "flex-start"
-      }
-    }, "\u0E2A\u0E48\u0E07\u0E04\u0E33\u0E15\u0E2D\u0E1A (", answeredCount, "/", order.length, ")"), warn && unanswered.length > 0 && React.createElement("div", {
-      className: "form-err",
-      role: "alert"
-    }, React.createElement(Icon, {
-      name: "alert",
-      size: 18
-    }), React.createElement("span", null, "\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E15\u0E2D\u0E1A ", unanswered.length, " \u0E02\u0E49\u0E2D: ", unanswered.map(k => React.createElement("button", {
-      key: k,
-      type: "button",
-      className: "link-btn",
-      onClick: () => {
-        setI(k);
-        setWarn(false);
-      }
-    }, "\u0E02\u0E49\u0E2D ", k + 1)), " \u0E15\u0E2D\u0E1A\u0E43\u0E2B\u0E49\u0E04\u0E23\u0E1A\u0E01\u0E48\u0E2D\u0E19\u0E2A\u0E48\u0E07")));
+    const isLast = i === order.length - 1;
+    return (
+      <div className="act qz-run" ref={topRef}>
+        <div className="qz-head">
+          <span className="qz-count">ข้อ <b>{i + 1}</b> / {order.length}</span>
+          <Badge tone={LEVEL_TONE[q.level]}>{q.level}</Badge>
+        </div>
+        <div className="qz-progress">
+          <ProgressBar value={Math.round(answeredCount / order.length * 100)} label="จำนวนข้อที่ตอบแล้ว" />
+          <span className="hint">ตอบแล้ว {answeredCount}/{order.length} ข้อ</span>
+        </div>
+
+        <fieldset className="qz-card" key={q.id}>
+          <legend className="qz-question">
+            <span className="qz-qnum" aria-hidden="true">{i + 1}</span>
+            <span>{q.q}</span>
+          </legend>
+          {q.code && <CodeBlock code={q.code} />}
+          <div className="qz-opts">
+            {q.opts.map((o, k) => {
+              const picked = ans[q.id] === o.id;
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  className="qz-opt"
+                  aria-pressed={picked}
+                  onClick={() => { setAns(s => ({ ...s, [q.id]: o.id })); setWarn(false); }}
+                >
+                  <span className="qz-letter">{LETTERS[k]}</span>
+                  <span className="qz-opt-text">{o.text}</span>
+                  {picked && <Icon name="check" size={18} />}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <div className="step-nav">
+          <Button variant="ghost" icon="chevL" disabled={i === 0} onClick={() => setI(i - 1)}>ข้อก่อนหน้า</Button>
+          {isLast
+            ? <Button icon="check" className="btn-glow" disabled={sending} onClick={submit}>{sending ? "กำลังส่ง…" : "ส่งคำตอบ"}</Button>
+            : <Button iconRight="chevR" onClick={() => setI(i + 1)}>ข้อถัดไป</Button>}
+        </div>
+
+        <nav className="qz-jump" aria-label="ไปยังข้อ">
+          <span className="hint">ไปยังข้อ</span>
+          <div className="qz-dots">
+            {order.map((x, k) => (
+              <button
+                key={x.id}
+                type="button"
+                className={ans[x.id] ? "done" : ""}
+                aria-current={k === i ? "true" : undefined}
+                aria-label={`ข้อ ${k + 1} ${ans[x.id] ? "ตอบแล้ว" : "ยังไม่ตอบ"}`}
+                onClick={() => setI(k)}
+              >
+                {k + 1}
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        {warn && unanswered.length > 0 && (
+          <div className="form-err" role="alert">
+            <Icon name="alert" size={18} />
+            <span>
+              ยังไม่ได้ตอบ {unanswered.length} ข้อ:{" "}
+              {unanswered.map(k => (
+                <button key={k} type="button" className="link-btn" onClick={() => { setI(k); setWarn(false); }}>ข้อ {k + 1}</button>
+              ))}{" "}
+              ตอบให้ครบก่อนส่ง
+            </span>
+          </div>
+        )}
+      </div>
+    );
   }
   const wrongNums = order.map((q, k) => result.answers[q.id] !== q.answer ? k + 1 : 0).filter(Boolean);
   // หลายบทอาจชี้ไปใบความรู้เดียวกัน: แสดงปุ่มละหนึ่งหัวข้อ
