@@ -235,6 +235,14 @@ export const api = {
     storage.remove(KEYS.progress);
   },
 
+  /** ส่งความก้าวหน้าทั้งก้อนไปรวมกับข้อมูลบนเซิร์ฟเวอร์ แล้วคืนก้อนที่รวมแล้ว (null ในโหมด demo) */
+  async syncProgress(progress, overallPercent) {
+    if (api.isDemo()) return null;
+    const resp = await api.callGas('progress/sync', { progress, overallPercent });
+    if (!resp || !resp.success) throw new Error(resp?.error || 'ซิงก์ความก้าวหน้าไม่สำเร็จ');
+    return resp.progress;
+  },
+
   /**
    * ส่งและตรวจข้อสอบ (Server-Side Quiz Grading)
    * เมื่ออยู่ในโหมด Production: ส่งไปยัง Google Apps Script ให้ตรวจคะแนนที่เซิร์ฟเวอร์

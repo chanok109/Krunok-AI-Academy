@@ -49,6 +49,60 @@ export function AppProvider({ children }) {
   const dismiss = useCallback(id => setToasts(xs => xs.filter(x => x.id !== id)), []);
   const warnedRef = useRef(false);
 
+  // --- ซิงก์ความก้าวหน้ากับเซิร์ฟเวอร์ (เซิร์ฟเวอร์เป็นคนรวมข้อมูลหลายเครื่อง) ---
+  const progressRef = useRef(progress);
+  const versionRef = useRef(0); // เพิ่มทุกครั้งที่แก้ในเครื่อง
+  const syncTimerRef = useRef(null);
+  const syncWarnedRef = useRef(false);
+
+  const syncNow = useCallback(async () => {
+    clearTimeout(syncTimerRef.current);
+    const u = storage.get(KEYS.user, null);
+    if (!u || !u.signedIn || !u.sessionToken || api.isDemo()) return;
+    const sentVersion = versionRef.current;
+    const local = progressRef.current;
+    try {
+      const server = await api.syncProgress(local, buildSummary(local).overall);
+      syncWarnedRef.current = false;
+      if (!server) return;
+      if (versionRef.current !== sentVersion) {
+        // มีการแก้ระหว่างรอ: ส่งใหม่ แทนที่จะเขียนทับของที่เพิ่งทำ
+        syncTimerRef.current = setTimeout(syncNow, 1000);
+        return;
+      }
+      const next = normalizeProgress(server);
+      progressRef.current = next;
+      setProgress(next);
+      api.saveProgress(next);
+    } catch (e) {
+      if (!syncWarnedRef.current) {
+        syncWarnedRef.current = true;
+        notify({
+          type: 'error',
+          title: 'ยังบันทึกความก้าวหน้าขึ้นเซิร์ฟเวอร์ไม่ได้',
+          message: `${e.message} — ข้อมูลยังอยู่ในเครื่องนี้ และจะลองส่งใหม่อัตโนมัติ`,
+          duration: 8000
+        });
+      }
+    }
+  }, [notify]);
+
+  const scheduleSync = useCallback(() => {
+    clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(syncNow, 3000);
+  }, [syncNow]);
+
+  useEffect(() => {
+    const onOnline = () => syncNow();
+    const onHide = () => document.visibilityState === 'hidden' && syncNow();
+    window.addEventListener('online', onOnline);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      document.removeEventListener('visibilitychange', onHide);
+    };
+  }, [syncNow]);
+
   useEffect(() => {
     const onStorage = e => {
       if (e.key === KEYS.progress) setProgress(normalizeProgress(storage.get(KEYS.progress, null)));
@@ -63,6 +117,9 @@ export function AppProvider({ children }) {
       setProgress(prev => {
         const next = updater(structuredClone(prev));
         next.updatedAt = new Date().toISOString();
+        progressRef.current = next;
+        versionRef.current += 1;
+        scheduleSync();
         api.saveProgress(next).then(ok => {
           if (!ok && !warnedRef.current) {
             warnedRef.current = true;
@@ -78,8 +135,17 @@ export function AppProvider({ children }) {
         return next;
       });
     },
-    [notify]
+    [notify, scheduleSync]
   );
+
+  // ให้ syncNow ส่งค่าล่าสุดเสมอ (รวมกรณีโหลดครั้งแรก/login/แท็บอื่นแก้)
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
+    if (status === 'ready') syncNow();
+  }, [status, syncNow]);
 
   const markItem = useCallback(
     (unitId, kind, itemId, done = true) => {
@@ -121,16 +187,18 @@ export function AppProvider({ children }) {
   );
 
   const login = useCallback(async (credentials) => {
+    const prev = storage.get(KEYS.user, null);
     const u = await auth.signIn(credentials);
-    let p = await api.loadProgress();
-    if (!p || !p.units) {
-      p = emptyProgress();
-      await api.saveProgress(p);
-    }
+    // เครื่องใช้ร่วมกัน: ความก้าวหน้าในเครื่องเป็นของคนก่อน ห้ามนำไปรวมกับบัญชีนี้
+    const sameOwner = prev && String(prev.userId) === String(u.userId);
+    const p = sameOwner ? normalizeProgress(await api.loadProgress()) : emptyProgress();
+    await api.saveProgress(p);
+    progressRef.current = p;
     setProgress(p);
     setUser(u);
+    syncNow();
     return u;
-  }, []);
+  }, [syncNow]);
 
   const loginGoogle = useCallback(async ({ idToken, classroom, displayName }) => {
     const u = await googleAuth.signInWithToken({ idToken, classroom, displayName });
@@ -141,12 +209,15 @@ export function AppProvider({ children }) {
   const resume = useCallback(async () => {
     const u = await auth.resume(user);
     setUser(u);
+    syncNow();
     return u;
-  }, [user]);
+  }, [user, syncNow]);
 
   const logout = useCallback(async () => {
-    if (user) setUser(await auth.signOut(user));
-  }, [user]);
+    if (!user) return;
+    await syncNow(); // ส่งของค้างก่อนออก
+    setUser(await auth.signOut(user));
+  }, [user, syncNow]);
 
   const forgetUser = useCallback(async () => {
     await auth.forget();

@@ -80,6 +80,11 @@ const SCHEMA = {
     headers: ['assessmentId', 'userId', 'unitId', 'projectId', 'rubricScores', 'totalScore', 'maxScore', 'feedback', 'teacherId', 'updatedAt'],
     validations: {},
   },
+  ProgressSnapshots: {
+    id: 'userId',
+    headers: ['userId', 'classroom', 'progressJson', 'overallPercent', 'clientUpdatedAt', 'serverUpdatedAt'],
+    validations: {},
+  },
   AuditLogs: {
     id: 'logId',
     headers: ['logId', 'timestamp', 'actorId', 'action', 'targetId', 'result'],
@@ -303,7 +308,14 @@ function toCell_(v) {
   if (typeof v === 'boolean') return v;
   if (v instanceof Date) return v.toISOString();
   if (typeof v === 'object') return cleanText_(JSON.stringify(v), 10000);
-  return cleanText_(v);
+  const s = cleanText_(v);
+  // กัน Sheets แปลงรหัสอย่าง "06999" เป็นตัวเลข 6999 (เลข 0 นำหน้าหาย)
+  return /^0\d+$/.test(s) ? "'" + s : s;
+}
+
+/** เทียบรหัสผู้ใช้ โดยไม่สนเลข 0 นำหน้าที่ Sheets อาจตัดทิ้งไปแล้วในแถวเก่า */
+function sameId_(a, b) {
+  return String(a).replace(/^0+/, '') === String(b).replace(/^0+/, '');
 }
 
 function rowToRecord_(headers, row) {
@@ -845,6 +857,130 @@ function gradeQuizOnServer_(unitId, answers, durationSeconds, attemptId, userId)
    8) AUTHENTICATION & ACCESS CONTROL (RBAC) (Phase B)
    ===================================================================== */
 
+/* ---------------------------------------------------------------------
+   PROGRESS SYNC — เก็บความก้าวหน้าทั้งก้อนเป็น JSON 1 แถวต่อนักเรียน
+   --------------------------------------------------------------------- */
+const PROGRESS_MAX_JSON = 45000; // ต่ำกว่าเพดานเซลล์ Sheets (50,000 ตัวอักษร)
+
+function str_(v, max) { return typeof v === 'string' ? v.slice(0, max) : null; }
+function newer_(a, b) { return !a ? b : !b ? a : (String(b) > String(a) ? b : a); }
+
+/** รับเฉพาะหน่วย/ฟิลด์ที่รู้จัก ตัดความยาว — ข้อมูลจากเบราว์เซอร์เชื่อไม่ได้ */
+function sanitizeProgress_(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  const ids = function (x) {
+    return Array.isArray(x) ? x.filter(function (s) { return typeof s === 'string' && s.length <= 100; }).slice(0, 300) : [];
+  };
+  const out = { version: 1, updatedAt: str_(raw.updatedAt, 40), lastVisited: null };
+  if (raw.lastVisited && SEED_UNITS.some(function (u) { return u.unitId === raw.lastVisited.unitId; })) {
+    out.lastVisited = { unitId: raw.lastVisited.unitId, at: str_(raw.lastVisited.at, 40) };
+  }
+  SEED_UNITS.forEach(function (unit) {
+    const r = raw[unit.unitId] && typeof raw[unit.unitId] === 'object' ? raw[unit.unitId] : {};
+    const scores = {};
+    Object.keys(r.activityScores || {}).slice(0, 100).forEach(function (k) {
+      const s = r.activityScores[k] || {};
+      if (k.length > 100) return;
+      scores[k] = { best: Number(s.best) || 0, last: Number(s.last) || 0, max: Number(s.max) || 0, attempts: Number(s.attempts) || 0, at: str_(s.at, 40) };
+    });
+    const reflections = {};
+    Object.keys(r.reflections || {}).slice(0, 50).forEach(function (k) {
+      if (k.length <= 100 && typeof r.reflections[k] === 'string') reflections[k] = r.reflections[k].slice(0, APP.maxText);
+    });
+    let project = r.project && typeof r.project === 'object' ? r.project : null;
+    if (project && JSON.stringify(project).length > 10000) project = null;
+    out[unit.unitId] = {
+      completedLessons: ids(r.completedLessons),
+      completedActivities: ids(r.completedActivities),
+      completedPractice: ids(r.completedPractice),
+      quizAttempts: [],
+      activityScores: scores,
+      reflections: reflections,
+      project: project,
+      completed: r.completed === true,
+      visitedAt: str_(r.visitedAt, 40),
+      updatedAt: str_(r.updatedAt, 40),
+    };
+  });
+  return out;
+}
+
+/** รวมสองก้อน: ความก้าวหน้าเพิ่มขึ้นอย่างเดียว จึง union / ค่ามากสุด / ใหม่กว่า (b = ที่เพิ่งส่งมา) */
+function mergeProgress_(a, b) {
+  const union = function (x, y) {
+    const seen = {}; const out = [];
+    x.concat(y).forEach(function (s) { if (!seen[s]) { seen[s] = true; out.push(s); } });
+    return out;
+  };
+  const out = { version: 1, updatedAt: newer_(a.updatedAt, b.updatedAt), lastVisited: null };
+  out.lastVisited = !a.lastVisited ? b.lastVisited : !b.lastVisited ? a.lastVisited
+    : (String(b.lastVisited.at) > String(a.lastVisited.at) ? b.lastVisited : a.lastVisited);
+  SEED_UNITS.forEach(function (unit) {
+    const x = a[unit.unitId], y = b[unit.unitId];
+    const scores = Object.assign({}, x.activityScores);
+    Object.keys(y.activityScores).forEach(function (k) {
+      const p = scores[k], q = y.activityScores[k];
+      if (!p) { scores[k] = q; return; }
+      const latest = String(q.at) > String(p.at) ? q : p;
+      scores[k] = { best: Math.max(p.best, q.best), last: latest.last, max: latest.max, attempts: Math.max(p.attempts, q.attempts), at: latest.at };
+    });
+    const px = x.project, py = y.project;
+    out[unit.unitId] = {
+      completedLessons: union(x.completedLessons, y.completedLessons),
+      completedActivities: union(x.completedActivities, y.completedActivities),
+      completedPractice: union(x.completedPractice, y.completedPractice),
+      quizAttempts: [],
+      activityScores: scores,
+      // reflections ไม่มีเวลากำกับ: ข้อความที่เพิ่งส่งมาชนะ
+      reflections: Object.assign({}, x.reflections, y.reflections),
+      project: !px ? py : !py ? px : (String(py.updatedAt) >= String(px.updatedAt) ? py : px),
+      completed: x.completed || y.completed,
+      visitedAt: newer_(x.visitedAt, y.visitedAt),
+      updatedAt: newer_(x.updatedAt, y.updatedAt),
+    };
+  });
+  return out;
+}
+
+/** ประวัติสอบมาจากชีต QuizAttempts ที่เซิร์ฟเวอร์ตรวจเองเท่านั้น (นักเรียนแก้คะแนนไม่ได้) */
+function attachQuizAttempts_(progress, userId) {
+  readAll_('QuizAttempts')
+    .filter(function (r) { return sameId_(r.userId, userId) && progress[r.unitId]; })
+    .sort(function (p, q) { return String(p.submittedAt) < String(q.submittedAt) ? -1 : 1; })
+    .forEach(function (r) {
+      progress[r.unitId].quizAttempts.push({
+        correct: Number(r.score) || 0,
+        total: Number(r.maxScore) || 0,
+        percent: Number(r.percentage) || 0,
+        passed: r.passed === true || String(r.passed).toUpperCase() === 'TRUE',
+        at: String(r.submittedAt),
+        durationSec: Number(r.durationSeconds) || 0,
+        attemptId: String(r.attemptId),
+      });
+    });
+  SEED_UNITS.forEach(function (u) { progress[u.unitId].quizAttempts = progress[u.unitId].quizAttempts.slice(-20); });
+  return progress;
+}
+
+function syncProgress_(user, payload) {
+  const incoming = sanitizeProgress_(payload.progress);
+  const found = findRowById_('ProgressSnapshots', user.userId);
+  let stored = null;
+  if (found && found.record.progressJson) {
+    try { stored = sanitizeProgress_(JSON.parse(found.record.progressJson)); } catch (e) { stored = null; }
+  }
+  const merged = attachQuizAttempts_(stored ? mergeProgress_(stored, incoming) : incoming, user.userId);
+  const json = JSON.stringify(merged);
+  if (json.length > PROGRESS_MAX_JSON) throw new Error('PROGRESS_TOO_LARGE');
+  const percent = Math.max(0, Math.min(100, Math.round(Number(payload.overallPercent) || 0)));
+  // userId ใส่ ' นำหน้าเพื่อให้เป็นข้อความเสมอ, progressJson เขียนตรงเพราะ toCell_ ตัดที่ 2,000 ตัวอักษร
+  const row = ["'" + user.userId, cleanText_(user.classroom || '', 40), json, percent, toCell_(merged.updatedAt), nowIso_()];
+  const sh = getSheet_('ProgressSnapshots');
+  if (found) sh.getRange(found.rowIndex, 1, 1, row.length).setValues([row]);
+  else sh.appendRow(row);
+  return merged;
+}
+
 /**
  * ยืนยันตัวตนผ่าน Google ID Token (Google Identity Services)
  * ตรวจสอบความถูกต้องของ Token ผ่าน Google OAuth2 Tokeninfo Endpoint
@@ -1327,6 +1463,12 @@ function doPost(e) {
       });
 
       responseData = { success: true, classStats: classStats, totalStudents: users.length };
+    }
+
+    // 10. Progress: Sync whole progress snapshot (merge with server copy)
+    else if (action === 'progress/sync') {
+      const user = resolveUser_(payload);
+      responseData = { success: true, progress: syncProgress_(user, payload) };
     }
 
     else {
