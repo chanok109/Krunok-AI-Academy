@@ -39,8 +39,8 @@ function HeroCircuit() {
     const host = canvas.closest('.rt-hero');
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const halo = glow('70, 225, 205');
-    const blob = glow('20, 140, 150');
+    const halo = glow('201, 181, 224');
+    const blob = glow('96, 97, 182');
     let w = 0, h = 0, quiet = [], nodes = [], edges = [], blobs = [], raf = 0, visible = true, last = 0, t = 0, narrow = false;
     let adj = [], pulses = [];
     const pointer = { x: -9999, y: -9999 };
@@ -155,11 +155,11 @@ function HeroCircuit() {
         const d = Math.hypot(a.x - c.x, a.y - c.y);
         const f = Math.max(0, 1 - d / 190);
         ctx.globalAlpha = k * (0.28 + f * 0.32);
-        ctx.strokeStyle = '#22B8B0';
+        ctx.strokeStyle = '#8C8FE0';
         ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke();
         ctx.globalAlpha = k * (0.6 + f * 0.4);
-        ctx.strokeStyle = '#D8FFF8';
+        ctx.strokeStyle = '#F1EAFF';
         ctx.lineWidth = 1.1;
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke();
       }

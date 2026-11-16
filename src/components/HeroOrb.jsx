@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
 // fires by itself every few seconds. three.js is loaded lazily after the page.
 // Sits only in AIra's corner and fades out before the unit timeline.
 
-const NODE_COLORS = ['#CFF2EC', '#CFF2EC', '#CFF2EC', '#FF6F91', '#B28CFF', '#5FE0B5', '#FFC266'];
+const NODE_COLORS = ['#E4DAF5', '#E4DAF5', '#E4DAF5', '#FF6F91', '#7DB8FF', '#5FE0B5', '#FFC266'];
 
 const GLSL_MOTION = /* glsl */ `
   uniform float uTime;
@@ -183,7 +183,7 @@ function HeroOrb({ anchor = ".rt-aira-bot", lift = 55, px = 500 }) {
           varying float vAlpha;
           varying float vWave;
           void main() {
-            vec3 col = mix(vec3(0.45, 0.9, 0.85), vec3(1.0), vWave);
+            vec3 col = mix(vec3(0.79, 0.71, 0.88), vec3(1.0), vWave);
             gl_FragColor = vec4(col, (0.16 + vWave * 0.7) * vAlpha);
           }
         `
