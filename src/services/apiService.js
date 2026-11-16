@@ -291,7 +291,7 @@ export const api = {
    */
   async saveActivity(unitId, actId, score, max) {
     if (!api.isDemo()) {
-      return api.callGas('progress/saveActivity', { unitId, actId, score, max });
+      return api.callGas('activity/submit', { unitId, actId, score, max });
     }
     return { success: true };
   },

@@ -28,6 +28,8 @@ const APP = {
   propDbId: 'DB_SPREADSHEET_ID',
   propSchemaVersion: 'DB_SCHEMA_VERSION',
   lockWaitMs: 30000,
+  // สเปรดชีตเก็บคะแนน/ความก้าวหน้า ใช้เมื่อยังไม่ได้ตั้ง Script Property DB_SPREADSHEET_ID
+  defaultDbId: '11RfS0KoG_xIajpyn_K2euRGX5L0RVUgv_4ys6BjNvUo',
   maxText: 2000,
 };
 
@@ -78,6 +80,11 @@ const SCHEMA = {
   Assessments: {
     id: 'assessmentId',
     headers: ['assessmentId', 'userId', 'unitId', 'projectId', 'rubricScores', 'totalScore', 'maxScore', 'feedback', 'teacherId', 'updatedAt'],
+    validations: {},
+  },
+  ScoreLog: {
+    id: 'logId',
+    headers: ['logId', 'submittedAt', 'userId', 'displayName', 'classroom', 'unitId', 'scoreType', 'itemId', 'itemName', 'score', 'maxScore', 'percentage', 'passed'],
     validations: {},
   },
   ProgressSnapshots: {
@@ -161,7 +168,7 @@ function setupDatabase() {
 
 /** ตรวจโครงสร้างแบบอ่านอย่างเดียว — ไม่สร้าง ไม่แก้ ไม่ลบ */
 function checkDatabase() {
-  const id = PropertiesService.getScriptProperties().getProperty(APP.propDbId);
+  const id = PropertiesService.getScriptProperties().getProperty(APP.propDbId) || APP.defaultDbId;
   if (!id) throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูล — รัน setupDatabase() ก่อน');
   const ss = SpreadsheetApp.openById(id);
   const result = { url: ss.getUrl(), sheets: {}, ok: true };
@@ -229,7 +236,7 @@ function writeAuditLog(actorId, action, targetId, result) {
    ===================================================================== */
 
 function getDb_() {
-  const id = PropertiesService.getScriptProperties().getProperty(APP.propDbId);
+  const id = PropertiesService.getScriptProperties().getProperty(APP.propDbId) || APP.defaultDbId;
   if (!id) throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูล — รัน setupDatabase() ก่อน');
   return SpreadsheetApp.openById(id);
 }
@@ -338,7 +345,7 @@ function nowIso_() { return new Date().toISOString(); }
 
 function getOrCreateSpreadsheet_(report) {
   const props = PropertiesService.getScriptProperties();
-  const id = props.getProperty(APP.propDbId);
+  const id = props.getProperty(APP.propDbId) || APP.defaultDbId;
   if (id) {
     try {
       const existing = SpreadsheetApp.openById(id);
@@ -459,105 +466,70 @@ const OFFICIAL_QUIZ = {
       "lesson": "u1-l1",
       "level": "ความรู้ความเข้าใจ",
       "answer": "a",
-      "explain": "McCarthy นิยาม AI ว่า \"the science and engineering of making intelligent machines, especially intelligent computer programs\" AI ไม่จำเป็นต้องมีรูปร่างเป็นหุ่นยนต์ และการคำนวณเร็วอย่างเดียวไม่ใช่ความฉลาด"
+      "explain": "McCarthy นิยาม AI ว่าเป็นศาสตร์และวิศวกรรมของการสร้างเครื่องจักรที่ฉลาด โดยเฉพาะโปรแกรมคอมพิวเตอร์ที่ฉลาด ไม่จำเป็นต้องมีรูปร่างเป็นหุ่นยนต์"
     },
     {
       "id": "q2",
       "lesson": "u1-l1",
       "level": "การประยุกต์ใช้",
       "answer": "d",
-      "explain": "แอปไม่ได้พยายามคิดหรือทำตัวเหมือนคน แต่เลือกการกระทำที่ให้ผลดีที่สุดตามเป้าหมาย (ถึงเร็วที่สุด) ซึ่งคือแนวคิด Rational Agent ของ Acting Rationally"
+      "explain": "การเลือกการกระทำที่ให้ผลลัพธ์ดีที่สุดตามเป้าหมาย (ไปถึงเร็วที่สุดภายใต้ข้อจำกัดจริง) คือแนวคิด Rational Agent หรือ Acting Rationally"
     },
     {
       "id": "q3",
       "lesson": "u1-l2",
-      "level": "ความรู้ความเข้าใจ",
-      "answer": "b",
-      "explain": "John McCarthy และคณะใช้คำว่า Artificial Intelligence ในข้อเสนอการประชุมที่ Dartmouth จึงถือเป็นจุดกำเนิดของสาขา AI ส่วน Deep Blue ชนะหมากรุกในปี ค.ศ. 1997"
+      "level": "การวิเคราะห์",
+      "answer": "c",
+      "explain": "AI Winter เกิดจากข้อจำกัดด้านพลังคำนวณและข้อมูลทำให้ผลงานไม่เป็นไปตามคำโฆษณา จึงถูกตัดงบวิจัย ส่วนยุคปัจจุบันก้าวกระโดดด้วย 3 ปัจจัยหลักคือ Big Data, GPU และอัลกอริทึมที่ก้าวหน้า"
     },
     {
       "id": "q4",
-      "lesson": "u1-l2",
-      "level": "การวิเคราะห์",
-      "answer": "c",
-      "explain": "ช่วง AI Winter เกิดจากคำสัญญาเกินจริง ขณะที่คอมพิวเตอร์ยังช้าและข้อมูลยังน้อย ผลงานไม่เป็นไปตามคาด ผู้ให้ทุนจึงลดการสนับสนุน"
+      "lesson": "u1-l3",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "b",
+      "explain": "AI ที่ใช้งานจริงในปัจจุบันทั้งหมดยังเป็น ANI (Narrow AI) คือมีความสามารถสูงเฉพาะด้านที่ถูกฝึกมาเท่านั้น ยังไม่ใช่ AGI หรือ ASI"
     },
     {
       "id": "q5",
-      "lesson": "u1-l2",
+      "lesson": "u1-l3",
       "level": "การวิเคราะห์",
-      "answer": "a",
-      "explain": "ความสำเร็จของ AlexNet ในปี ค.ศ. 2012 มาจากข้อมูลภาพจำนวนมหาศาล (ImageNet) พลังของ GPU และเทคนิคการฝึกโครงข่ายประสาทที่ดีขึ้น"
+      "answer": "c",
+      "explain": "โครงสร้างซ้อนชั้นคือ AI ⊃ ML ⊃ DL ⊃ Generative AI โดย DL ใช้โครงข่ายประสาทเทียมหลายชั้น และเป็นรากฐานของ Generative AI ที่สร้างข้อความหรือภาพใหม่ได้"
     },
     {
       "id": "q6",
-      "lesson": "u1-l3",
-      "level": "ความรู้ความเข้าใจ",
-      "answer": "b",
-      "explain": "ระบบที่ใช้อยู่จริงทำงานได้ดีในขอบเขตที่ฝึกมา จึงเป็น ANI ส่วน AGI ยังไม่มีระบบใดที่ได้รับการยอมรับอย่างกว้างขวาง และ ASI เป็นแนวคิดเชิงสมมติฐาน"
+      "lesson": "u1-l4",
+      "level": "การวิเคราะห์",
+      "answer": "a",
+      "explain": "เมื่อข้อมูลฝึกสอน (Training Data) มีความลำเอียงในอดีต โมเดลจะเรียนรู้และผลิตซ้ำอคตินั้น (Data Bias) ทำให้ผลการตัดสินใจขาดความเป็นธรรม (Fairness)"
     },
     {
       "id": "q7",
-      "lesson": "u1-l3",
-      "level": "การวิเคราะห์",
+      "lesson": "u1-l4",
+      "level": "การประยุกต์ใช้",
       "answer": "c",
-      "explain": "AI เป็นวงกว้างที่สุด ML อยู่ใน AI และ DL อยู่ใน ML ส่วน GenAI แบ่งตามเป้าหมายคือการสร้างเนื้อหาใหม่ ระบบ GenAI สมัยใหม่ส่วนใหญ่ใช้ Deep Learning"
+      "explain": "Generative AI ทำนายคำถัดไปตามความน่าจะเป็น จึงสามารถแต่งข้อมูลเท็จที่ฟังดูสมจริงขึ้นมาได้ (Hallucination) ผู้ใช้จึงต้องตรวจสอบกับแหล่งอ้างอิงต้นทางเสมอ"
     },
     {
       "id": "q8",
-      "lesson": "u1-l3",
-      "level": "การประยุกต์ใช้",
-      "answer": "d",
-      "explain": "การสร้างภาพใหม่จากข้อความ (Text-to-Image) เป็นงานของ Generative AI ส่วนตัวเลือกอื่นใช้ทำนาย จำแนก หรือตัดสินใจตามกฎ ไม่ได้สร้างเนื้อหาใหม่"
+      "lesson": "u1-l5",
+      "level": "การวิเคราะห์",
+      "answer": "b",
+      "explain": "หลักการสำคัญคือกฎหมายควบคุมเข้มงวดตามผลกระทบต่อสิทธิของมนุษย์ โดย Social Scoring ถูกห้ามใช้เด็ดขาด (Unacceptable Risk) ส่วน AI คัดเลือกการศึกษาเป็น High Risk ที่ต้องโปร่งใส ตรวจสอบได้ และมีมนุษย์กำกับ"
     },
     {
       "id": "q9",
-      "lesson": "u1-l4",
-      "level": "การวิเคราะห์",
-      "answer": "a",
-      "explain": "ข้อมูลฝึกไม่สมดุล (Data Bias) ทำให้โมเดลแม่นยำกับบางกลุ่มน้อยกว่า ส่งผลให้เกิดความไม่เป็นธรรม (Fairness) ต่อคนกลุ่มนั้น เช่นที่งานวิจัย Gender Shades พบ"
+      "lesson": "u1-l5",
+      "level": "ความรู้ความเข้าใจ",
+      "answer": "d",
+      "explain": "พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) มีผลบังคับใช้เต็มรูปแบบตั้งแต่วันที่ 1 มิ.ย. 2565 ข้อมูลชีวมิติและสุขภาพเป็นข้อมูลอ่อนไหว (มาตรา 26) และเจ้าของข้อมูลมีสิทธิเข้าถึง คัดค้าน หรือขอให้ลบข้อมูลได้"
     },
     {
       "id": "q10",
-      "lesson": "u1-l4",
-      "level": "การประยุกต์ใช้",
-      "answer": "c",
-      "explain": "Generative AI อาจสร้างข้อมูลที่ฟังดูน่าเชื่อแต่ไม่จริง (Hallucination) การถามซ้ำไม่ช่วยยืนยัน ต้องตรวจกับแหล่งต้นทาง เช่น ราชกิจจานุเบกษา หรือเว็บไซต์หน่วยงานรัฐ"
-    },
-    {
-      "id": "q11",
-      "lesson": "u1-l5",
-      "level": "ความรู้ความเข้าใจ",
-      "answer": "b",
-      "explain": "ตามข้อมูลที่ตรวจสอบได้ ร่างนี้ผ่านการรับฟังความคิดเห็นแล้ว และอยู่ระหว่างขั้นตอนเสนอต่อคณะกรรมการกฤษฎีกา คณะรัฐมนตรี และรัฐสภา จึงยังไม่ใช่กฎหมายที่มีผลบังคับ ส่วน EU AI Act ใช้ในสหภาพยุโรป ไม่ใช่กฎหมายไทย"
-    },
-    {
-      "id": "q12",
-      "lesson": "u1-l5",
-      "level": "การวิเคราะห์",
-      "answer": "d",
-      "explain": "PDPA มีฐานทางกฎหมายหลายฐาน ความยินยอมเป็นเพียงหนึ่งในนั้น การจัดทำระเบียนการศึกษาอาจอาศัยฐานหน้าที่ตามกฎหมายหรือภารกิจสาธารณะได้ แต่ยังต้องแจ้งวัตถุประสงค์ ใช้ตามที่แจ้ง และรักษาความปลอดภัยของข้อมูล"
-    },
-    {
-      "id": "q13",
-      "lesson": "u1-l5",
-      "level": "การวิเคราะห์",
-      "answer": "a",
-      "explain": "AI ที่ตัดสินการเข้าถึงการศึกษาอยู่ในรายการความเสี่ยงสูงตาม Annex III ต้องมีการบริหารความเสี่ยง คุณภาพข้อมูล เอกสาร และการกำกับโดยมนุษย์ ซึ่งหลัง Digital Omnibus กำหนดให้ใช้ตั้งแต่ 2 ธ.ค. 2570"
-    },
-    {
-      "id": "q14",
       "lesson": "u1-l6",
       "level": "การประยุกต์ใช้",
       "answer": "c",
-      "explain": "AI โคลนเสียงจากคลิปสั้น ๆ ได้ และรูปบัตรก็ปลอมหรือขโมยมาได้ วิธีที่ดีที่สุดคือยืนยันผ่านช่องทางที่เรารู้จักอยู่แล้ว ถ้าสงสัยว่าถูกหลอก แจ้งสายด่วน 1441"
-    },
-    {
-      "id": "q15",
-      "lesson": "u1-l6",
-      "level": "การวิเคราะห์",
-      "answer": "b",
-      "explain": "การติดป้ายว่าใช้ AI ช่วยเรื่องความโปร่งใส แต่ไม่ได้ทำให้การใช้ภาพคนอื่นโดยไม่ยินยอมถูกต้อง ภาพปลอมทำร้ายจิตใจและชื่อเสียงได้จริง และกลุ่มปิดก็ถูกส่งต่อได้"
+      "explain": "เทคโนโลยี Deepfake และ AI Voice Cloning สามารถปลอมใบหน้าและเสียงแบบเรียลไทม์ได้ วิธีป้องกันที่ดีที่สุดคือหยุดความเร่งด่วน แล้วโทรกลับไปยืนยันผ่านช่องทางหลักที่เรารู้จักอยู่เดิม"
     }
   ],
   "unit2": [
@@ -962,6 +934,38 @@ function attachQuizAttempts_(progress, userId) {
   return progress;
 }
 
+/* ---------------------------------------------------------------------
+   SCORE LOG — 1 แถวต่อการส่ง 1 ครั้ง (มินิเกม/แบบทดสอบหลังเรียน) ให้ครูเปิดดูในชีตได้ตรงๆ
+   --------------------------------------------------------------------- */
+const SCORE_ITEM_NAMES = {
+  'u1-a1': 'ด่าน 1: AI or Not AI',
+  'u1-a2': 'ด่าน 2: Timeline Challenge',
+  'u1-a3': 'ด่าน 3: Tech Explorer',
+  'u1-a4': 'ด่าน 4: Ethics Challenge',
+  'u1-a5': 'ด่าน 5: Deepfake Detective',
+  'posttest': 'แบบทดสอบหลังเรียน',
+};
+
+function logScore_(user, unitId, scoreType, itemId, score, maxScore, passed) {
+  score = Number(score) || 0;
+  maxScore = Number(maxScore) || 0;
+  appendRecord_('ScoreLog', {
+    logId: 'SCR-' + Utilities.getUuid().slice(0, 8),
+    submittedAt: nowIso_(),
+    userId: String(user.userId),
+    displayName: user.displayName || '',
+    classroom: user.classroom || '',
+    unitId: unitId,
+    scoreType: scoreType,
+    itemId: itemId,
+    itemName: SCORE_ITEM_NAMES[itemId] || itemId,
+    score: score,
+    maxScore: maxScore,
+    percentage: maxScore ? Math.round((score / maxScore) * 100) : 0,
+    passed: passed === null || passed === undefined ? '' : Boolean(passed),
+  });
+}
+
 function syncProgress_(user, payload) {
   const incoming = sanitizeProgress_(payload.progress);
   const found = findRowById_('ProgressSnapshots', user.userId);
@@ -1257,7 +1261,23 @@ function doPost(e) {
         payload.attemptId,
         user.userId
       );
+      if (!result.duplicate) {
+        logScore_(user, payload.unitId, 'POSTTEST', 'posttest', result.score, result.maxScore, result.passed);
+      }
       responseData = { success: true, result: result };
+    }
+
+    // 3b. Mini-game: record a stage score (graded in the browser)
+    else if (action === 'activity/submit') {
+      const user = resolveUser_(payload);
+      const unitId = String(payload.unitId || '');
+      const actId = String(payload.actId || '');
+      const max = Number(payload.max), score = Number(payload.score);
+      if (!SEED_UNITS.some(function (u) { return u.unitId === unitId; })) throw new Error('ไม่รู้จักหน่วย ' + unitId);
+      if (!/^[a-z0-9-]{1,40}$/.test(actId)) throw new Error('รหัสกิจกรรมไม่ถูกต้อง');
+      if (!(max >= 1 && max <= 100 && score >= 0 && score <= max)) throw new Error('คะแนนไม่ถูกต้อง');
+      logScore_(user, unitId, 'MINIGAME', actId, score, max, null);
+      responseData = { success: true };
     }
 
     // 4. Progress: Get Student Progress (Phase C)

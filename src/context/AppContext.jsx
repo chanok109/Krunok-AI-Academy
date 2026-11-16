@@ -252,8 +252,21 @@ export function AppProvider({ children }) {
         u.completed = unitPercent(UNITS.find(x => x.id === unitId), u) === 100;
         return p;
       });
+      // บันทึกคะแนนรอบนี้ลงชีต ScoreLog ให้ครู (คะแนนสูงสุดยังอยู่ในความก้าวหน้าที่ซิงก์อยู่แล้ว)
+      api.saveActivity(unitId, actId, score, max).then(
+        r => {
+          if (r && r.success === false) throw new Error(r.error);
+        }
+      ).catch(e =>
+        notify({
+          type: 'error',
+          title: 'ส่งคะแนนมินิเกมให้ครูไม่สำเร็จ',
+          message: `${e.message || e} — ลองเล่นด่านนี้ใหม่อีกครั้งเมื่อเชื่อมต่อได้`,
+          duration: 8000
+        })
+      );
     },
-    [commit]
+    [commit, notify]
   );
 
   const saveProject = useCallback(

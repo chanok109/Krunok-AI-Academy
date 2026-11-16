@@ -191,7 +191,7 @@ export const NAV_ORDER = ["home", "unit1", "unit2", "unit3", "unit4"];
 export const API_CONFIG = {
   authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "sheets",
   dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "sheets",
-  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "https://script.google.com/macros/s/AKfycbwn0TUHLRizk49v3tS7X4296ZWd6CbkVaa3iM0Wr5U6OT_JE1WiavS7crdOYZeIi7vV/exec",
+  gasEndpoint: typeof window !== 'undefined' && localStorage.getItem('krunok_gas_endpoint') ? localStorage.getItem('krunok_gas_endpoint') : "https://script.google.com/macros/s/AKfycbzmbPWGV5DgyRbUnT_jh5HgKSiKPzWGxVyYrz7nOCZuG9CZi_rI0QRJ625tkRGkqu9N1g/exec",
   googleClientId: typeof window !== 'undefined' && localStorage.getItem('krunok_google_client_id') ? localStorage.getItem('krunok_google_client_id') : ""
 };
 

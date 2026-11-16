@@ -26,12 +26,14 @@ const ctx = {
   Utilities: { getUuid: () => 'aaaa-' + (++uuid) },
   PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] || null }) },
   SpreadsheetApp: { openById: id => ({ getSheetByName: n => id === 'db' ? db[n] : usersSheet }) },
+  LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
+  ContentService: { createTextOutput: s => ({ setMimeType: () => s }), MimeType: { JSON: 'json' } },
   console,
 };
 vm.createContext(ctx);
-vm.runInContext(src + '\n;this.T={SCHEMA,loginWithUsernamePassword_,createSession_,resolveUser_,verifyGoogleIdToken_,syncProgress_};', ctx);
+vm.runInContext(src + '\n;this.T={SCHEMA,loginWithUsernamePassword_,createSession_,resolveUser_,verifyGoogleIdToken_,syncProgress_,doPost,OFFICIAL_QUIZ};', ctx);
 const T = ctx.T;
-for (const name of ['ProgressSnapshots', 'QuizAttempts']) db[name] = fakeSheet([T.SCHEMA[name].headers.slice()]);
+for (const name of ['ProgressSnapshots', 'QuizAttempts', 'ScoreLog', 'AuditLogs']) db[name] = fakeSheet([T.SCHEMA[name].headers.slice()]);
 
 // --- auth ---
 const s = T.loginWithUsernamePassword_('06999', 'pw1');
@@ -68,4 +70,28 @@ assert.deepStrictEqual(u1.quizAttempts.map(a => [a.percent, a.passed]), [[80, tr
 assert.strictEqual(merged.unit9, undefined, 'unknown unit dropped');
 assert.strictEqual(merged.updatedAt, '2026-11-16T02:00:00Z');
 assert.throws(() => T.syncProgress_(s, { progress: { unit1: { reflections: Object.fromEntries(Array.from({ length: 50 }, (_, i) => ['r' + i, 'x'.repeat(2000)])) } } }), /PROGRESS_TOO_LARGE/);
+// --- Unit 1 scores: server answer key must match the website's quiz ---
+const esbuild = require('esbuild');
+const bundle = esbuild.buildSync({ entryPoints: [require('path').join(__dirname, '../src/data/unit1Data.js')], bundle: true, write: false,
+  format: 'cjs', platform: 'node', loader: { '.js': 'jsx', '.jsx': 'jsx' }, jsx: 'automatic', logLevel: 'silent',
+  plugins: [] , external: ['*.css', '*.png', '*.jpg', '*.jpeg', '*.webp', '*.svg'] });
+const mod = { exports: {} };
+new Function('module', 'exports', 'require', bundle.outputFiles[0].text)(mod, mod.exports, id => /\.(css|png|jpe?g|webp|svg)$/.test(id) ? '' : require(id));
+const clientKey = mod.exports.U1_QUIZ.map(q => q.id + ':' + q.answer).join(' ');
+const serverKey = T.OFFICIAL_QUIZ.unit1.map(q => q.id + ':' + q.answer).join(' ');
+assert.strictEqual(serverKey, clientKey, 'OFFICIAL_QUIZ.unit1 in Code.gs is out of sync with U1_QUIZ in unit1Data.js');
+
+const post = body => JSON.parse(T.doPost({ postData: { contents: JSON.stringify({ sessionToken: tok, ...body }) } }));
+const allRight = Object.fromEntries(mod.exports.U1_QUIZ.map(q => [q.id, q.answer]));
+const quiz = post({ action: 'quiz/submit', unitId: 'unit1', answers: allRight, durationSeconds: 90, attemptId: 'ATT-x' });
+assert.ok(quiz.success, quiz.error); assert.deepStrictEqual([quiz.result.score, quiz.result.maxScore, quiz.result.passed], [10, 10, true]);
+post({ action: 'quiz/submit', unitId: 'unit1', answers: allRight, durationSeconds: 90, attemptId: 'ATT-x' }); // retry: no second log row
+assert.ok(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 4, max: 6 }).success);
+assert.match(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 9, max: 6 }).error, /คะแนนไม่ถูกต้อง/);
+assert.match(post({ action: 'activity/submit', unitId: 'unit1', actId: 'u1-a2', score: 1, max: 6, sessionToken: 'x' }).error, /SESSION_EXPIRED/);
+const log = db.ScoreLog.rows.slice(1).map(r => [r[2], r[4], r[6], r[8], r[9], r[10], r[11], r[12]]);
+assert.deepStrictEqual(log, [
+  ['06999', 'ม.5/1', 'POSTTEST', 'แบบทดสอบหลังเรียน', 10, 10, 100, true],
+  ['06999', 'ม.5/1', 'MINIGAME', 'ด่าน 2: Timeline Challenge', 4, 6, 67, ''],
+]);
 console.log('backend-check: all passed');
