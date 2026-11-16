@@ -117,6 +117,21 @@
 
 ครูต้องทำเอง: ปิดแชร์สาธารณะของชีต `Users`, รัน `setupDatabase()`, deploy Apps Script เวอร์ชันใหม่
 
+### ขั้นที่ 1 — ทำแล้ว (รอ deploy)
+
+โค้ดที่เปลี่ยน:
+- `Code.gs`: `login` คืน `sessionToken` (`createSession_`), action ข้อมูลทั้งหมดใช้ `resolveUser_` (session ก่อน แล้วค่อย Google idToken), แก้บั๊ก `classroom`, ปิด `DEMO_MOCK_TOKEN` เว้นแต่ตั้ง Script Property `ALLOW_DEMO_TOKENS=true`
+- `apiService.js`: login ผ่านเซิร์ฟเวอร์อย่างเดียว (ลบการดึงชีต `Users` ผ่าน gviz), ส่ง `sessionToken` ทุกคำขอ, ผู้ใช้ที่ login ไว้ก่อนหน้านี้ต้องเข้าระบบใหม่หนึ่งครั้ง
+- ตรวจด้วย `npm run test:backend` (จำลอง Apps Script)
+
+ลำดับ deploy (ต้องทำตามลำดับ ไม่งั้นนักเรียนเข้าระบบไม่ได้ในช่วงเปลี่ยน):
+1. วาง `backend/Code.gs` ใหม่ใน Apps Script แล้ว **Deploy → Manage deployments → แก้ deployment เดิม → New version** (URL เดิมจึงใช้ต่อได้) ตั้ง *Execute as: Me* และ *Who has access: Anyone*
+2. ลอง login ด้วยบัญชีทดสอบบนเว็บเวอร์ชันใหม่ (`npm run build` แล้วอัปโหลด `dist/`)
+3. เมื่อ login ผ่านแล้ว ปิดแชร์สาธารณะของสเปรดชีต `Users` (Share → General access → Restricted)
+4. เปลี่ยนรหัสผ่านนักเรียนทั้งหมด เพราะรหัสเดิมถูกเปิดอ่านได้ระหว่างที่ชีตเป็นสาธารณะ
+
+ยังเหลือ (ไม่อยู่ในขั้นนี้): จำกัดจำนวนครั้งที่ login ผิด และเก็บรหัสผ่านแบบ hash แทนข้อความธรรมดา
+
 ## 6. ความเสี่ยง
 
 - **โควตา Apps Script:** `LockService` ทำให้คำขอทำงานทีละรายการ ถ้าทั้งห้อง (40 คน) ซิงก์พร้อมกัน แต่ละคำขอใช้ราว 1–2 วินาที debounce 3 วินาทีช่วยได้ แต่ควรลองกับทั้งห้องจริงก่อนใช้สอบ

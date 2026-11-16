@@ -852,8 +852,11 @@ function gradeQuizOnServer_(unitId, answers, durationSeconds, attemptId, userId)
 function verifyGoogleIdToken_(idToken) {
   if (!idToken) throw new Error('MISSING_TOKEN');
 
-  // สำหรับการทดสอบจำลอง (Mock / Demo Token ในเครื่อง)
+  // สำหรับการทดสอบจำลอง: ปิดไว้เป็นค่าเริ่มต้น เพราะใครก็ปลอม token นี้เป็นอีเมลครูได้
   if (idToken.startsWith('DEMO_MOCK_TOKEN:')) {
+    if (PropertiesService.getScriptProperties().getProperty('ALLOW_DEMO_TOKENS') !== 'true') {
+      throw new Error('Demo token ถูกปิดใช้งานบนเซิร์ฟเวอร์นี้');
+    }
     const parts = idToken.split(':');
     return {
       sub: parts[1] || 'demo-sub',
@@ -971,6 +974,28 @@ function authenticateAndResolveUser_(authPayload) {
 }
 
 /**
+ * Session สำหรับผู้ใช้ที่เข้าระบบด้วยรหัสประจำตัว (ไม่มี Google idToken)
+ * เก็บใน CacheService อายุ 6 ชั่วโมง (เพดานของ CacheService) — หมดอายุแล้วต้องเข้าระบบใหม่
+ */
+const SESSION_TTL_SEC = 21600;
+
+function createSession_(user) {
+  const token = Utilities.getUuid() + Utilities.getUuid().replace(/-/g, '');
+  const session = { userId: user.userId, role: user.role, classroom: user.classroom, displayName: user.displayName };
+  CacheService.getScriptCache().put('sess:' + token, JSON.stringify(session), SESSION_TTL_SEC);
+  return token;
+}
+
+function resolveUser_(payload) {
+  if (payload && payload.sessionToken) {
+    const raw = CacheService.getScriptCache().get('sess:' + String(payload.sessionToken));
+    if (!raw) throw new Error('SESSION_EXPIRED');
+    return JSON.parse(raw);
+  }
+  return authenticateAndResolveUser_(payload);
+}
+
+/**
  * ตรวจสอบสิทธิ์ (RBAC Guard)
  */
 function requireRole_(user, allowedRoles) {
@@ -1055,6 +1080,7 @@ function doPost(e) {
     // 0. Auth: Login with Username & Password (Google Sheets Users sheet)
     if (action === 'login') {
       const user = loginWithUsernamePassword_(payload.username, payload.password);
+      user.sessionToken = createSession_(user);
       responseData = { success: true, user: user };
     }
 
@@ -1087,7 +1113,7 @@ function doPost(e) {
 
     // 3. Quiz: Server-Side Grading & Submit (Phase C)
     else if (action === 'quiz/submit') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       const result = gradeQuizOnServer_(
         payload.unitId,
         payload.answers,
@@ -1100,7 +1126,7 @@ function doPost(e) {
 
     // 4. Progress: Get Student Progress (Phase C)
     else if (action === 'progress/get') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       const targetUserId = (user.role === 'TEACHER' || user.role === 'ADMIN') && payload.targetUserId
         ? payload.targetUserId
         : user.userId;
@@ -1126,7 +1152,7 @@ function doPost(e) {
 
     // 5. Progress: Save Lesson / Activity Completion (Phase C)
     else if (action === 'progress/saveLesson') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       const unitId = payload.unitId;
       const lessonId = payload.lessonId;
       if (!unitId || !lessonId) throw new Error('Missing unitId or lessonId');
@@ -1157,7 +1183,7 @@ function doPost(e) {
 
     // 6. Project: Submit Capstone Project (Phase C)
     else if (action === 'project/submit') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       const projectId = payload.projectId || ('PRJ-' + Utilities.getUuid().slice(0, 8));
       const now = nowIso_();
 
@@ -1191,7 +1217,7 @@ function doPost(e) {
 
     // 7. Teacher: Get Roster with Scores & Progress (Phase D)
     else if (action === 'teacher/getRoster') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       requireRole_(user, ['TEACHER', 'ADMIN']);
 
       const classroom = payload.classroom; // filter by classroom or 'all'
@@ -1242,7 +1268,7 @@ function doPost(e) {
 
     // 8. Teacher: Assess Project & Give Feedback (Phase D)
     else if (action === 'teacher/assessProject') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       requireRole_(user, ['TEACHER', 'ADMIN']);
 
       const assessmentId = 'ASM-' + Utilities.getUuid().slice(0, 8);
@@ -1275,7 +1301,7 @@ function doPost(e) {
 
     // 9. Teacher: Summary Analytics across Classrooms (Phase D)
     else if (action === 'teacher/getAnalytics') {
-      const user = authenticateAndResolveUser_(payload);
+      const user = resolveUser_(payload);
       requireRole_(user, ['TEACHER', 'ADMIN']);
 
       const users = readAll_('Users').filter(function (u) { return u.role === 'STUDENT'; });
@@ -1374,6 +1400,7 @@ function loginWithUsernamePassword_(username, password) {
     if (rowUser === uClean && rowPass === pClean) {
       const isTeacher = rowClass === '0' || rowTitle.indexOf('ครู') !== -1;
       const role = isTeacher ? 'TEACHER' : 'STUDENT';
+      const classroom = isTeacher ? 'ครูผู้สอน' : (rowClass.indexOf('ม.') === 0 ? rowClass : 'ม.5/' + rowClass);
       const firstName = rowName.trim() || rowUser;
       const fullName = (rowTitle + rowName + ' ' + rowLastname).trim() || rowUser;
       const displayName = firstName; // แสดงเฉพาะชื่อจริง

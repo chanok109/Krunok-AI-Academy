@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test:backend": "node scripts/check-backend-auth.cjs",
     "clasp:login": "clasp login",
     "clasp:push": "clasp push",
     "clasp:pull": "clasp pull"
