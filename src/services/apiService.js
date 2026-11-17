@@ -38,14 +38,6 @@ export const demoAuth = {
     if (!storage.set(KEYS.user, user)) throw new Error('STORAGE_BLOCKED');
     return user;
   },
-  async resume(user) {
-    const next = {
-      ...user,
-      signedIn: true
-    };
-    if (!storage.set(KEYS.user, next)) throw new Error('STORAGE_BLOCKED');
-    return next;
-  },
   async signOut(user) {
     const next = {
       ...user,
@@ -53,52 +45,6 @@ export const demoAuth = {
     };
     storage.set(KEYS.user, next);
     return next;
-  },
-  async forget() {
-    storage.remove(KEYS.user);
-    storage.remove(KEYS.progress);
-  }
-};
-
-export const googleAuth = {
-  async getUser() {
-    const u = storage.get(KEYS.user, null);
-    return isValidUser(u) ? u : null;
-  },
-  async signInWithToken({ idToken, classroom, displayName }) {
-    if (!API_CONFIG.gasEndpoint) {
-      throw new Error('ยังไม่ได้ระบุ Google Apps Script Web App URL');
-    }
-    const res = await api.callGas('auth/verify', {
-      idToken,
-      classroom,
-      displayName
-    });
-    if (!res || !res.success || !res.user) {
-      throw new Error(res?.error || 'การยืนยันตัวตนด้วย Google ล้มเหลว');
-    }
-    const user = {
-      ...res.user,
-      id: res.user.userId,
-      idToken,
-      mode: 'google',
-      signedIn: true,
-      lastLogin: new Date().toISOString()
-    };
-    storage.set(KEYS.user, user);
-    return user;
-  },
-  async signOut(user) {
-    const next = {
-      ...user,
-      signedIn: false
-    };
-    storage.set(KEYS.user, next);
-    return next;
-  },
-  async forget() {
-    storage.remove(KEYS.user);
-    storage.remove(KEYS.progress);
   }
 };
 
@@ -156,15 +102,6 @@ export const sheetsAuth = {
     return loggedUser;
   },
 
-  async resume(user) {
-    const next = {
-      ...user,
-      signedIn: true
-    };
-    if (!storage.set(KEYS.user, next)) throw new Error('STORAGE_BLOCKED');
-    return next;
-  },
-
   async signOut(user) {
     const next = {
       ...user,
@@ -172,18 +109,12 @@ export const sheetsAuth = {
     };
     storage.set(KEYS.user, next);
     return next;
-  },
-
-  async forget() {
-    storage.remove(KEYS.user);
-    storage.remove(KEYS.progress);
   }
 };
 
 export const AUTH_ADAPTERS = {
   sheets: sheetsAuth,
-  demo: demoAuth,
-  google: googleAuth
+  demo: demoAuth
 };
 
 export const auth = AUTH_ADAPTERS[API_CONFIG.authProvider] || sheetsAuth;
@@ -191,24 +122,27 @@ export const auth = AUTH_ADAPTERS[API_CONFIG.authProvider] || sheetsAuth;
 export const api = {
   isDemo: () => API_CONFIG.dataMode === 'demo' || !API_CONFIG.gasEndpoint,
 
+  gasBody(action, payload = {}) {
+    const user = storage.get(KEYS.user, null);
+    return JSON.stringify({
+      action,
+      sessionToken: user?.sessionToken || undefined,
+      idToken: user?.idToken || (user?.mode === 'demo' ? `DEMO_MOCK_TOKEN:${user.id}:${user.email || 'demo@pcccr.ac.th'}:${user.displayName}` : ''),
+      ...payload
+    });
+  },
+
   async callGas(action, payload = {}) {
     if (!API_CONFIG.gasEndpoint) {
       throw new Error('ยังไม่ได้กำหนด GAS Web App URL');
     }
     const user = storage.get(KEYS.user, null);
-    const bodyObj = {
-      action,
-      sessionToken: user?.sessionToken || undefined,
-      idToken: user?.idToken || (user?.mode === 'demo' ? `DEMO_MOCK_TOKEN:${user.id}:${user.email || 'demo@pcccr.ac.th'}:${user.displayName}` : ''),
-      ...payload
-    };
-
     const res = await fetch(API_CONFIG.gasEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8'
       },
-      body: JSON.stringify(bodyObj)
+      body: api.gasBody(action, payload)
     });
 
     if (!res.ok) {
@@ -241,6 +175,15 @@ export const api = {
     const resp = await api.callGas('progress/sync', { progress, overallPercent });
     if (!resp || !resp.success) throw new Error(resp?.error || 'ซิงก์ความก้าวหน้าไม่สำเร็จ');
     return resp.progress;
+  },
+
+  /** ส่งความก้าวหน้าที่ค้างแบบไม่รอคำตอบ (ใช้ตอนออกจากระบบ) เบราว์เซอร์ส่งให้แม้เปลี่ยนหน้าไปแล้ว */
+  sendProgressInBackground(progress, overallPercent) {
+    if (api.isDemo()) return;
+    const body = api.gasBody('progress/sync', { progress, overallPercent });
+    const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+    if (navigator.sendBeacon && navigator.sendBeacon(API_CONFIG.gasEndpoint, blob)) return;
+    fetch(API_CONFIG.gasEndpoint, { method: 'POST', body, keepalive: true, mode: 'no-cors' }).catch(() => {});
   },
 
   /**
@@ -277,16 +220,6 @@ export const api = {
   },
 
   /**
-   * บันทึกการจบบทเรียน
-   */
-  async saveLesson(unitId, lessonId) {
-    if (!api.isDemo()) {
-      return api.callGas('progress/saveLesson', { unitId, lessonId });
-    }
-    return { success: true };
-  },
-
-  /**
    * บันทึกคะแนนกิจกรรม Lab
    */
   async saveActivity(unitId, actId, score, max) {
@@ -294,16 +227,6 @@ export const api = {
       return api.callGas('activity/submit', { unitId, actId, score, max });
     }
     return { success: true };
-  },
-
-  /**
-   * ส่งข้อเสนอโครงงาน Capstone
-   */
-  async submitProject(projectData) {
-    if (!api.isDemo()) {
-      return api.callGas('project/submit', projectData);
-    }
-    return { success: true, projectId: 'PRJ-DEMO-' + Date.now() };
   },
 
   /**
@@ -325,15 +248,5 @@ export const api = {
       return api.callGas('teacher/assessProject', assessmentData);
     }
     return { success: true, assessmentId: 'ASM-DEMO-' + Date.now() };
-  },
-
-  /**
-   * สถิติภาพรวมชั้นเรียน
-   */
-  async getTeacherAnalytics() {
-    if (!api.isDemo()) {
-      return api.callGas('teacher/getAnalytics', {});
-    }
-    return null;
   }
 };

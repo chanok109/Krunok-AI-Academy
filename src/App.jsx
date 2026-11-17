@@ -1,25 +1,26 @@
-import React, { useEffect, useRef } from 'react';
+import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { RouteProvider, useRoute } from './context/RouteContext.jsx';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import { Navbar, AppLayout, Toasts } from './components/Navigation.jsx';
 import { LoadingState, ErrorState } from './components/UIPrimitives.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import Unit1Page from './pages/Unit1Page.jsx';
-import Unit2Page from './pages/Unit2Page.jsx';
-import Unit3Page from './pages/Unit3Page.jsx';
-import Unit4Page from './pages/Unit4Page.jsx';
-import TeacherDashboard from './pages/TeacherDashboard.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
+// Unit pages and the teacher dashboard load on demand, so login and home download less up front
+const LOADERS = {
+  unit1: () => import('./pages/Unit1Page.jsx'),
+  unit2: () => import('./pages/Unit2Page.jsx'),
+  unit3: () => import('./pages/Unit3Page.jsx'),
+  unit4: () => import('./pages/Unit4Page.jsx'),
+  teacher: () => import('./pages/TeacherDashboard.jsx')
+};
 const PAGES = {
   home: HomePage,
-  unit1: Unit1Page,
-  unit2: Unit2Page,
-  unit3: Unit3Page,
-  unit4: Unit4Page,
-  teacher: TeacherDashboard
+  ...Object.fromEntries(Object.entries(LOADERS).map(([k, load]) => [k, lazy(load)]))
 };
+// warm the cache once the app is idle, so opening a unit is still instant
+const prefetchPages = () => Object.values(LOADERS).forEach(load => load().catch(() => {}));
 
 function Router() {
   const { status, student } = useApp();
@@ -34,6 +35,13 @@ function Router() {
       if (student && route === 'login') navigate('home');
     }
   }, [status, student, route, navigate]);
+
+  useEffect(() => {
+    if (!student) return undefined;
+    const idle = window.requestIdleCallback || (cb => setTimeout(cb, 1500));
+    const id = idle(prefetchPages);
+    return () => (window.cancelIdleCallback || clearTimeout)(id);
+  }, [student]);
 
   if (status === 'loading') {
     return (
@@ -74,7 +82,9 @@ function Router() {
   const Page = PAGES[route] || NotFoundPage;
   return (
     <AppLayout>
-      <Page />
+      <Suspense fallback={<LoadingState text="กำลังเปิดบทเรียน…" />}>
+        <Page />
+      </Suspense>
     </AppLayout>
   );
 }

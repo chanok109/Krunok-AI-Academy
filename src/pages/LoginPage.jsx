@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { COURSE } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
-import { Icon, AIraBot, GlassCard, Button } from '../components/UIPrimitives.jsx';
+import { Icon, GlassCard, Button } from '../components/UIPrimitives.jsx';
 import { HoloStage } from '../components/BackgroundEffects.jsx';
 import { HeroNetwork } from '../components/HeroNetwork.jsx';
 import { HeroOrb } from '../components/HeroOrb.jsx';
@@ -18,16 +18,11 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [phase, setPhase] = useState("idle");
-  const [welcome, setWelcome] = useState(null);
 
   const refs = {
     username: useRef(null),
     password: useRef(null)
   };
-  const timer = useRef(null);
-
-  useEffect(() => () => clearTimeout(timer.current), []);
-
   const update = k => e => {
     const v = e.target.value;
     setForm(f => ({ ...f, [k]: v }));
@@ -41,29 +36,19 @@ function LoginPage() {
     }
   };
 
-  const finish = (loggedUser, back) => {
+  // go straight in; the welcome toast carries the greeting
+  const finish = loggedUser => {
     const isTeacher = loggedUser.role === 'TEACHER';
-    setWelcome({
-      name: loggedUser.displayName,
-      classroom: loggedUser.classroom,
-      role: loggedUser.role,
-      back
-    });
-    setPhase("success");
-
     notify({
       type: "success",
       bot: "cheer",
       duration: 5200,
-      title: back ? `ยินดีต้อนรับกลับมา ${loggedUser.displayName}!` : `ยินดีต้อนรับ ${loggedUser.displayName}!`,
+      title: `ยินดีต้อนรับ ${loggedUser.displayName}!`,
       message: isTeacher
         ? "เข้าสู่ระบบครูผู้สอน กำลังเปิดแดชบอร์ดบริหารจัดการชั้นเรียน..."
         : `เข้าสู่ระบบสำเร็จ (${loggedUser.classroom}) พร้อมพาสำรวจโลก AI แล้ว`
     });
-
-    timer.current = setTimeout(() => {
-      navigate(isTeacher ? "teacher" : "home");
-    }, 1500);
+    navigate(isTeacher ? "teacher" : "home");
   };
 
   const submit = async e => {
@@ -86,7 +71,7 @@ function LoginPage() {
     setPhase("saving");
     try {
       const loggedUser = await login({ username: u, password: p });
-      finish(loggedUser, false);
+      finish(loggedUser);
     } catch (err) {
       setPhase("idle");
       setErrors({
@@ -96,23 +81,7 @@ function LoginPage() {
     }
   };
 
-  let card;
-  if (phase === "success" && welcome) {
-    card = (
-      <div className="success" role="status" aria-live="polite">
-        <AIraBot mood="cheer" className="bot" />
-        <h2>
-          {welcome.back ? "ยินดีต้อนรับกลับมา" : "ยินดีต้อนรับ"}{" "}
-          <span className="grad-text">{welcome.name}</span>
-        </h2>
-        <p className="lead" style={{ marginTop: 8 }}>
-          {welcome.role === 'TEACHER' ? '👩‍🏫 ครูผู้สอน' : `👨‍🎓 ชั้น ${welcome.classroom}`} · กำลังพาไปหน้าบทเรียน…
-        </p>
-        <div className="spinner" aria-hidden="true" style={{ marginTop: 20 }} />
-      </div>
-    );
-  } else {
-    card = (
+  const card = (
       <form onSubmit={submit} noValidate aria-labelledby="login-title" style={{ display: "contents" }}>
         <div className="card-head login-card-head">
           <div className="login-head-title-group">
@@ -220,7 +189,6 @@ function LoginPage() {
 
       </form>
     );
-  }
 
   return (
     <div className="login-wrap">
@@ -232,7 +200,7 @@ function LoginPage() {
 
           <div className="holo-showcase-box">
             <div className="holo-glow-ring" aria-hidden="true" />
-            <HoloStage mood={phase === "success" ? "cheer" : "happy"} />
+            <HoloStage mood="happy" />
           </div>
 
           <h1 id="welcome-title">KruNok AI Academy</h1>
@@ -250,7 +218,7 @@ function LoginPage() {
         <GlassCard
           pad={false}
           className="login-card"
-          aria-labelledby={phase === "success" ? undefined : "login-title"}
+          aria-labelledby="login-title"
         >
           {card}
         </GlassCard>

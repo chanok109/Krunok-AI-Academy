@@ -127,55 +127,6 @@ export const UNITS = [
   }
 ];
 
-export const COURSE_RESOURCES = [
-  {
-    id: "res-setup",
-    unitNo: 2,
-    title: "ติดตั้ง VS Code, Python และ OpenCV 4",
-    desc: "ขั้นตอนการติดตั้งเครื่องมือสำหรับเขียนโค้ดและทดลองประมวลผลภาพในคาบเรียน",
-    url: "unit2/setup.html",
-    badge: "Setup Guide",
-    type: "html"
-  },
-  {
-    id: "res-act21",
-    unitNo: 2,
-    title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ",
-    desc: "กิจกรรมสำรวจพิกเซล สี RGB และโครงสร้างข้อมูลภาพ (เปิดพิมพ์เป็น PDF ได้)",
-    url: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
-    badge: "Worksheet (PDF)",
-    type: "html"
-  },
-  {
-    id: "res-code-u2",
-    unitNo: 2,
-    title: "โค้ดตัวอย่าง หน่วยที่ 2 (OpenCV Basics)",
-    desc: "ไฟล์ตัวอย่างโค้ด Python บทที่ 2.3–2.5 พร้อมภาพและวิดีโอตัวอย่าง",
-    url: "code/code-2.3-2.5.zip",
-    badge: "Code (.zip)",
-    type: "zip"
-  },
-  {
-    id: "res-code-u3",
-    unitNo: 3,
-    title: "โค้ดตัวอย่าง หน่วยที่ 3 (Machine Learning)",
-    desc: "ไฟล์ตัวอย่างโมเดลและการทดลอง Ultralytics / Pose / Hand Detection",
-    url: "code/code-unit3.zip",
-    badge: "Code (.zip)",
-    type: "zip"
-  },
-  {
-    id: "res-code-u4",
-    unitNo: 4,
-    title: "โค้ดตัวอย่าง หน่วยที่ 4 (AI Innovation Project)",
-    desc: "ไฟล์ตัวอย่างโค้ดสำหรับสร้างชิ้นงานแอปพลิเคชันและการประยุกต์ใช้ ML",
-    url: "code/code-unit5.zip",
-    badge: "Code (.zip)",
-    type: "zip"
-  }
-];
-
-export const unitTitle = u => u.title || `หน่วยการเรียนรู้ที่ ${u.no}`;
 export const countItems = u => u.lessons.length + u.activities.length + u.practice.length + (u.quiz ? 1 : 0);
 export const unitReady = u => countItems(u) > 0;
 

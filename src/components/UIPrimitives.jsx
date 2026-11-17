@@ -207,22 +207,6 @@ function ProgressRing({
     }
   }, v, "%"));
 }
-function PageHeader({
-  eyebrow,
-  title,
-  lead,
-  aside
-}) {
-  return React.createElement("header", {
-    className: "page-head"
-  }, React.createElement("div", {
-    className: "head-text"
-  }, eyebrow && React.createElement("span", {
-    className: "eyebrow"
-  }, eyebrow), React.createElement("h1", null, title), lead && React.createElement("p", {
-    className: "lead"
-  }, lead)), aside);
-}
 function LoadingState({
   text = "กำลังโหลดข้อมูล…"
 }) {
@@ -317,7 +301,6 @@ export {
   DemoBadge,
   ProgressBar,
   ProgressRing,
-  PageHeader,
   LoadingState,
   ErrorState,
   ErrorBoundary

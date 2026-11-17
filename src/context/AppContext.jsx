@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { UNITS, KEYS } from '../data/courseData.js';
 import { storage } from '../services/storageService.js';
-import { auth, api, googleAuth } from '../services/apiService.js';
+import { auth, api } from '../services/apiService.js';
 import {
   emptyProgress,
   normalizeProgress,
@@ -52,6 +52,7 @@ export function AppProvider({ children }) {
   // --- ซิงก์ความก้าวหน้ากับเซิร์ฟเวอร์ (เซิร์ฟเวอร์เป็นคนรวมข้อมูลหลายเครื่อง) ---
   const progressRef = useRef(progress);
   const versionRef = useRef(0); // เพิ่มทุกครั้งที่แก้ในเครื่อง
+  const syncedVersionRef = useRef(0); // versionRef ล่าสุดที่เซิร์ฟเวอร์ได้รับแล้ว
   const syncTimerRef = useRef(null);
   const syncWarnedRef = useRef(false);
 
@@ -64,6 +65,7 @@ export function AppProvider({ children }) {
     try {
       const server = await api.syncProgress(local, buildSummary(local).overall);
       syncWarnedRef.current = false;
+      syncedVersionRef.current = sentVersion;
       if (!server) return;
       if (versionRef.current !== sentVersion) {
         // มีการแก้ระหว่างรอ: ส่งใหม่ แทนที่จะเขียนทับของที่เพิ่งทำ
@@ -200,30 +202,16 @@ export function AppProvider({ children }) {
     return u;
   }, [syncNow]);
 
-  const loginGoogle = useCallback(async ({ idToken, classroom, displayName }) => {
-    const u = await googleAuth.signInWithToken({ idToken, classroom, displayName });
-    setUser(u);
-    return u;
-  }, []);
-
-  const resume = useCallback(async () => {
-    const u = await auth.resume(user);
-    setUser(u);
-    syncNow();
-    return u;
-  }, [user, syncNow]);
-
+  // ออกทันที ไม่ต้องรอเซิร์ฟเวอร์: ถ้ามีของค้างให้เบราว์เซอร์ส่งตามหลังเอง
   const logout = useCallback(async () => {
     if (!user) return;
-    await syncNow(); // ส่งของค้างก่อนออก
+    clearTimeout(syncTimerRef.current);
+    if (versionRef.current !== syncedVersionRef.current && user.sessionToken) {
+      const local = progressRef.current;
+      api.sendProgressInBackground(local, buildSummary(local).overall);
+    }
     setUser(await auth.signOut(user));
-  }, [user, syncNow]);
-
-  const forgetUser = useCallback(async () => {
-    await auth.forget();
-    setUser(null);
-    setProgress(emptyProgress());
-  }, []);
+  }, [user]);
 
   const resetProgress = useCallback(async () => {
     await api.clearProgress();
@@ -345,9 +333,7 @@ export function AppProvider({ children }) {
     notify,
     dismiss,
     login,
-    resume,
     logout,
-    forgetUser,
     resetProgress,
     markItem,
     recordQuiz,
