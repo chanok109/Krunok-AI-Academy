@@ -660,7 +660,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t24',
+                    '/unit2/index.html?only=t24#t24',
                     '2.3 อ่านภาพจากกล้องและวิดีโอ',
                     '/unit2/index.html#a23-1',
                     'u2-item-6'
@@ -709,7 +709,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t25',
+                    '/unit2/index.html?only=t25#t25',
                     '2.4 การตรวจจับสีด้วยปริภูมิสี HSV',
                     '/unit2/index.html#a24-1',
                     'u2-item-7'
@@ -758,7 +758,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t26',
+                    '/unit2/index.html?only=t26#t26',
                     '2.5 การตรวจจับใบหน้าด้วย Haar Cascade',
                     '/unit2/index.html#a25-1',
                     'u2-item-8'
