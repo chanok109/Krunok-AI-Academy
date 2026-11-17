@@ -183,25 +183,7 @@ function Sidebar({ collapsed, onToggle }) {
       className: "side-title"
     }, `หน่วยที่ ${u.no}: ${u.title}`), React.createElement("small", {
       className: isCompleted ? "status-done" : ""
-    }, unitStatusText(su)))), !collapsed && u.id === 'unit2' && React.createElement("a", {
-      className: "side-link side-sublink",
-      href: "unit2/setup.html",
-      target: "_blank",
-      rel: "noopener noreferrer",
-      title: "ติดตั้ง VS Code, Python และ OpenCV 4",
-      style: { paddingLeft: "34px", marginBlock: "2px" }
-    }, React.createElement("span", {
-      className: "side-num",
-      style: { width: "20px", height: "20px", minWidth: "20px" }
-    }, React.createElement(Icon, {
-      name: "cpu",
-      size: 13
-    })), React.createElement("span", {
-      className: "lbl"
-    }, React.createElement("span", {
-      className: "side-title",
-      style: { fontSize: "12.5px", color: "var(--lavender, #9B87F5)" }
-    }, "ติดตั้ง VS Code, Python และ OpenCV 4"), React.createElement("small", null, "คู่มือเตรียมเครื่อง ↗"))));
+    }, unitStatusText(su)))));
   }), !collapsed && React.createElement("div", {
     className: "side-label"
   }, "ความก้าวหน้า"), React.createElement("button", {

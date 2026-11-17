@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext.jsx';
 import { Icon, Badge, DemoBadge, ProgressRing, AIraBot } from '../components/UIPrimitives.jsx';
 import { Modal, Callout } from '../components/UIHelpers.jsx';
 import { QuizRunner } from '../components/QuizRunner.jsx';
+import { CvMiniGame } from '../components/CvMiniGame.jsx';
 import { U2_QUIZ, U2_REFS } from '../data/unit2Data.js';
 
 const U2_OBJECTIVES = [
@@ -453,6 +454,8 @@ export default function Unit2Page() {
     setActivePortal(null);
   }, []);
 
+  const gamePlayed = ['u2-g1', 'u2-g3', 'u2-g4', 'u2-g5'].filter(id => up.completedActivities?.includes(id)).length;
+
   const timelineSteps = [
     {
       id: 'u2-step-1',
@@ -622,8 +625,35 @@ export default function Unit2Page() {
       ]
     },
     {
-      id: 'u2-step-4',
+      id: 'u2-step-game',
       stepNum: 4,
+      tone: 'rose',
+      kicker: 'ฝึกทบทวนความรู้ · 4 ด่าน',
+      title: 'CV QUEST',
+      desc: 'สนุกกับเกม CV QUEST 4 ด่านทบทวนใบความรู้ 2.1 เรื่องคอมพิวเตอร์วิทัศน์ ขั้นตอนการมองเห็น และโค้ด OpenCV',
+      items: [
+        {
+          id: 'u2-item-game',
+          title: 'ฝึกมินิเกมทบทวนความรู้ (4 ด่านโต้ตอบ)',
+          subtext: `เล่นแล้ว ${gamePlayed}/4 ด่าน · ใช่ CV ไหม? · เรียงขั้นตอน · อ่านโค้ด · เรียงโค้ด`,
+          actions: (
+            <button
+              type="button"
+              className="curr-btn-solid rose"
+              onClick={() => {
+                markChecked('u2-item-game');
+                setActivePortal({ mode: 'game' });
+              }}
+            >
+              <Icon name="puzzle" size={14} /> ฝึกมินิเกมทบทวน (4 ด่าน)
+            </button>
+          )
+        }
+      ]
+    },
+    {
+      id: 'u2-step-4',
+      stepNum: 5,
       tone: 'teal',
       kicker: 'ใบความรู้ 2.2',
       title: 'พื้นฐานการประมวลผลภาพ',
@@ -661,7 +691,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-5',
-      stepNum: 5,
+      stepNum: 6,
       tone: 'blue',
       kicker: 'ใบความรู้ 2.3',
       title: 'อ่านภาพจากกล้องและวิดีโอ',
@@ -710,7 +740,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-6',
-      stepNum: 6,
+      stepNum: 7,
       tone: 'rose',
       kicker: 'ใบความรู้ 2.4',
       title: 'การตรวจจับสีด้วยปริภูมิสี HSV',
@@ -759,7 +789,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-7',
-      stepNum: 7,
+      stepNum: 8,
       tone: 'teal',
       kicker: 'ใบความรู้ 2.5',
       title: 'การตรวจจับใบหน้าด้วย Haar Cascade',
@@ -808,7 +838,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-8',
-      stepNum: 8,
+      stepNum: 9,
       tone: 'amber',
       kicker: 'ลงมือทำ & ทบทวน',
       title: 'ชุดโค้ดตัวอย่างและสรุปทบทวนหน่วยที่ 2',
@@ -850,7 +880,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-9',
-      stepNum: 9,
+      stepNum: 10,
       tone: 'indigo',
       kicker: 'วัดผลสัมฤทธิ์',
       title: 'แบบทดสอบหลังเรียน หน่วยที่ 2 (15 ข้อ)',
@@ -874,7 +904,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-10',
-      stepNum: 10,
+      stepNum: 11,
       tone: 'purple',
       kicker: 'ค้นคว้าต่อ',
       title: 'แหล่งเรียนรู้เพิ่มเติม',
@@ -1167,7 +1197,7 @@ export default function Unit2Page() {
 
       {/* 4. Fullscreen Portal for Unit 2 Post-Test (15 Questions) */}
       {activePortal &&
-        activePortal.mode === 'posttest' &&
+        (activePortal.mode === 'posttest' || activePortal.mode === 'game') &&
         createPortal(
           <div className="lesson-slide-deck deck-fullscreen u1-posttest-fullscreen">
             <div className="deck-toolbar">
@@ -1182,7 +1212,9 @@ export default function Unit2Page() {
                 </button>
                 <div className="deck-fs-unit-meta">
                   <span className="deck-fs-unit-kicker">UNIT 02</span>
-                  <span className="deck-fs-unit-title">แบบทดสอบหลังเรียน (ปรนัย 15 ข้อ)</span>
+                  <span className="deck-fs-unit-title">
+                    {activePortal.mode === 'game' ? 'มินิเกม แนวคิดคอมพิวเตอร์วิทัศน์' : 'แบบทดสอบหลังเรียน (ปรนัย 15 ข้อ)'}
+                  </span>
                 </div>
               </div>
               <div className="deck-toolbar-right">
@@ -1201,7 +1233,7 @@ export default function Unit2Page() {
             <div className="deck-slide-stage">
               <div className="deck-slide-card deck-quiz-fullscreen-card">
                 <div className="deck-slide-body">
-                  <QuizRunner
+                  {activePortal.mode === 'game' ? <CvMiniGame /> : <QuizRunner
                     unitId="unit2"
                     questions={U2_QUIZ}
                     lessonTitle={() => 'แบบทดสอบหลังเรียน หน่วยที่ 2'}
@@ -1214,7 +1246,7 @@ export default function Unit2Page() {
                         'u2-item-2'
                       )
                     }
-                  />
+                  />}
                 </div>
               </div>
             </div>

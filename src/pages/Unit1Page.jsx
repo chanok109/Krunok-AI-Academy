@@ -4,8 +4,8 @@ import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, Button, Badge, DemoBadge, ProgressRing } from '../components/UIPrimitives.jsx';
-import { AiraTip, Callout, Celebrate, Modal } from '../components/UIHelpers.jsx';
-import { ClassifyActivity, OrderActivity, ReasoningActivity } from '../components/ActivityEngines.jsx';
+import { Callout, Celebrate, Modal } from '../components/UIHelpers.jsx';
+import { AiQuestGame } from '../components/AiQuestGame.jsx';
 import { QuizRunner } from '../components/QuizRunner.jsx';
 import { LessonSlideDeck } from '../components/LessonSlideDeck.jsx';
 import airaMascotUrl from '../assets/aira-mascot.png';
@@ -28,12 +28,7 @@ import {
   U1_CHECKED,
   U1_OBJECTIVES,
   U1_ITEMS,
-  U1_TIMELINE,
   U1_REFS,
-  U1_A1,
-  U1_A3,
-  U1_A4,
-  U1_A5,
   U1_QUIZ
 } from '../data/unit1Data.js';
 
@@ -138,7 +133,6 @@ function Unit1Page() {
 
   // Section state: 'cover' | 'ks1' | 'ks2' | 'ks3' | 'set1' | 'set2' | 'set3' | 'act11' | 'posttest' | 'activities'
   const [section, setSection] = useState("cover");
-  const [activeActivity, setActiveActivity] = useState("u1-a1");
   const [refsOpen, setRefsOpen] = useState(false);
   const [party, setParty] = useState(null);
   const [isBrowserFs, setIsBrowserFs] = useState(
@@ -197,7 +191,7 @@ function Unit1Page() {
     if (set3Done) init["u1-item-3"] = true;
     if (up.completedActivities.includes("u1-a1")) init["u1-item-4"] = true;
     if (up.completedActivities.includes("u1-a2")) init["u1-item-5"] = true;
-    if (actsDone >= 5) init["u1-item-minigame"] = true;
+    if (actsDone >= 4) init["u1-item-minigame"] = true;
     if (su.quizPassed) init["u1-item-6"] = true;
     return init;
   });
@@ -209,7 +203,7 @@ function Unit1Page() {
   }, [checkedItems]);
 
   useEffect(() => {
-    if (actsDone >= 5) {
+    if (actsDone >= 4) {
       setCheckedItems(prev => (prev["u1-item-minigame"] ? prev : { ...prev, "u1-item-minigame": true }));
     }
   }, [actsDone]);
@@ -346,7 +340,7 @@ function Unit1Page() {
                     </Badge>
                     <Badge>
                       <Icon name="puzzle" size={12} />
-                      กิจกรรม {actsDone}/5
+                      กิจกรรม {actsDone}/4
                     </Badge>
                     <Badge tone={su.quizPassed ? "ok" : ""}>
                       <Icon name="target" size={12} />
@@ -410,7 +404,7 @@ function Unit1Page() {
                   แนะนำให้เรียนตามลำดับ
                   <span className="u1-aira-step-pill">1. อ่านใบความรู้ / ดูสไลด์</span>
                   <span className="u1-aira-step-pill">2. ทำกิจกรรมที่ 1.1–1.2</span>
-                  <span className="u1-aira-step-pill">3. เล่นมินิเกมทบทวน 5 ด่าน</span>
+                  <span className="u1-aira-step-pill">3. เล่นมินิเกมทบทวน 4 ด่าน</span>
                   <span className="u1-aira-step-pill">4. ทำแบบทดสอบหลังเรียน 6/10+</span>
                 </p>
               </div>
@@ -597,31 +591,30 @@ function Unit1Page() {
                 {
                   id: "step-minigame",
                   stepNum: 3,
-                  tone: "purple",
+                  tone: "rose",
                   icon: "puzzle",
-                  kicker: "ฝึกทบทวนความรู้ · 5 ด่าน",
-                  title: "มินิเกมฝึกทบทวนความรู้ก่อนสอบ",
-                  desc: "สนุกกับแบบฝึกหัดโต้ตอบ 5 ด่านเพื่อเช็กความเข้าใจเรื่องความหมาย AI ประวัติศาสตร์ เทคโนโลยี จริยธรรม และ Deepfake",
+                  kicker: "ฝึกทบทวนความรู้ · 4 ด่าน",
+                  title: "AI QUEST",
+                  desc: "สนุกกับเกม AI QUEST 4 ด่านเพื่อเช็กความเข้าใจเรื่องความหมาย AI ประวัติศาสตร์ จริยธรรม และ Deepfake ก่อนทำแบบทดสอบ",
                   items: [
                     {
                       id: "u1-item-minigame",
-                      kicker: actsDone >= 5 ? "ผ่านครบ 5 ด่าน ✓" : `ผ่านแล้ว ${actsDone}/5 ด่าน`,
-                      kickerTone: actsDone >= 5 ? "emerald" : "purple",
+                      kicker: actsDone >= 4 ? "ผ่านครบ 4 ด่าน ✓" : `ผ่านแล้ว ${actsDone}/4 ด่าน`,
+                      kickerTone: actsDone >= 4 ? "emerald" : "rose",
                       tileIcon: "puzzle",
-                      tileTone: "purple",
-                      title: "ฝึกมินิเกมทบทวนความรู้ (5 ด่านโต้ตอบ)",
-                      desc: "ประกอบด้วยด่าน AI or Not AI, Timeline Challenge, Tech Explorer, Ethics Challenge และ Deepfake Detective",
-                      tags: ["AI or Not AI", "Timeline Challenge", "Tech Explorer", "Ethics Challenge", "Deepfake Detective"],
+                      tileTone: "rose",
+                      title: "ฝึกมินิเกมทบทวนความรู้ (4 ด่านโต้ตอบ)",
+                      desc: "ประกอบด้วยด่าน AI or Not AI, Timeline Challenge, Ethics Challenge และ Deepfake Detective",
+                      tags: ["AI or Not AI", "Timeline Challenge", "Ethics Challenge", "Deepfake Detective"],
                       actions: (
                         <button
                           type="button"
-                          className="curr-btn-solid purple"
+                          className="curr-btn-solid rose"
                           onClick={() => {
-                            setActiveActivity("u1-a1");
                             setSection("activities");
                           }}
                         >
-                          <Icon name="puzzle" size={14} /> ฝึกมินิเกมทบทวน (5 ด่าน)
+                          <Icon name="puzzle" size={14} /> ฝึกมินิเกมทบทวน (4 ด่าน)
                         </button>
                       )
                     }
@@ -662,7 +655,7 @@ function Unit1Page() {
                 {
                   id: "step-4",
                   stepNum: 5,
-                  tone: "rose",
+                  tone: "teal",
                   icon: "fileText",
                   kicker: "แหล่งอ้างอิง",
                   title: "แหล่งอ้างอิงและเอกสารศึกษาเพิ่มเติม",
@@ -671,16 +664,16 @@ function Unit1Page() {
                     {
                       id: "u1-item-7",
                       kicker: "เอกสารทางการ",
-                      kickerTone: "rose",
+                      kickerTone: "sky",
                       tileIcon: "fileText",
-                      tileTone: "rose",
+                      tileTone: "sky",
                       title: "แหล่งอ้างอิงและข้อมูลตรวจสอบกฎหมาย AI (EU AI Act, PDPA, ETDA)",
                       desc: "ลิงก์ตรงสู่เว็บไซต์ทางการของคณะกรรมาธิการยุโรป, ETDA, สำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (สคส.) และ OECD",
                       tags: ["EU AI Act", "ร่าง พ.ร.บ. AI ไทย", "PDPA สคส.", "ETDA", `ตรวจสอบเมื่อ ${U1_CHECKED}`],
                       actions: (
                         <button
                           type="button"
-                          className="curr-btn-solid rose"
+                          className="curr-btn-solid teal"
                           onClick={() => {
                             markChecked("u1-item-7");
                             setRefsOpen(true);
@@ -972,7 +965,7 @@ function Unit1Page() {
                 </Button>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <Badge tone="cyan">
-                    <Icon name="puzzle" size={12} /> มินิเกมฝึกทบทวน {actsDone}/5 ด่าน
+                    <Icon name="puzzle" size={12} /> มินิเกมฝึกทบทวน {actsDone}/4 ด่าน
                   </Badge>
                   <button
                     type="button"
@@ -984,88 +977,7 @@ function Unit1Page() {
                 </div>
               </div>
 
-              <AiraTip mood="wink" title="AIra ท้าทายความคิด">
-                เลือกทำกิจกรรมมินิเกมทั้ง 5 ด่านเพื่อฝึกฝนและทดสอบความเข้าใจ จากนั้นกดทำแบบทดสอบหลังเรียน 10 ข้อเพื่อรับเหรียญรางวัล AI Explorer (เกณฑ์ผ่าน 6/10 ข้อ)
-              </AiraTip>
-
-              <div className="u1-act-tabs" role="tablist" aria-label="เลือกกิจกรรมหรือแบบทดสอบ" style={{ marginTop: 14 }}>
-                {[
-                  { id: "u1-a1", title: "ด่าน 1: AI or Not AI", icon: "puzzle" },
-                  { id: "u1-a2", title: "ด่าน 2: Timeline Challenge", icon: "clock" },
-                  { id: "u1-a3", title: "ด่าน 3: Tech Explorer", icon: "cpu" },
-                  { id: "u1-a4", title: "ด่าน 4: Ethics Challenge", icon: "scale" },
-                  { id: "u1-a5", title: "ด่าน 5: Deepfake Detective", icon: "eye" },
-                  { id: "u1-quiz", title: "แบบทดสอบหลังเรียน (10 ข้อ)", icon: "target", isQuiz: true }
-                ].map(act => {
-                  const done = act.id === "u1-quiz" ? su.quizPassed : up.completedActivities.includes(act.id);
-                  return (
-                    <button
-                      key={act.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeActivity === act.id}
-                      className={`u1-act-tab ${activeActivity === act.id ? "active" : ""} ${act.isQuiz ? "is-quiz" : ""}`}
-                      onClick={() => setActiveActivity(act.id)}
-                    >
-                      <Icon name={done ? "check" : act.icon} size={14} />
-                      <span>{act.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="glass u1-act-canvas" style={{ padding: 24, borderRadius: 20, marginTop: 14 }}>
-                {activeActivity === "u1-a1" && (
-                  <ClassifyActivity
-                    unitId="unit1"
-                    actId="u1-a1"
-                    items={U1_A1.items}
-                    options={U1_A1.options}
-                  />
-                )}
-                {activeActivity === "u1-a2" && (
-                  <OrderActivity
-                    unitId="unit1"
-                    actId="u1-a2"
-                    events={U1_TIMELINE}
-                  />
-                )}
-                {activeActivity === "u1-a3" && (
-                  <>
-                    <Callout tone="info" title="คำถามทุกข้อ">
-                      ระบบนี้จัดอยู่ในกลุ่มใด <b>เฉพาะเจาะจงที่สุด</b> (จำไว้ว่า DL อยู่ใน ML และ ML อยู่ใน AI)
-                    </Callout>
-                    <ClassifyActivity
-                      unitId="unit1"
-                      actId="u1-a3"
-                      items={U1_A3.items}
-                      options={U1_A3.options}
-                    />
-                  </>
-                )}
-                {activeActivity === "u1-a4" && (
-                  <ReasoningActivity
-                    unitId="unit1"
-                    actId="u1-a4"
-                    cases={U1_A4}
-                  />
-                )}
-                {activeActivity === "u1-a5" && (
-                  <ReasoningActivity
-                    unitId="unit1"
-                    actId="u1-a5"
-                    cases={U1_A5}
-                  />
-                )}
-                {activeActivity === "u1-quiz" && (
-                  <QuizRunner
-                    unitId="unit1"
-                    questions={U1_QUIZ}
-                    lessonTitle={resolveQuizReviewTitle}
-                    onGoLesson={(lid) => setSection(resolveQuizReviewSection(lid))}
-                  />
-                )}
-              </div>
+              <AiQuestGame />
             </div>
           )}
         </div>

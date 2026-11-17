@@ -40,7 +40,6 @@ export const UNITS = [
     activities: [
       { id: "u1-a1", title: "AI or Not AI" },
       { id: "u1-a2", title: "AI Timeline Challenge" },
-      { id: "u1-a3", title: "AI Technology Explorer" },
       { id: "u1-a4", title: "AI Ethics & Risk Challenge" },
       { id: "u1-a5", title: "Deepfake Detective" }
     ],
