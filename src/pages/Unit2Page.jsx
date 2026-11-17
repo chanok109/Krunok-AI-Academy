@@ -664,7 +664,8 @@ export default function Unit2Page() {
         { id: 'u2-item-5b', anchor: 't222', title: '2.2.2 การเข้าถึงพิกเซล', codePills: ['img[y, x]'] },
         { id: 'u2-item-5c', anchor: 't223', title: '2.2.3 การตัดภาพ', codePills: ['img[y1:y2, x1:x2]'] },
         { id: 'u2-item-5d', anchor: 't224', title: '2.2.4 การปรับขนาด', codePills: ['cv2.resize()'] },
-        { id: 'u2-item-5', anchor: 't225', title: '2.2.5 การพลิกภาพ', codePills: ['cv2.flip()'] }
+        { id: 'u2-item-5', anchor: 't225', title: '2.2.5 การพลิกภาพ', codePills: ['cv2.flip()'] },
+        { id: 'u2-item-5e', anchor: 't226', title: 'หัวข้อเสริม: ทำทีละหลายรูป', codePills: ['for + glob'] }
       ].map(it => ({
         ...it,
         actions: (
@@ -687,7 +688,22 @@ export default function Unit2Page() {
             </button>
           </>
         )
-      }))
+      })).concat({
+        id: 'u2-item-5s',
+        title: 'สรุปโค้ดคำสั่ง ใบความรู้ 2.2',
+        subtext: 'รวมทุกคำสั่งไว้ในโปรแกรมเดียว · คัดลอกไปรันได้ทันที',
+        actions: (
+          <button
+            type="button"
+            className="curr-btn-ghost teal"
+            onClick={() =>
+              openViewer('read', 'unit2/index.html?only=t23#sum22', 'สรุปโค้ดคำสั่ง ใบความรู้ 2.2', null, 'u2-item-5s')
+            }
+          >
+            <Icon name="openBook" size={14} /> อ่าน
+          </button>
+        )
+      })
     },
     {
       id: 'u2-step-5',
