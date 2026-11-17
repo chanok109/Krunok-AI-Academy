@@ -2,6 +2,13 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
+<script>
+/* ?only=t21,t22 (read buttons): hide the header and other topics before first paint, so the page opens straight on the topic */
+(function(){var o=new URLSearchParams(location.search).get('only');if(!o)return;
+ var s=document.createElement('style');
+ s.textContent='header.hero{display:none!important}main section.part'+o.split(',').map(function(id){return':not(#'+CSS.escape(id)+')'}).join('')+'{display:none!important}';
+ document.head.appendChild(s)})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KruNok ใบความรู้หน่วยที่ 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4535,17 +4542,16 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
 })();
 </script>
 <script>
-/* ?only=t21,t22 shows just those topics (used by the 2.1 read buttons) */
+/* ?only=…: the <head> script already hid the header and other topics; here hide their nav links */
 (function(){
  const only=new URLSearchParams(location.search).get('only');if(!only)return;
  const keep=only.split(',');
- const hero=document.querySelector('header.hero');if(hero)hero.style.display='none';
  const parts=[...document.querySelectorAll('main section.part[id]')];
- parts.forEach(s=>{if(!keep.includes(s.id))s.style.display='none'});
  document.querySelectorAll('a[href^="#"]').forEach(a=>{const id=a.getAttribute('href').slice(1);if(parts.some(s=>s.id===id)&&!keep.includes(id))a.style.display='none'});
- // the browser jumped to the hash before sections were hidden; jump again now the layout changed
+ // images above the target can shift it while loading; re-align once, only if it drifted (don't yank a reader who scrolled)
  const t=location.hash&&document.getElementById(location.hash.slice(1));
- if(t)addEventListener('load',()=>t.scrollIntoView({behavior:'instant'}),{once:true});
+ if(t)t.scrollIntoView({behavior:'instant'});
+ if(t)addEventListener('load',()=>{if(Math.abs(t.getBoundingClientRect().top-92)>40&&scrollY<t.offsetTop)t.scrollIntoView({behavior:'instant'})},{once:true});
 })();
 </script>
 
