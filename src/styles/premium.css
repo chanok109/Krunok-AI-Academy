@@ -1585,3 +1585,53 @@ html body .u-objectives {
   border-radius: 16px;
 }
 html body .u-objectives .objectives { margin: 0; }
+
+/* Unit 1 stage on navy: no frosted box, faint rings, dark-glass chips */
+html body .glass.u1-hero[class] .u1-stage-card {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+html body .glass.u1-hero[class] .u1-stage-rings-svg circle[stroke] {
+  stroke: rgba(255, 255, 255, .22);
+  fill: rgba(255, 255, 255, .03);
+}
+html body .glass.u1-hero[class] .u1-stage-rings-svg circle[stroke]:nth-of-type(4) { fill: rgba(255, 111, 145, .08); }
+html body .glass.u1-hero[class] .u1-stage-rings-svg g { stroke: rgba(255, 255, 255, .18); }
+html body .glass.u1-hero[class] .u1-stage-rings-svg circle:not([stroke]):not([fill^="url"]) { filter: drop-shadow(0 0 4px currentColor); }
+html body .glass.u1-hero[class] .u1-stage-mascot-img { filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .35)); }
+html body .glass.u1-hero[class] .u1-floating-chip {
+  background: rgba(0, 16, 91, .55) !important;
+  border: 1px solid rgba(255, 255, 255, .22) !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .25) !important;
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+}
+html body .glass.u1-hero[class] .u1-floating-chip.chip-ai { color: #7DB8FF !important; }
+html body .glass.u1-hero[class] .u1-floating-chip.chip-ethics { color: #FFC266 !important; }
+html body .glass.u1-hero[class] .u1-floating-chip.chip-genai { color: #C9B5E0 !important; }
+html body .glass.u1-hero[class] .u1-floating-chip.chip-pdpa { color: #FF8FA9 !important; }
+/* AIra's line reads like the home header bubble */
+html body .glass.u1-hero[class] .u1-stage-speech {
+  background: #FFFFFF !important;
+  border: 0 !important;
+  border-radius: 18px 18px 18px 4px !important;
+  color: var(--ink) !important;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .45) !important;
+}
+
+/* Unit 2 vision stage on navy: drop the frosted card, dark-glass labels */
+html body .glass.u1-hero[class] .vision-net > rect:nth-of-type(-n+2) { fill: none; stroke: none; filter: none; }
+html body .glass.u1-hero[class] .vision-net .art-matrix-cell { opacity: .55; }
+html body .glass.u1-hero[class] .vision-net g > rect[fill="#FFFFFF"],
+html body .glass.u1-hero[class] .vision-net g > rect[fill="#FFFBEB"] {
+  fill: rgba(0, 16, 91, .6);
+  stroke: rgba(255, 255, 255, .22);
+  filter: none;
+}
+html body .glass.u1-hero[class] .vision-net text[fill="#2E3566"],
+html body .glass.u1-hero[class] .vision-net text[fill="#1F67B3"] { fill: #BFD9F5; }
+html body .glass.u1-hero[class] .vision-net text[fill="#B45309"] { fill: #FFC266; }
+html body .glass.u1-hero[class] .vision-aira-wrapper { filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .35)); }
+html body .glass.u1-hero[class] .vision-aira-badge { border-color: rgba(255, 255, 255, .35); }
