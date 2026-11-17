@@ -465,7 +465,7 @@ export default function Unit2Page() {
           codePills: ['pip install "opencv-python<5"'],
           actions: (
             <a
-              href="/unit2/setup.html"
+              href="unit2/setup.html"
               target="_blank"
               rel="noopener noreferrer"
               className="curr-btn-solid purple"
@@ -497,9 +497,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t21,t22#t21',
+                    'unit2/index.html?only=t21,t22#t21',
                     '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
-                    '/unit2/index.html#a21-1',
+                    'unit2/index.html#a21-1',
                     'u2-item-2'
                   )
                 }
@@ -512,7 +512,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a21-1',
+                    'unit2/index.html#a21-1',
                     '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                     null,
                     'u2-item-2'
@@ -536,9 +536,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t21,t22#t22',
+                    'unit2/index.html?only=t21,t22#t22',
                     '2.1 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
-                    '/unit2/index.html#a21-t22',
+                    'unit2/index.html#a21-t22',
                     'u2-item-3'
                   )
                 }
@@ -551,7 +551,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a21-t22',
+                    'unit2/index.html#a21-t22',
                     '2.1 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
                     null,
                     'u2-item-3'
@@ -574,7 +574,7 @@ export default function Unit2Page() {
               onClick={() =>
                 openViewer(
                   'read',
-                  '/unit2/index.html?only=t22#sum21',
+                  'unit2/index.html?only=t22#sum21',
                   'สรุปโค้ดคำสั่ง ใบความรู้ 2.1',
                   null,
                   'u2-item-2s'
@@ -633,9 +633,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t23#t23',
+                    'unit2/index.html?only=t23#t23',
                     '2.2 พื้นฐานการประมวลผลภาพ',
-                    '/unit2/index.html#a22-1',
+                    'unit2/index.html#a22-1',
                     'u2-item-5'
                   )
                 }
@@ -648,7 +648,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a22-1',
+                    'unit2/index.html#a22-1',
                     '2.2 พื้นฐานการประมวลผลภาพ',
                     null,
                     'u2-item-5'
@@ -682,9 +682,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t24#t24',
+                    'unit2/index.html?only=t24#t24',
                     '2.3 อ่านภาพจากกล้องและวิดีโอ',
-                    '/unit2/index.html#a23-1',
+                    'unit2/index.html#a23-1',
                     'u2-item-6'
                   )
                 }
@@ -697,7 +697,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a23-1',
+                    'unit2/index.html#a23-1',
                     '2.3 อ่านภาพจากกล้องและวิดีโอ',
                     null,
                     'u2-item-6'
@@ -731,9 +731,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t25#t25',
+                    'unit2/index.html?only=t25#t25',
                     '2.4 การตรวจจับสีด้วยปริภูมิสี HSV',
-                    '/unit2/index.html#a24-1',
+                    'unit2/index.html#a24-1',
                     'u2-item-7'
                   )
                 }
@@ -746,7 +746,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a24-1',
+                    'unit2/index.html#a24-1',
                     '2.4 การตรวจจับสีด้วยปริภูมิสี HSV',
                     null,
                     'u2-item-7'
@@ -780,9 +780,9 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html?only=t26#t26',
+                    'unit2/index.html?only=t26#t26',
                     '2.5 การตรวจจับใบหน้าด้วย Haar Cascade',
-                    '/unit2/index.html#a25-1',
+                    'unit2/index.html#a25-1',
                     'u2-item-8'
                   )
                 }
@@ -795,7 +795,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    '/unit2/index.html#a25-1',
+                    'unit2/index.html#a25-1',
                     '2.5 การตรวจจับใบหน้าด้วย Haar Cascade',
                     null,
                     'u2-item-8'
@@ -829,7 +829,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#sum',
+                    'unit2/index.html#sum',
                     'สรุปและคำศัพท์สำคัญ หน่วยที่ 2',
                     null,
                     'u2-item-9'
@@ -839,7 +839,7 @@ export default function Unit2Page() {
                 <Icon name="openBook" size={14} /> สรุปบทเรียน
               </button>
               <a
-                href="/code/code-2.3-2.5.zip"
+                href="code/code-2.3-2.5.zip"
                 download
                 className="curr-btn-solid amber"
                 onClick={() => markChecked('u2-item-9')}
@@ -929,7 +929,7 @@ export default function Unit2Page() {
               เริ่มเรียน
             </Button>
             <a
-              href="/unit2/setup.html"
+              href="unit2/setup.html"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-ghost"
@@ -938,7 +938,7 @@ export default function Unit2Page() {
               <Icon name="cpu" size={16} /> คู่มือติดตั้ง ↗
             </a>
             <a
-              href="/code/code-2.3-2.5.zip"
+              href="code/code-2.3-2.5.zip"
               download
               className="btn btn-ghost"
               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
@@ -1223,7 +1223,7 @@ export default function Unit2Page() {
                     onGoLesson={() =>
                       openViewer(
                         'slide',
-                        '/unit2/index.html#a21-1',
+                        'unit2/index.html#a21-1',
                         '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                         null,
                         'u2-item-2'

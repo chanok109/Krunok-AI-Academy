@@ -778,13 +778,13 @@ function Unit4Page() {
     onClick: () => goStep(st.findIndex(s => s.state !== "done") + 1 || 6)
   }, doneReq === 0 ? "เริ่มโครงงาน" : "ทำต่อ"), React.createElement("a", {
     className: "btn btn-secondary",
-    href: "/unit5/index.html",
+    href: "unit5/index.html",
     target: "_blank",
     rel: "noopener noreferrer",
     style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
   }, React.createElement(Icon, { name: "book", size: 14 }), "ใบความรู้ & เกณฑ์ประเมิน ↗"), React.createElement("a", {
     className: "btn btn-ghost",
-    href: "/code/code-unit5.zip",
+    href: "code/code-unit5.zip",
     download: true,
     style: { textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }
   }, React.createElement(Icon, { name: "sparkle", size: 14 }), "โค้ดโครงงาน (.zip) ↓"), React.createElement(Button, {

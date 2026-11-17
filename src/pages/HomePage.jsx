@@ -804,7 +804,7 @@ function HomePage() {
                   {u.id === 'unit2' && (
                     <div className="unit-quick-chips">
                       <a
-                        href="/unit2/setup.html"
+                        href="unit2/setup.html"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="unit-quick-link"

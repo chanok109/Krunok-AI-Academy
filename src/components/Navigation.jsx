@@ -185,7 +185,7 @@ function Sidebar({ collapsed, onToggle }) {
       className: isCompleted ? "status-done" : ""
     }, unitStatusText(su)))), !collapsed && u.id === 'unit2' && React.createElement("a", {
       className: "side-link side-sublink",
-      href: "/unit2/setup.html",
+      href: "unit2/setup.html",
       target: "_blank",
       rel: "noopener noreferrer",
       title: "ติดตั้ง VS Code, Python และ OpenCV 4",
@@ -219,7 +219,7 @@ function Sidebar({ collapsed, onToggle }) {
     className: "side-label"
   }, "เอกสาร & โค้ด"), React.createElement("a", {
     className: "side-link",
-    href: "/unit2/setup.html",
+    href: "unit2/setup.html",
     target: "_blank",
     rel: "noopener noreferrer",
     title: "ติดตั้ง VS Code, Python และ OpenCV 4"
@@ -249,7 +249,7 @@ function Sidebar({ collapsed, onToggle }) {
     className: "side-title"
   }, "ใบกิจกรรม 2.1"), React.createElement("small", null, "พิมพ์เป็น PDF ↗"))), React.createElement("a", {
     className: "side-link",
-    href: "/code/code-2.3-2.5.zip",
+    href: "code/code-2.3-2.5.zip",
     download: true,
     title: "ดาวน์โหลดโค้ดตัวอย่างประจำหน่วย"
   }, React.createElement("span", {

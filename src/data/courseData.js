@@ -70,10 +70,10 @@ export const UNITS = [
     ],
     practice: [],
     quiz: { id: "u2-quiz", questions: 15 },
-    slidesUrl: "/unit2/index.html",
-    setupUrl: "/unit2/setup.html",
+    slidesUrl: "unit2/index.html",
+    setupUrl: "unit2/setup.html",
     activityUrl: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
-    codeUrl: "/code/code-2.3-2.5.zip"
+    codeUrl: "code/code-2.3-2.5.zip"
   },
   {
     id: "unit3",
@@ -99,8 +99,8 @@ export const UNITS = [
     ],
     practice: [],
     quiz: { id: "u3-quiz", questions: 15 },
-    slidesUrl: "/unit3/index.html",
-    codeUrl: "/code/code-unit3.zip"
+    slidesUrl: "unit3/index.html",
+    codeUrl: "code/code-unit3.zip"
   },
   {
     id: "unit4",
@@ -122,8 +122,8 @@ export const UNITS = [
     ],
     practice: [],
     quiz: null,
-    slidesUrl: "/unit5/index.html",
-    codeUrl: "/code/code-unit5.zip"
+    slidesUrl: "unit5/index.html",
+    codeUrl: "code/code-unit5.zip"
   }
 ];
 
@@ -133,7 +133,7 @@ export const COURSE_RESOURCES = [
     unitNo: 2,
     title: "ติดตั้ง VS Code, Python และ OpenCV 4",
     desc: "ขั้นตอนการติดตั้งเครื่องมือสำหรับเขียนโค้ดและทดลองประมวลผลภาพในคาบเรียน",
-    url: "/unit2/setup.html",
+    url: "unit2/setup.html",
     badge: "Setup Guide",
     type: "html"
   },
@@ -151,7 +151,7 @@ export const COURSE_RESOURCES = [
     unitNo: 2,
     title: "โค้ดตัวอย่าง หน่วยที่ 2 (OpenCV Basics)",
     desc: "ไฟล์ตัวอย่างโค้ด Python บทที่ 2.3–2.5 พร้อมภาพและวิดีโอตัวอย่าง",
-    url: "/code/code-2.3-2.5.zip",
+    url: "code/code-2.3-2.5.zip",
     badge: "Code (.zip)",
     type: "zip"
   },
@@ -160,7 +160,7 @@ export const COURSE_RESOURCES = [
     unitNo: 3,
     title: "โค้ดตัวอย่าง หน่วยที่ 3 (Machine Learning)",
     desc: "ไฟล์ตัวอย่างโมเดลและการทดลอง Ultralytics / Pose / Hand Detection",
-    url: "/code/code-unit3.zip",
+    url: "code/code-unit3.zip",
     badge: "Code (.zip)",
     type: "zip"
   },
@@ -169,7 +169,7 @@ export const COURSE_RESOURCES = [
     unitNo: 4,
     title: "โค้ดตัวอย่าง หน่วยที่ 4 (AI Innovation Project)",
     desc: "ไฟล์ตัวอย่างโค้ดสำหรับสร้างชิ้นงานแอปพลิเคชันและการประยุกต์ใช้ ML",
-    url: "/code/code-unit5.zip",
+    url: "code/code-unit5.zip",
     badge: "Code (.zip)",
     type: "zip"
   }

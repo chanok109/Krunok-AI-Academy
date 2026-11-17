@@ -3448,8 +3448,8 @@ const U3_CFG = {
     name: "ML Engineer",
     icon: "cpu"
   },
-  slidesUrl: "/unit3/index.html",
-  codeUrl: "/code/code-unit3.zip",
+  slidesUrl: "unit3/index.html",
+  codeUrl: "code/code-unit3.zip",
   next: {
     id: "unit4",
     label: "ไปหน่วยที่ 4"
