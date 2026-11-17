@@ -17,18 +17,18 @@ const U2_OBJECTIVES = [
 const U2_CHECK_STORAGE_KEY = 'krunok_u2_timeline_checks_v1';
 
 const U2_ITEM_PROGRESS_MAP = {
-  'u2-item-1': [{ kind: 'activity', id: 'u2-a1' }],
-  'u2-item-2': [{ kind: 'lesson', id: 'u2-l1' }],
-  'u2-item-3': [{ kind: 'lesson', id: 'u2-l2' }],
-  'u2-item-4': [{ kind: 'activity', id: 'u2-a2' }],
+  'u2-item-1': [{ kind: 'activities', id: 'u2-a1' }],
+  'u2-item-2': [{ kind: 'lessons', id: 'u2-l1' }],
+  'u2-item-3': [{ kind: 'lessons', id: 'u2-l2' }],
+  'u2-item-4': [{ kind: 'activities', id: 'u2-a2' }],
   'u2-item-5': [
-    { kind: 'lesson', id: 'u2-l3' },
-    { kind: 'activity', id: 'u2-a3' }
+    { kind: 'lessons', id: 'u2-l3' },
+    { kind: 'activities', id: 'u2-a3' }
   ],
-  'u2-item-6': [{ kind: 'lesson', id: 'u2-l4' }],
-  'u2-item-7': [{ kind: 'activity', id: 'u2-a4' }],
-  'u2-item-8': [{ kind: 'lesson', id: 'u2-l5' }],
-  'u2-item-9': [{ kind: 'activity', id: 'u2-a5' }]
+  'u2-item-6': [{ kind: 'lessons', id: 'u2-l4' }],
+  'u2-item-7': [{ kind: 'activities', id: 'u2-a4' }],
+  'u2-item-8': [{ kind: 'lessons', id: 'u2-l5' }],
+  'u2-item-9': [{ kind: 'activities', id: 'u2-a5' }]
 };
 
 function VisionStage({ mood = "happy" }) {
@@ -350,6 +350,20 @@ export default function Unit2Page() {
       setCheckedItems(prev => ({ ...prev, 'u2-item-10': true }));
     }
   }, [su.quizPassed, checkedItems]);
+
+  // Keep ticks and course progress in step: record ticks made before progress saving worked,
+  // and restore ticks from synced progress on a new device (localStorage starts empty there)
+  useEffect(() => {
+    if (!markItem) return;
+    const isDone = m =>
+      (m.kind === 'lessons' ? up.completedLessons : up.completedActivities)?.includes(m.id);
+    const restore = {};
+    Object.entries(U2_ITEM_PROGRESS_MAP).forEach(([itemId, maps]) => {
+      if (checkedItems[itemId]) maps.forEach(m => !isDone(m) && markItem('unit2', m.kind, m.id, true));
+      else if (maps.every(isDone)) restore[itemId] = true;
+    });
+    if (Object.keys(restore).length) setCheckedItems(prev => ({ ...prev, ...restore }));
+  }, [up, checkedItems, markItem]);
 
   // Listen for fullscreen changes & postMessage exit from /unit2/index.html
   useEffect(() => {
