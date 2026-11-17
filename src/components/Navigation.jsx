@@ -234,7 +234,7 @@ function Sidebar({ collapsed, onToggle }) {
     className: "side-title"
   }, "ติดตั้ง VS Code, Python และ OpenCV 4"), React.createElement("small", null, "คู่มือเตรียมเครื่องเรียน ↗"))), React.createElement("a", {
     className: "side-link",
-    href: "/unit2/activity-2-1.html",
+    href: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
     target: "_blank",
     rel: "noopener noreferrer",
     title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ (พิมพ์ PDF)"

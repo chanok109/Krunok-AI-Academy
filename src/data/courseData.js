@@ -72,7 +72,7 @@ export const UNITS = [
     quiz: { id: "u2-quiz", questions: 15 },
     slidesUrl: "/unit2/index.html",
     setupUrl: "/unit2/setup.html",
-    activityUrl: "/unit2/activity-2-1.html",
+    activityUrl: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
     codeUrl: "/code/code-2.3-2.5.zip"
   },
   {
@@ -142,7 +142,7 @@ export const COURSE_RESOURCES = [
     unitNo: 2,
     title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ",
     desc: "กิจกรรมสำรวจพิกเซล สี RGB และโครงสร้างข้อมูลภาพ (เปิดพิมพ์เป็น PDF ได้)",
-    url: "/unit2/activity-2-1.html",
+    url: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
     badge: "Worksheet (PDF)",
     type: "html"
   },

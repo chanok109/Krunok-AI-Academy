@@ -497,7 +497,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t21',
+                    '/unit2/index.html?only=t21,t22#t21',
                     '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                     '/unit2/index.html#a21-1',
                     'u2-item-2'
@@ -536,7 +536,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t22',
+                    '/unit2/index.html?only=t21,t22#t22',
                     '2.1 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
                     '/unit2/index.html#a21-t22',
                     'u2-item-3'
@@ -579,7 +579,7 @@ export default function Unit2Page() {
           subtext: 'งานเดี่ยว · 50 นาที · 3 ตอน · 20 คะแนน',
           actions: (
             <a
-              href="/unit2/activity-2-1.html"
+              href="https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html"
               target="_blank"
               rel="noopener noreferrer"
               className="curr-btn-solid amber"
@@ -611,7 +611,7 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'read',
-                    '/unit2/index.html#t23',
+                    '/unit2/index.html?only=t23#t23',
                     '2.2 พื้นฐานการประมวลผลภาพ',
                     '/unit2/index.html#a22-1',
                     'u2-item-5'
@@ -937,16 +937,37 @@ export default function Unit2Page() {
       <UnitObjectives items={U2_OBJECTIVES} />
 
       {/* 2. Curriculum Progress Card & Numbered Step Timeline */}
-      <div className="u1-set-selector" ref={curriculumRef} style={{ marginTop: 28 }}>
+      <div className="u1-cover-sets-section" ref={curriculumRef} style={{ marginTop: 28 }}>
+        <div className="section-title">
+          <div className="u1-section-heading-box">
+            <span className="curr-section-kicker">
+              <Icon name="sparkle" size={13} /> CURRICULUM ROADMAP
+            </span>
+            <h2>
+              <Icon name="book" size={24} style={{ color: "#7475C4" }} />
+              เลือกชุดการเรียนรู้ตามลำดับขั้น
+            </h2>
+          </div>
+          <span className="hint">
+            คลิกเครื่องหมายถูกหน้าหัวข้อเพื่อบันทึกความก้าวหน้า หรือกดเข้าเรียนแต่ละหัวข้อได้ทันที
+          </span>
+        </div>
+
         <div className="u1-curriculum-container">
           <div className="curriculum-progress-card">
             <div className="curr-prog-left">
-              <span className="curr-prog-label" style={{ fontSize: 16 }}>
-                เรียนแล้ว <b>{checkedCount} / {totalItems}</b>
-              </span>
+              <div className="curr-prog-icon-badge">
+                <Icon name="sparkle" size={18} />
+              </div>
+              <div className="curr-prog-text">
+                <span className="curr-prog-kicker">CURRICULUM PROGRESS</span>
+                <span className="curr-prog-label">
+                  เรียนแล้ว <b>{checkedCount} / {totalItems}</b> หัวข้อ <span className="curr-prog-percent">({progressPct}%)</span>
+                </span>
+              </div>
             </div>
 
-            <div className="curr-prog-track-wrapper" style={{ maxWidth: 'none' }}>
+            <div className="curr-prog-track-wrapper">
               <div className="curr-prog-track">
                 <div
                   className="curr-prog-fill"
@@ -955,6 +976,7 @@ export default function Unit2Page() {
                   <span className="curr-prog-shimmer" />
                 </div>
               </div>
+              <span className="curr-prog-indicator">{progressPct}%</span>
             </div>
 
             <div className="curr-prog-right">

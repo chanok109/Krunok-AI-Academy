@@ -4475,6 +4475,16 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
  $$('main section[id]').forEach(s=>io.observe(s))})();
 })();
 </script>
+<script>
+/* ?only=t21,t22 shows just those topics (used by the 2.1 read buttons) */
+(function(){
+ const only=new URLSearchParams(location.search).get('only');if(!only)return;
+ const keep=only.split(',');
+ const parts=[...document.querySelectorAll('main section.part[id]')];
+ parts.forEach(s=>{if(!keep.includes(s.id))s.style.display='none'});
+ document.querySelectorAll('a[href^="#"]').forEach(a=>{const id=a.getAttribute('href').slice(1);if(parts.some(s=>s.id===id)&&!keep.includes(id))a.style.display='none'});
+})();
+</script>
 
 </body>
 </html>
