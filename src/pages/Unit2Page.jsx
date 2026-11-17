@@ -22,10 +22,8 @@ const U2_ITEM_PROGRESS_MAP = {
   'u2-item-2': [{ kind: 'lessons', id: 'u2-l1' }],
   'u2-item-3': [{ kind: 'lessons', id: 'u2-l2' }],
   'u2-item-4': [{ kind: 'activities', id: 'u2-a2' }],
-  'u2-item-5': [
-    { kind: 'lessons', id: 'u2-l3' },
-    { kind: 'activities', id: 'u2-a3' }
-  ],
+  'u2-item-5': [{ kind: 'lessons', id: 'u2-l3' }],
+  'u2-item-act22': [{ kind: 'activities', id: 'u2-a3' }],
   'u2-item-6': [{ kind: 'lessons', id: 'u2-l4' }],
   'u2-item-7': [{ kind: 'activities', id: 'u2-a4' }],
   'u2-item-8': [{ kind: 'lessons', id: 'u2-l5' }],
@@ -665,7 +663,8 @@ export default function Unit2Page() {
         { id: 'u2-item-5c', anchor: 't223', title: '2.2.3 การตัดภาพ', codePills: ['img[y1:y2, x1:x2]'] },
         { id: 'u2-item-5d', anchor: 't224', title: '2.2.4 การปรับขนาด', codePills: ['cv2.resize()'] },
         { id: 'u2-item-5', anchor: 't225', title: '2.2.5 การพลิกภาพ', codePills: ['cv2.flip()'] },
-        { id: 'u2-item-5e', anchor: 't226', title: 'หัวข้อเสริม: ทำทีละหลายรูป', codePills: ['for + glob'] }
+        { id: 'u2-item-5e', anchor: 't226', title: 'หัวข้อเสริม: ตัวอย่างการปรับภาพทีละหลายภาพ', codePills: ['for + glob'] },
+        { id: 'u2-item-5x', anchor: 't228', title: 'หัวข้อเสริม: การแสดงภาพพร้อมแกน x,y ด้วย matplotlib', codePills: ['plt.imshow()'] }
       ].map(it => ({
         ...it,
         actions: (
@@ -706,8 +705,34 @@ export default function Unit2Page() {
       })
     },
     {
-      id: 'u2-step-5',
+      id: 'u2-step-act22',
       stepNum: 6,
+      tone: 'amber',
+      kicker: 'ลงมือทำ',
+      title: 'กิจกรรมที่ 2.2 นักแปลงภาพ',
+      desc: 'วางแผนเตรียมภาพให้ AI แล้วเขียนโปรแกรมระบายสี ตัดภาพ ย่อเป็น 224 × 224 และพลิกภาพของตนเอง ใช้ความรู้จากใบความรู้ 2.2',
+      items: [
+        {
+          id: 'u2-item-act22',
+          title: 'ใบงานกิจกรรมที่ 2.2',
+          subtext: 'งานเดี่ยว · 50 นาที · 3 ตอน · 20 คะแนน',
+          actions: (
+            <a
+              href="unit2/activity-2-2.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="curr-btn-solid amber"
+              onClick={() => markChecked('u2-item-act22')}
+            >
+              <Icon name="external" size={14} /> เปิดกิจกรรม
+            </a>
+          )
+        }
+      ]
+    },
+    {
+      id: 'u2-step-5',
+      stepNum: 7,
       tone: 'blue',
       kicker: 'ใบความรู้ 2.3',
       title: 'อ่านภาพจากกล้องและวิดีโอ',
@@ -756,7 +781,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-6',
-      stepNum: 7,
+      stepNum: 8,
       tone: 'rose',
       kicker: 'ใบความรู้ 2.4',
       title: 'การตรวจจับสีด้วยปริภูมิสี HSV',
@@ -805,7 +830,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-7',
-      stepNum: 8,
+      stepNum: 9,
       tone: 'teal',
       kicker: 'ใบความรู้ 2.5',
       title: 'การตรวจจับใบหน้าด้วย Haar Cascade',
@@ -854,7 +879,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-8',
-      stepNum: 9,
+      stepNum: 10,
       tone: 'amber',
       kicker: 'ลงมือทำ & ทบทวน',
       title: 'ชุดโค้ดตัวอย่างและสรุปทบทวนหน่วยที่ 2',
@@ -896,7 +921,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-9',
-      stepNum: 10,
+      stepNum: 11,
       tone: 'indigo',
       kicker: 'วัดผลสัมฤทธิ์',
       title: 'แบบทดสอบหลังเรียน หน่วยที่ 2 (15 ข้อ)',
@@ -920,7 +945,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-10',
-      stepNum: 11,
+      stepNum: 12,
       tone: 'purple',
       kicker: 'ค้นคว้าต่อ',
       title: 'แหล่งเรียนรู้เพิ่มเติม',
