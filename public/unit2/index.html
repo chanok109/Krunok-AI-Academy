@@ -2312,6 +2312,46 @@ copy_low.jpg 53458 ไบต์ B = 49 G = 39 R = 153</span></div></div>
   <details class="fix"><summary><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /> </svg>กดปุ่มแล้วโปรแกรมไม่จบ</summary><p><b>สาเหตุ:</b> กดใน Terminal แทนหน้าต่างภาพ<br><b>วิธีแก้:</b> คลิกหน้าต่างภาพก่อนกดปุ่ม</p></details>
   </div>
  </div>
+
+ <div class="block" id="sum21" style="--c:var(--cyan)">
+  <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>สรุปโค้ดคำสั่ง ใบความรู้ 2.1</h3>
+  <p class="prose">รวมคำสั่งทั้งหมดในใบความรู้ 2.1 ไว้ในโปรแกรมเดียว ตั้งแต่อ่านภาพ ดูขนาด แปลงเป็นภาพเทา อ่านค่าสีพิกเซล แสดงผล จนถึงบันทึกภาพ วางไฟล์ <code>fruits.png</code> ไว้ในโฟลเดอร์เดียวกับโค้ดก่อนรัน</p>
+  <div class="code">
+   <div class="cap"><span>summary_2_1.py</span><button type="button" class="act cpy" data-src="srcSUM21"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด</span></button></div>
+<pre id="srcSUM21"><span class="kw">import</span> cv2
+
+<span class="cm"># อ่านภาพ</span>
+img = cv2.<span class="fn">imread</span>(<span class="str">"fruits.png"</span>)
+
+<span class="cm"># แสดงขนาดภาพ</span>
+<span class="fn">print</span>(<span class="str">"ขนาดภาพ (สูง, กว้าง, ช่องสี):"</span>, img.shape)
+
+<span class="cm"># แปลงภาพสีเป็นภาพเทา</span>
+gray = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2GRAY)
+<span class="fn">print</span>(<span class="str">"ขนาดภาพเทา (สูง, กว้าง):"</span>, gray.shape)
+
+<span class="cm"># อ่านพิกเซลแถว 600 คอลัมน์ 420</span>
+b, g, r = img[<span class="nu">600</span>, <span class="nu">420</span>]
+<span class="fn">print</span>(<span class="str">"B ="</span>, b, <span class="str">"G ="</span>, g, <span class="str">"R ="</span>, r)
+
+<span class="cm"># แสดงภาพสีและภาพเทา</span>
+cv2.<span class="fn">imshow</span>(<span class="str">"Color"</span>, img)
+cv2.<span class="fn">imshow</span>(<span class="str">"Gray"</span>, gray)
+<span class="cm"># รอจนกว่าจะกดปุ่มใดก็ได้บนหน้าต่างภาพ</span>
+cv2.<span class="fn">waitKey</span>(<span class="nu">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()
+
+<span class="cm"># บันทึกภาพ</span>
+cv2.<span class="fn">imwrite</span>(<span class="str">"fruits_gray.png"</span>, gray)
+<span class="fn">print</span>(<span class="str">"บันทึกภาพเทาแล้ว"</span>)</pre>
+  </div>
+  <p class="prose">ตัวอย่างผลลัพธ์เมื่อรันกับ <code>fruits.png</code> ตัวเลขใน Terminal จะขึ้นก่อน จากนั้นหน้าต่าง Color และ Gray จะเปิดขึ้นมา กดปุ่มใดก็ได้บนหน้าต่างภาพเพื่อปิด แล้วโปรแกรมจึงบันทึกไฟล์</p>
+  <div class="win"><div class="tb"><i></i><i></i><i></i><span>ผลลัพธ์ใน Terminal</span></div><div class="tm wrapit"><span class="o">ขนาดภาพ (สูง, กว้าง, ช่องสี): (817, 1275, 3)
+ขนาดภาพเทา (สูง, กว้าง): (817, 1275)
+B = 21 G = 1 R = 155
+บันทึกภาพเทาแล้ว</span></div></div>
+  <p class="note tip"><b>อ่านผล:</b> ภาพเทาเหลือแค่ (สูง, กว้าง) เพราะแต่ละพิกเซลมีค่าเดียว พิกเซลแถว 600 คอลัมน์ 420 อยู่บนแอปเปิลแดง ค่า R จึงสูงกว่า B และ G มาก และในโฟลเดอร์จะมีไฟล์ใหม่ชื่อ <code>fruits_gray.png</code></p>
+ </div>
 </div></section>
 
 <section id="t23" class="part"><div class="wrap">
@@ -4496,6 +4536,9 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
  const parts=[...document.querySelectorAll('main section.part[id]')];
  parts.forEach(s=>{if(!keep.includes(s.id))s.style.display='none'});
  document.querySelectorAll('a[href^="#"]').forEach(a=>{const id=a.getAttribute('href').slice(1);if(parts.some(s=>s.id===id)&&!keep.includes(id))a.style.display='none'});
+ // the browser jumped to the hash before sections were hidden; jump again now the layout changed
+ const t=location.hash&&document.getElementById(location.hash.slice(1));
+ if(t)addEventListener('load',()=>t.scrollIntoView({behavior:'instant'}),{once:true});
 })();
 </script>
 

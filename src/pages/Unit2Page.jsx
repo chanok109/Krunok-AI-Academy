@@ -562,6 +562,28 @@ export default function Unit2Page() {
               </button>
             </>
           )
+        },
+        {
+          id: 'u2-item-2s',
+          title: 'สรุปโค้ดคำสั่ง ใบความรู้ 2.1',
+          subtext: 'รวมทุกคำสั่งไว้ในโปรแกรมเดียว · คัดลอกไปรันได้ทันที',
+          actions: (
+            <button
+              type="button"
+              className="curr-btn-ghost teal"
+              onClick={() =>
+                openViewer(
+                  'read',
+                  '/unit2/index.html?only=t22#sum21',
+                  'สรุปโค้ดคำสั่ง ใบความรู้ 2.1',
+                  null,
+                  'u2-item-2s'
+                )
+              }
+            >
+              <Icon name="openBook" size={14} /> อ่าน
+            </button>
+          )
         }
       ]
     },
