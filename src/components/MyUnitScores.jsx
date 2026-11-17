@@ -20,7 +20,7 @@ export function MyUnitScores({ unitId, columns }) {
 
   const items = columns.map(c => {
     const s = up?.activityScores?.[c.id];
-    return { key: c.id, label: c.label, score: s ? num(avgOf(s)) : null, max: c.max || s?.max || 0, tries: s?.attempts || 0 };
+    return { key: c.id, group: c.group, label: c.label, score: s ? num(avgOf(s)) : null, max: c.max || s?.max || 0, tries: s?.attempts || 0 };
   });
   items.push({
     key: 'quiz', label: 'แบบทดสอบหลังเรียน', quiz: true,
@@ -51,7 +51,7 @@ export function MyUnitScores({ unitId, columns }) {
       <div className="my-scores-grid">
         {items.map(x => (
           <div key={x.key} className={`my-score ${x.score == null ? 'todo' : ''} ${x.quiz ? 'quiz' : ''}`}>
-            <span className="my-score-l">{x.quiz ? 'แบบทดสอบ' : 'AI QUEST'}</span>
+            <span className="my-score-l">{x.quiz ? 'แบบทดสอบ' : x.group}</span>
             <b className="my-score-t">{x.label}</b>
             <span className="my-score-n">
               {x.score == null ? 'ยังไม่ได้ทำ' : <>{x.score}<small>/{x.max}</small></>}

@@ -2,7 +2,8 @@ import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { RouteProvider, useRoute } from './context/RouteContext.jsx';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import { Navbar, AppLayout, Toasts } from './components/Navigation.jsx';
-import { LoadingState, ErrorState } from './components/UIPrimitives.jsx';
+import { LoadingState, ErrorState, Button } from './components/UIPrimitives.jsx';
+import { UNITS, unitLocked } from './data/courseData.js';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
@@ -79,6 +80,18 @@ function Router() {
     );
   }
 
+  if (unitLocked(route, student)) {
+    const u = UNITS.find(x => x.id === route);
+    return (
+      <AppLayout>
+        <ErrorState
+          title={`หน่วยที่ ${u?.no ?? ''} ยังไม่เปิดให้เรียน`}
+          message="ครูกำลังเตรียมเนื้อหา เร็วๆ นี้"
+          action={<Button icon="home" onClick={() => navigate('home')}>กลับหน้าหลัก</Button>}
+        />
+      </AppLayout>
+    );
+  }
   const Page = PAGES[route] || NotFoundPage;
   return (
     <AppLayout>

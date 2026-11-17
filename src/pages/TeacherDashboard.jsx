@@ -6,15 +6,18 @@ import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, Progr
 import { Modal } from '../components/UIHelpers.jsx';
 import { api } from '../services/apiService.js';
 import { UnitScoreBoard } from '../components/UnitScoreBoard.jsx';
-import { U1_SCORE_COLS } from '../components/unitScoreColumns.js';
+import { U1_SCORE_COLS, U2_SCORE_COLS } from '../components/unitScoreColumns.js';
+
+const SCORE_TABS = { unit1: U1_SCORE_COLS, unit2: U2_SCORE_COLS };
 
 // โหมดสาธิต: สร้างคะแนนตัวอย่างจากคะแนนแบบทดสอบของนักเรียนจำลอง (ไม่ใช้กับข้อมูลจริง)
 const demoUnitScores = s => {
   const f = (s.q1 || 0) / 100, sc = (max, d) => Math.max(0, Math.min(max, Math.round(max * f) - d));
-  return { unit1: {
-    activities: Object.fromEntries(U1_SCORE_COLS.map((c, i) => [c.id, { best: sc(c.max, i % 3), max: c.max }])),
-    quiz: { correct: Math.round(f * 10), total: 10, percent: s.q1 || 0 }
-  } };
+  const unit = (cols, quizMax) => ({
+    activities: Object.fromEntries(cols.map((c, i) => [c.id, { best: sc(c.max, i % 3), max: c.max }])),
+    quiz: { correct: Math.round(f * quizMax), total: quizMax, percent: s.q1 || 0 }
+  });
+  return { unit1: unit(U1_SCORE_COLS, 10), unit2: unit(U2_SCORE_COLS, 15) };
 };
 
 export function TeacherDashboard() {
@@ -24,7 +27,7 @@ export function TeacherDashboard() {
   const [selectedClass, setSelectedClass] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('roster'); // 'roster' | 'unit1' | 'analytics' | 'settings'
+  const [activeTab, setActiveTab] = useState('roster'); // 'roster' | 'unit1' | 'unit2' | 'analytics' | 'settings'
 
   // Assessment Modal State
   const [evaluatingStudent, setEvaluatingStudent] = useState(null);
@@ -166,27 +169,30 @@ export function TeacherDashboard() {
     }
   ]);
 
-  // แท็บคะแนนหน่วยที่ 1: รายชื่อจากแผ่นงาน Users คะแนนจาก ScoreLog (endpoint เดียวกับ Leaderboard)
-  const [u1Board, setU1Board] = useState({ loading: false, error: '', students: null });
+  // แท็บคะแนนรายหน่วย: รายชื่อจากแผ่นงาน Users คะแนนจาก ScoreLog (endpoint เดียวกับ Leaderboard)
+  const [boards, setBoards] = useState({}); // unitId -> { error, students }
   useEffect(() => {
-    if (activeTab !== 'unit1' || api.isDemo() || u1Board.students) return undefined;
+    const unitId = activeTab;
+    if (!SCORE_TABS[unitId] || api.isDemo() || boards[unitId]?.students) return undefined;
     let alive = true;
-    setU1Board({ loading: true, error: '', students: null });
-    api.getLeaderboard('unit1')
+    setBoards(b => ({ ...b, [unitId]: { error: '', students: null } }));
+    api.getLeaderboard(unitId)
       .then(r => {
         if (!alive) return;
         if (!r || !r.success) throw new Error((r && r.error) || 'โหลดคะแนนไม่สำเร็จ');
-        setU1Board({ loading: false, error: '', students: r.students.map((x, i) => ({
+        const students = r.students.map((x, i) => ({
           id: `${x.classroom}-${x.no}-${i}`, name: x.name, no: x.no, classroom: x.classroom,
-          unitScores: { unit1: {
+          unitScores: { [unitId]: {
             activities: Object.fromEntries(Object.entries(x.activities || {}).map(([k, v]) => [k, { best: v }])),
             quiz: x.quiz == null ? null : { correct: x.quiz }
           } }
-        })).sort((a, b) => a.classroom.localeCompare(b.classroom) || a.no - b.no) });
+        })).sort((p, q) => p.classroom.localeCompare(q.classroom) || p.no - q.no);
+        setBoards(b => ({ ...b, [unitId]: { error: '', students } }));
       })
-      .catch(e => alive && setU1Board({ loading: false, error: e.message || String(e), students: null }));
+      .catch(e => alive && setBoards(b => ({ ...b, [unitId]: { error: e.message || String(e), students: null } })));
     return () => { alive = false; };
   }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  const board = boards[activeTab] || {};
 
   // Load real roster from GAS if configured
   useEffect(() => {
@@ -472,13 +478,11 @@ export function TeacherDashboard() {
             >
               รายชื่อนักเรียน
             </Button>
-            <Button
-              variant={activeTab === 'unit1' ? 'primary' : 'ghost'}
-              icon="trophy"
-              onClick={() => setActiveTab('unit1')}
-            >
-              คะแนนหน่วยที่ 1
-            </Button>
+            {Object.keys(SCORE_TABS).map((u, i) => (
+              <Button key={u} variant={activeTab === u ? 'primary' : 'ghost'} icon="trophy" onClick={() => setActiveTab(u)}>
+                คะแนนหน่วยที่ {i + 1}
+              </Button>
+            ))}
             <Button
               variant={activeTab === 'analytics' ? 'primary' : 'ghost'}
               icon="chart"
@@ -701,19 +705,20 @@ export function TeacherDashboard() {
         </GlassCard>
       )}
 
-      {/* TAB: UNIT 1 SCORES PER ACTIVITY (by classroom) */}
-      {activeTab === 'unit1' && !api.isDemo() && !u1Board.students && (
+      {/* TAB: UNIT SCORES PER ACTIVITY (unit 1 / unit 2, by classroom) */}
+      {SCORE_TABS[activeTab] && !api.isDemo() && !board.students && (
         <GlassCard>
           <p style={{ textAlign: 'center', padding: 24, color: 'var(--muted)' }}>
-            {u1Board.error ? `โหลดคะแนนไม่สำเร็จ: ${u1Board.error}` : 'กำลังโหลดคะแนนจากแผ่นงาน Users และ ScoreLog…'}
+            {board.error ? `โหลดคะแนนไม่สำเร็จ: ${board.error}` : 'กำลังโหลดคะแนนจากแผ่นงาน Users และ ScoreLog…'}
           </p>
         </GlassCard>
       )}
-      {activeTab === 'unit1' && (api.isDemo() || u1Board.students) && (
+      {SCORE_TABS[activeTab] && (api.isDemo() || board.students) && (
         <UnitScoreBoard
-          unitId="unit1"
-          columns={U1_SCORE_COLS}
-          students={api.isDemo() ? students.map(s => (s.unitScores ? s : { ...s, unitScores: demoUnitScores(s) })) : u1Board.students}
+          key={activeTab}
+          unitId={activeTab}
+          columns={SCORE_TABS[activeTab]}
+          students={api.isDemo() ? students.map(s => (s.unitScores ? s : { ...s, unitScores: demoUnitScores(s) })) : board.students}
           selectedClass={selectedClass}
           onSelectClass={setSelectedClass}
         />

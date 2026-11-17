@@ -7,7 +7,13 @@ import { Modal, Callout } from '../components/UIHelpers.jsx';
 import { QuizRunner } from '../components/QuizRunner.jsx';
 import { CvMiniGame } from '../components/CvMiniGame.jsx';
 import { PixelQuestGame } from '../components/PixelQuestGame.jsx';
+import { MyUnitScores } from '../components/MyUnitScores.jsx';
+import { U2_SCORE_COLS } from '../components/unitScoreColumns.js';
 import { U2_QUIZ, U2_REFS } from '../data/unit2Data.js';
+import { isStaff } from '../data/courseData.js';
+
+// หัวข้อหลัง PIXEL QUEST ยังไม่พร้อม: นักเรียนเข้าไม่ได้ ครูยังเปิดดูได้
+const U2_LOCKED_STEPS = new Set(['u2-step-5', 'u2-step-6', 'u2-step-7', 'u2-step-8', 'u2-step-9', 'u2-step-10']);
 
 const U2_OBJECTIVES = [
   "อธิบายหลักการมองเห็นของคอมพิวเตอร์และโครงสร้างข้อมูลภาพดิจิทัล (พิกเซล, BGR, Grayscale) ได้",
@@ -308,7 +314,8 @@ function VisionStage({ mood = "happy" }) {
 }
 
 export default function Unit2Page() {
-  const { progress, summary, visitUnit, markItem } = useApp();
+  const { progress, summary, visitUnit, markItem, student } = useApp();
+  const staff = isStaff(student);
   const curriculumRef = useRef(null);
 
   // Checked state for 10 curriculum items
@@ -1054,6 +1061,11 @@ export default function Unit2Page() {
       <UnitObjectives items={U2_OBJECTIVES} />
 
       {/* 2. Curriculum Progress Card & Numbered Step Timeline */}
+      {/* คะแนนของฉัน + Leaderboard (เหมือนหน่วยที่ 1) */}
+      <div style={{ marginTop: 28 }}>
+        <MyUnitScores unitId="unit2" columns={U2_SCORE_COLS} />
+      </div>
+
       <div className="u1-cover-sets-section" ref={curriculumRef} style={{ marginTop: 28 }}>
         <div className="section-title">
           <div className="u1-section-heading-box">
@@ -1112,6 +1124,7 @@ export default function Unit2Page() {
           <div className="curriculum-timeline">
             {timelineSteps.map((step, idx) => {
               const stepAllDone = step.items.every(it => checkedItems[it.id]);
+              const locked = !staff && U2_LOCKED_STEPS.has(step.id);
               return (
                 <div key={step.id} className="curr-step-item">
                   <div className="curr-step-rail">
@@ -1129,13 +1142,18 @@ export default function Unit2Page() {
                     {idx < timelineSteps.length - 1 && <div className="curr-step-line" />}
                   </div>
 
-                  <div className={`curr-step-card tone-${step.tone}`}>
+                  <div className={`curr-step-card tone-${step.tone}${locked ? ' is-locked' : ''}`} aria-disabled={locked || undefined}>
                     <div className="curr-card-head">
                       <div className="curr-card-head-top">
                         <span className={`curr-card-kicker tone-${step.tone}`}>
                           {step.kicker}
                         </span>
-                        {stepAllDone && (
+                        {locked && (
+                          <span className="curr-card-lock-badge">
+                            <Icon name="lock" size={12} stroke={2.5} /> เร็วๆ นี้
+                          </span>
+                        )}
+                        {!locked && stepAllDone && (
                           <span className="curr-card-done-badge">
                             <Icon name="check" size={12} stroke={2.5} /> ครบทุกหัวข้อ
                           </span>
@@ -1165,6 +1183,7 @@ export default function Unit2Page() {
                                 type="checkbox"
                                 className="curr-checkbox-hidden"
                                 checked={isChecked}
+                                disabled={locked}
                                 onChange={() => toggleCheck(it.id)}
                               />
                               <span
@@ -1192,7 +1211,9 @@ export default function Unit2Page() {
                               )}
                             </div>
 
-                            <div className="curr-subitem-actions">{it.actions}</div>
+                            <div className="curr-subitem-actions">
+                              {locked ? <span className="curr-lock-pill"><Icon name="lock" size={13} /> ยังไม่เปิด</span> : it.actions}
+                            </div>
                           </div>
                         );
                       })}

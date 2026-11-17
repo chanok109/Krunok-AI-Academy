@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ACHIEVEMENTS, COURSE, QUIZ_PASS_PERCENT, UNITS } from '../data/courseData.js';
+import { ACHIEVEMENTS, COURSE, QUIZ_PASS_PERCENT, UNITS, unitLocked } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from '../components/UIPrimitives.jsx';
@@ -601,10 +601,12 @@ function relTime(iso) {
   return thaiDate(iso);
 }
 
-function continueTarget(summary) {
-  const last = summary.lastVisited && unitById(summary.lastVisited.unitId);
+function continueTarget(summary, student) {
+  const open = u => u && !unitLocked(u.id, student);
+  const last0 = summary.lastVisited && unitById(summary.lastVisited.unitId);
+  const last = open(last0) ? last0 : null;
   if (last && !summary.units[last.id].completed) return last;
-  const next = UNITS.find(u => summary.units[u.id].ready && !summary.units[u.id].completed);
+  const next = UNITS.find(u => open(u) && summary.units[u.id].ready && !summary.units[u.id].completed);
   return next || last || UNITS[0];
 }
 
@@ -668,7 +670,7 @@ function HomePage() {
   const { student, summary, progress } = useApp();
   const lessonDone = (u, l) => !!progress[u.id]?.completedLessons?.includes(l.id);
   const { navigate } = useRoute();
-  const target = continueTarget(summary);
+  const target = continueTarget(summary, student);
   const advice = airaAdvice(summary, target);
   const hasHistory = !!summary.lastVisited;
   const unlocked = summary.achievements.filter(a => a.unlocked).length;
@@ -706,11 +708,12 @@ function HomePage() {
             const su = summary.units[u.id] || { percent: 0 };
             const done = su.completed || su.percent === 100;
             const here = target.id === u.id && !done;
-            const state = done ? "เรียนครบแล้ว" : su.percent > 0 ? `เรียนไปแล้ว ${su.percent}%` : "ยังไม่เริ่ม";
+            const locked = unitLocked(u.id, student);
+            const state = locked ? "เร็วๆ นี้" : done ? "เรียนครบแล้ว" : su.percent > 0 ? `เรียนไปแล้ว ${su.percent}%` : "ยังไม่เริ่ม";
             return (
-              <li key={u.id} data-unit={u.no} className={done ? "is-done" : here ? "is-here" : su.percent > 0 ? "is-started" : ""}>
-                <button type="button" onClick={() => navigate(u.id)} aria-current={here ? "step" : undefined}>
-                  <span className="rt-stop" aria-hidden="true">{done ? <Icon name="check" size={18} /> : u.no}</span>
+              <li key={u.id} data-unit={u.no} className={locked ? "is-locked" : done ? "is-done" : here ? "is-here" : su.percent > 0 ? "is-started" : ""}>
+                <button type="button" disabled={locked} onClick={() => navigate(u.id)} aria-current={here ? "step" : undefined}>
+                  <span className="rt-stop" aria-hidden="true">{locked ? <Icon name="lock" size={16} /> : done ? <Icon name="check" size={18} /> : u.no}</span>
                   <span className="rt-name">หน่วยที่ {u.no} {u.title}</span>
                   <span className="rt-state">{state}</span>
                   {u.lessons?.length > 0 && (
@@ -763,14 +766,16 @@ function HomePage() {
             const isCompleted = su.completed || su.percent === 100;
             const isInProgress = !isCompleted && su.percent > 0;
             const isCurrent = target.id === u.id;
+            const locked = unitLocked(u.id, student);
+            const go = () => !locked && navigate(u.id);
 
             return (
               <article
                 key={u.id}
                 data-unit={u.no}
-                className={`unit-menu-card ${isCurrent ? 'is-target' : ''} ${isCompleted ? 'is-done' : ''}`}
+                className={`unit-menu-card ${isCurrent ? 'is-target' : ''} ${isCompleted ? 'is-done' : ''} ${locked ? 'is-locked' : ''}`}
               >
-                <button type="button" className="unit-photo" onClick={() => navigate(u.id)} tabIndex={-1} aria-hidden="true">
+                <button type="button" className="unit-photo" disabled={locked} onClick={go} tabIndex={-1} aria-hidden="true">
                   <img src={UNIT_PHOTO[u.no]} alt="" width="760" height="424" loading="lazy" decoding="async" />
                   <span className={`unit-fx fx-${u.no}`}><i /><i /><i /><i /></span>
                 </button>
@@ -779,13 +784,13 @@ function HomePage() {
                 <div className="unit-card-body">
                   <div className="unit-card-top">
                     <span className="unit-roundel" aria-hidden="true">{isCompleted ? <Icon name="check" size={16} /> : u.no}</span>
-                    <span className={`unit-status-pill ${isCompleted ? "status-pill-done" : isInProgress ? "status-pill-progress" : "status-pill-ready"}`}>
-                      {isCompleted ? "เรียนครบแล้ว" : isInProgress ? `กำลังเรียน ${su.percent}%` : "พร้อมเรียน"}
+                    <span className={`unit-status-pill ${locked ? "status-pill-locked" : isCompleted ? "status-pill-done" : isInProgress ? "status-pill-progress" : "status-pill-ready"}`}>
+                      {locked ? "เร็วๆ นี้" : isCompleted ? "เรียนครบแล้ว" : isInProgress ? `กำลังเรียน ${su.percent}%` : "พร้อมเรียน"}
                     </span>
                   </div>
                   <h3
                     className="unit-card-title"
-                    onClick={() => navigate(u.id)}
+                    onClick={go}
                     title={u.title}
                   >
                     {u.title}
@@ -844,11 +849,12 @@ function HomePage() {
                   {/* Card Action Button */}
                   <Button
                     variant={isCurrent ? "primary" : isCompleted ? "secondary" : "primary"}
-                    icon={isCompleted ? "check" : isCurrent || isInProgress ? "play" : "arrowRight"}
-                    onClick={() => navigate(u.id)}
+                    icon={locked ? "lock" : isCompleted ? "check" : isCurrent || isInProgress ? "play" : "arrowRight"}
+                    disabled={locked}
+                    onClick={go}
                     className="btn-unit-card-cta"
                   >
-                    {isCompleted ? "ทบทวนบทเรียน" : isInProgress || isCurrent ? "เรียนต่อ" : "เข้าสู่บทเรียน"}
+                    {locked ? "ยังไม่เปิดให้เรียน" : isCompleted ? "ทบทวนบทเรียน" : isInProgress || isCurrent ? "เรียนต่อ" : "เข้าสู่บทเรียน"}
                   </Button>
                 </div>
               </article>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ASSISTANT_SCRIPT, COURSE, NAV_ORDER, QUIZ_PASS_PERCENT, ROUTES, UNITS } from '../data/courseData.js';
+import { ASSISTANT_SCRIPT, COURSE, NAV_ORDER, QUIZ_PASS_PERCENT, ROUTES, UNITS, unitLocked } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, DemoBadge, ProgressRing, ErrorBoundary } from './UIPrimitives.jsx';
@@ -130,6 +130,7 @@ function Sidebar({ collapsed, onToggle }) {
   } = useRoute();
   const {
     summary,
+    student,
     logout,
     notify,
     resetProgress
@@ -170,6 +171,7 @@ function Sidebar({ collapsed, onToggle }) {
       className: "side-link " + (isCompleted ? "is-done" : ""),
       "data-unit": u.no,
       "aria-current": route === u.id ? "page" : undefined,
+      disabled: unitLocked(u.id, student),
       onClick: () => navigate(u.id),
       title: `หน่วยที่ ${u.no}: ${u.title}`
     }, React.createElement("span", {
@@ -183,7 +185,7 @@ function Sidebar({ collapsed, onToggle }) {
       className: "side-title"
     }, `หน่วยที่ ${u.no}: ${u.title}`), React.createElement("small", {
       className: isCompleted ? "status-done" : ""
-    }, unitStatusText(su)))));
+    }, unitLocked(u.id, student) ? "เร็วๆ นี้" : unitStatusText(su)))));
   }), !collapsed && React.createElement("div", {
     className: "side-label"
   }, "ความก้าวหน้า"), React.createElement("button", {
@@ -197,53 +199,7 @@ function Sidebar({ collapsed, onToggle }) {
     size: 16
   })), !collapsed && React.createElement("span", {
     className: "lbl"
-  }, "เหรียญตราและความก้าวหน้า", React.createElement("small", null, "สรุปผลการเรียน"))), !collapsed && React.createElement("div", {
-    className: "side-label"
-  }, "เอกสาร & โค้ด"), React.createElement("a", {
-    className: "side-link",
-    href: "unit2/setup.html",
-    target: "_blank",
-    rel: "noopener noreferrer",
-    title: "ติดตั้ง VS Code, Python และ OpenCV 4"
-  }, React.createElement("span", {
-    className: "side-num"
-  }, React.createElement(Icon, {
-    name: "cpu",
-    size: 15
-  })), !collapsed && React.createElement("span", {
-    className: "lbl"
-  }, React.createElement("span", {
-    className: "side-title"
-  }, "ติดตั้ง VS Code, Python และ OpenCV 4"), React.createElement("small", null, "คู่มือเตรียมเครื่องเรียน ↗"))), React.createElement("a", {
-    className: "side-link",
-    href: "https://chanok109.github.io/Krunok-AI-Academy/krunok-ai-academy/unit2/activity-2-1.html",
-    target: "_blank",
-    rel: "noopener noreferrer",
-    title: "ใบกิจกรรมที่ 2.1 นักสำรวจภาพ (พิมพ์ PDF)"
-  }, React.createElement("span", {
-    className: "side-num"
-  }, React.createElement(Icon, {
-    name: "book",
-    size: 15
-  })), !collapsed && React.createElement("span", {
-    className: "lbl"
-  }, React.createElement("span", {
-    className: "side-title"
-  }, "ใบกิจกรรม 2.1"), React.createElement("small", null, "พิมพ์เป็น PDF ↗"))), React.createElement("a", {
-    className: "side-link",
-    href: "code/code-2.3-2.5.zip",
-    download: true,
-    title: "ดาวน์โหลดโค้ดตัวอย่างประจำหน่วย"
-  }, React.createElement("span", {
-    className: "side-num"
-  }, React.createElement(Icon, {
-    name: "sparkle",
-    size: 15
-  })), !collapsed && React.createElement("span", {
-    className: "lbl"
-  }, React.createElement("span", {
-    className: "side-title"
-  }, "ดาวน์โหลดโค้ด"), React.createElement("small", null, "ไฟล์โค้ดตัวอย่าง ↓"))), React.createElement("div", {
+  }, "เหรียญตราและความก้าวหน้า", React.createElement("small", null, "สรุปผลการเรียน"))), React.createElement("div", {
     className: "side-foot"
   }, !collapsed && (!confirmReset ? React.createElement("button", {
     type: "button",

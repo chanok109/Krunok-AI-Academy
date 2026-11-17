@@ -2152,3 +2152,13 @@ html body .lb .lb-spark i:nth-child(4) { right: 13%; top: 40%; font-size: 15px; 
 @keyframes lbFloat { 50% { transform: translateY(-5px); } }
 @keyframes lbTwinkle { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { html body .lb .lb-pod.p1 .lb-pod-ic, html body .lb .lb-spark i { animation: none; } }
+
+/* ===== เนื้อหาที่ยังไม่เปิด (เร็วๆ นี้) ===== */
+.side-link:disabled { opacity: .45; cursor: not-allowed; }
+.rt-line li.is-locked button { opacity: .5; cursor: not-allowed; }
+.unit-menu-card.is-locked { filter: grayscale(.85); opacity: .7; }
+.unit-menu-card.is-locked .unit-photo, .unit-menu-card.is-locked .unit-card-title { cursor: not-allowed; }
+.unit-status-pill.status-pill-locked { background: #e5e7eb; color: #4b5563; }
+.curr-step-card.is-locked { opacity: .55; filter: grayscale(.7); }
+.curr-step-card.is-locked .curr-check-label { cursor: not-allowed; }
+.curr-card-lock-badge, .curr-lock-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: #e5e7eb; color: #4b5563; font-size: 12.5px; font-weight: 700; white-space: nowrap; }

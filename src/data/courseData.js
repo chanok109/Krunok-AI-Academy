@@ -141,6 +141,11 @@ export const ROUTES = {
 
 export const NAV_ORDER = ["home", "unit1", "unit2", "unit3", "unit4"];
 
+// เนื้อหาที่ยังไม่พร้อม: นักเรียนเข้าไม่ได้ ครู/แอดมินยังเปิดดูได้เพื่อเตรียมเนื้อหา
+export const LOCKED_UNITS = ["unit3", "unit4"];
+export const isStaff = u => !!u && (u.role === "TEACHER" || u.role === "ADMIN");
+export const unitLocked = (unitId, user) => LOCKED_UNITS.includes(unitId) && !isStaff(user);
+
 export const API_CONFIG = {
   authProvider: typeof window !== 'undefined' && localStorage.getItem('krunok_auth_provider') ? localStorage.getItem('krunok_auth_provider') : "sheets",
   dataMode: typeof window !== 'undefined' && localStorage.getItem('krunok_data_mode') ? localStorage.getItem('krunok_data_mode') : "sheets",
