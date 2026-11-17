@@ -4123,7 +4123,20 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
   const I={y1:$('#peY1'),y2:$('#peY2'),x1:$('#peX1'),x2:$('#peX2')};let col=[0,255,255];const used=new Set();
   function base(){ox.drawImage(SRC,0,0)}
   function rd(){const v=k=>clamp(parseInt(I[k].value)||0,0,k[0]==='y'?H:W);let y1=v('y1'),y2=v('y2'),x1=v('x1'),x2=v('x2');if(y2<y1)[y1,y2]=[y2,y1];if(x2<x1)[x1,x2]=[x2,x1];return{y1,y2,x1,x2}}
-  function draw(){const r=rd();x.drawImage(off,0,0,cv.width,cv.height);x.save();x.strokeStyle='#FFB400';x.lineWidth=3;x.setLineDash([8,5]);x.strokeRect(r.x1*cv.width/W,r.y1*cv.height/H,(r.x2-r.x1)*cv.width/W,(r.y2-r.y1)*cv.height/H);x.restore();
+  /* x axis along the top, y axis down the left (pixel coords), selected range highlighted */
+  function axes(r){const sx=cv.width/W,sy=cv.height/H,T=18,L=34;x.save();
+   x.fillStyle='rgba(255,255,255,.85)';x.fillRect(0,0,cv.width,T);x.fillRect(0,T,L,cv.height-T);
+   x.fillStyle='rgba(14,127,117,.28)';x.fillRect(r.x1*sx,0,(r.x2-r.x1)*sx,T);
+   x.fillStyle='rgba(31,95,208,.25)';x.fillRect(0,Math.max(T,r.y1*sy),L,Math.max(0,r.y2*sy-Math.max(T,r.y1*sy)));
+   x.font='bold 10px ui-monospace,Consolas,monospace';x.textBaseline='middle';x.lineWidth=1;
+   x.strokeStyle=x.fillStyle='#0E7F75';x.textAlign='center';
+   for(let v=200;v<W-60;v+=200){const p=v*sx;x.beginPath();x.moveTo(p,T-4);x.lineTo(p,T);x.stroke();x.fillText(v,p,8)}
+   x.textAlign='left';x.fillText('x →',L+4,8);
+   x.strokeStyle=x.fillStyle='#1F5FD0';
+   for(let v=200;v<H-100;v+=200){const p=v*sy;x.beginPath();x.moveTo(L-4,p);x.lineTo(L,p);x.stroke();x.fillText(v,L-6,p)}
+   x.textAlign='center';x.fillText('y ↓',L/2,cv.height-10);
+   x.fillStyle='#2E3566';x.fillText('0',L/2,8);x.restore()}
+  function draw(){const r=rd();x.drawImage(off,0,0,cv.width,cv.height);x.save();x.strokeStyle='#FFB400';x.lineWidth=3;x.setLineDash([8,5]);x.strokeRect(r.x1*cv.width/W,r.y1*cv.height/H,(r.x2-r.x1)*cv.width/W,(r.y2-r.y1)*cv.height/H);x.restore();axes(r);
    const n=(r.y2-r.y1)*(r.x2-r.x1);
    $('#peCode').innerHTML=`img[<span class="sy">${r.y1}:${r.y2}</span>, <span class="sx">${r.x1}:${r.x2}</span>] = [<span class="cb">${col[0]}</span>, <span class="cg">${col[1]}</span>, <span class="cr">${col[2]}</span>]`;
    $('#peInfo').innerHTML=`พิกเซลที่จะเปลี่ยน = (${r.y2}−${r.y1}) × (${r.x2}−${r.x1}) = <b>${f(n)}</b> พิกเซล`}
