@@ -230,6 +230,15 @@ export const api = {
   },
 
   /**
+   * คะแนนรายหน่วยของนักเรียนทุกห้อง สำหรับหน้า Leaderboard
+   * โหมดสาธิตคืน null ให้หน้าใช้ข้อมูลจำลองแทน
+   */
+  async getLeaderboard(unitId) {
+    if (api.isDemo()) return null;
+    return api.callGas('leaderboard/get', { unitId });
+  },
+
+  /**
    * ดึงข้อมูลรายชื่อนักเรียนและคะแนนสำหรับครูผู้สอน
    */
   async getTeacherRoster(classroom = 'all') {

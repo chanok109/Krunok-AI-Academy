@@ -230,6 +230,8 @@ export function AppProvider({ children }) {
           [actId]: {
             best: Math.max(score, prev ? prev.best : 0),
             last: score,
+            // ผลรวมทุกครั้งที่ทำ ใช้หาค่าเฉลี่ย (shortcut: ข้อมูลเก่าไม่มี sum จึงประมาณจาก best × attempts)
+            sum: (prev ? (prev.sum != null ? prev.sum : prev.best * prev.attempts) : 0) + score,
             max,
             attempts: (prev ? prev.attempts : 0) + 1,
             at

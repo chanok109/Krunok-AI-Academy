@@ -855,7 +855,7 @@ function sanitizeProgress_(raw) {
     Object.keys(r.activityScores || {}).slice(0, 100).forEach(function (k) {
       const s = r.activityScores[k] || {};
       if (k.length > 100) return;
-      scores[k] = { best: Number(s.best) || 0, last: Number(s.last) || 0, max: Number(s.max) || 0, attempts: Number(s.attempts) || 0, at: str_(s.at, 40) };
+      scores[k] = { best: Number(s.best) || 0, last: Number(s.last) || 0, sum: Number(s.sum) || 0, max: Number(s.max) || 0, attempts: Number(s.attempts) || 0, at: str_(s.at, 40) };
     });
     const reflections = {};
     Object.keys(r.reflections || {}).slice(0, 50).forEach(function (k) {
@@ -896,7 +896,8 @@ function mergeProgress_(a, b) {
       const p = scores[k], q = y.activityScores[k];
       if (!p) { scores[k] = q; return; }
       const latest = String(q.at) > String(p.at) ? q : p;
-      scores[k] = { best: Math.max(p.best, q.best), last: latest.last, max: latest.max, attempts: Math.max(p.attempts, q.attempts), at: latest.at };
+      const more = q.attempts >= p.attempts ? q : p; // sum ต้องคู่กับ attempts ของชุดเดียวกัน
+      scores[k] = { best: Math.max(p.best, q.best), last: latest.last, sum: more.sum, max: latest.max, attempts: more.attempts, at: latest.at };
     });
     const px = x.project, py = y.project;
     out[unit.unitId] = {
@@ -953,6 +954,48 @@ const SCORE_ITEM_NAMES = {
   'u2-h4': 'PIXEL QUEST ด่าน 2: เรียงโค้ดให้รันได้',
   'posttest': 'แบบทดสอบหลังเรียน',
 };
+
+/**
+ * คะแนนหน่วยหนึ่งของนักเรียนทุกคน สำหรับ Leaderboard และแท็บคะแนนของครู
+ * รายชื่อ: แผ่นงาน Users (class, no, username, password, title, name, lastname) แบบเดียวกับการเข้าสู่ระบบ
+ * คะแนน: แผ่นงาน ScoreLog ใช้ค่าเฉลี่ยของทุกครั้งที่ทำ ของแต่ละกิจกรรม (MINIGAME) และแบบทดสอบหลังเรียน (POSTTEST)
+ */
+function unitLeaderboard_(unitId, viewerId) {
+  const sheet = getDb_().getSheetByName('Users');
+  if (!sheet) throw new Error('ไม่พบแผ่นงานชื่อ Users ใน Google Sheet');
+  const rows = sheet.getDataRange().getValues().slice(1);
+  const acc = {}; // username -> { activities: {actId: [sum, n]}, quiz: [sum, n], records }
+  readAll_('ScoreLog').forEach(function (r) {
+    if (String(r.unitId) !== unitId) return;
+    const id = String(r.userId).replace(/^'/, '').trim();
+    const b = acc[id] || (acc[id] = { activities: {}, quiz: [0, 0], records: 0 });
+    const sc = Number(r.score) || 0;
+    b.records += 1;
+    if (r.scoreType === 'POSTTEST') { b.quiz[0] += sc; b.quiz[1] += 1; }
+    else if (r.scoreType === 'MINIGAME') { const k = String(r.itemId); const t = b.activities[k] || (b.activities[k] = [0, 0]); t[0] += sc; t[1] += 1; }
+  });
+  const avg2 = function (t) { return Math.round((t[0] / t[1]) * 100) / 100; };
+  const out = [];
+  rows.forEach(function (row) {
+    const cls = String(row[0] != null ? row[0] : '').trim();
+    const username = String(row[2] != null ? row[2] : '').trim();
+    const title = String(row[4] != null ? row[4] : '').trim();
+    if (!username || cls === '0' || title.indexOf('ครู') !== -1) return; // ข้ามครูและแถวว่าง
+    const b = acc[username] || { activities: {}, quiz: [0, 0], records: 0 };
+    const activities = {};
+    Object.keys(b.activities).forEach(function (k) { activities[k] = avg2(b.activities[k]); });
+    out.push({
+      name: (title + String(row[5] || '').trim() + ' ' + String(row[6] || '').trim()).trim() || username,
+      no: Number(row[1]) || 0,
+      classroom: cls.indexOf('ม.') === 0 ? cls : 'ม.5/' + cls,
+      activities: activities,
+      quiz: b.quiz[1] ? avg2(b.quiz) : null,
+      records: b.records,
+      me: username === String(viewerId)
+    });
+  });
+  return out;
+}
 
 function logScore_(user, unitId, scoreType, itemId, score, maxScore, passed) {
   score = Number(score) || 0;
@@ -1286,6 +1329,15 @@ function doPost(e) {
       if (!(max >= 1 && max <= 100 && score >= 0 && score <= max)) throw new Error('คะแนนไม่ถูกต้อง');
       logScore_(user, unitId, 'MINIGAME', actId, score, max, null);
       responseData = { success: true };
+    }
+
+    // 3c. Leaderboard: คะแนนรายหน่วยของนักเรียนทุกห้อง (ผู้ที่เข้าสู่ระบบแล้วดูได้)
+    //     รายชื่อจากแผ่นงาน Users คะแนนจากแผ่นงาน ScoreLog; ส่งเฉพาะชื่อ เลขที่ ห้อง คะแนน (ไม่ส่ง username/รหัสผ่าน)
+    else if (action === 'leaderboard/get') {
+      const user = resolveUser_(payload);
+      const unitId = String(payload.unitId || '');
+      if (!SEED_UNITS.some(function (u) { return u.unitId === unitId; })) throw new Error('ไม่รู้จักหน่วย ' + unitId);
+      responseData = { success: true, unitId: unitId, students: unitLeaderboard_(unitId, user.userId) };
     }
 
     // 4. Progress: Get Student Progress (Phase C)

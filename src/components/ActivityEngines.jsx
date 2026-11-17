@@ -210,7 +210,7 @@ const QUALITY = {
     pts: 0
   }
 };
-function caseMax(c) {
+export function caseMax(c) {
   return 2 + (c.risk ? 1 : 0) + 2;
 }
 function caseScore(c, st) {

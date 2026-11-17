@@ -6,6 +6,8 @@ import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, Button, Badge, DemoBadge, ProgressRing } from '../components/UIPrimitives.jsx';
 import { Callout, Celebrate, Modal } from '../components/UIHelpers.jsx';
 import { AiQuestGame } from '../components/AiQuestGame.jsx';
+import { MyUnitScores } from '../components/MyUnitScores.jsx';
+import { U1_SCORE_COLS } from '../components/unitScoreColumns.js';
 import { QuizRunner } from '../components/QuizRunner.jsx';
 import { LessonSlideDeck } from '../components/LessonSlideDeck.jsx';
 import airaMascotUrl from '../assets/aira-mascot.png';
@@ -389,27 +391,8 @@ function Unit1Page() {
             </div>
           )}
 
-          {/* 1.3 AIra Study Advice */}
-          <div className="u1-aira-guide-banner">
-            <div className="u1-aira-guide-left">
-              <div className="u1-aira-guide-avatar">
-                <img src={airaMascotUrl} alt="AIra แนะนำลำดับการเรียน" />
-              </div>
-              <div className="u1-aira-guide-text">
-                <div className="u1-aira-guide-title">
-                  <Icon name="sparkle" size={16} style={{ color: "#6061B6" }} />
-                  <span>คำแนะนำการเรียนจากน้อง AIra</span>
-                </div>
-                <p className="u1-aira-guide-steps">
-                  แนะนำให้เรียนตามลำดับ
-                  <span className="u1-aira-step-pill">1. อ่านใบความรู้ / ดูสไลด์</span>
-                  <span className="u1-aira-step-pill">2. ทำกิจกรรมที่ 1.1–1.2</span>
-                  <span className="u1-aira-step-pill">3. เล่นมินิเกมทบทวน 4 ด่าน</span>
-                  <span className="u1-aira-step-pill">4. ทำแบบทดสอบหลังเรียน 6/10+</span>
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* 1.4 My scores (own scores only) */}
+          <MyUnitScores unitId="unit1" columns={U1_SCORE_COLS} />
 
           {/* 1.5 Curriculum Roadmap Timeline */}
           <div className="u1-cover-sets-section" ref={curriculumRef}>
