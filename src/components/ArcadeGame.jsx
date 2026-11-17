@@ -52,7 +52,7 @@ export function ArcadeGame({ unitId, brand, tagline, levels }) {
         </div>
       </header>
 
-      <nav className="cvg-levels" role="tablist" aria-label="เลือกด่าน" style={{ "--n": levels.length }}>
+      <nav className={`cvg-levels ${levels.length <= 2 ? 'few' : ''}`} role="tablist" aria-label="เลือกด่าน" style={{ "--n": levels.length }}>
         {levels.map(l => (
           <button
             key={l.id}

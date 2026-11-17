@@ -1815,20 +1815,29 @@ html body .quest-game .act .btn-ghost { background: rgba(255, 255, 255, .08) !im
 
 /* CV QUEST code levels: code shown like an editor line */
 html body .quest-game .cvg-code,
-html body .quest-game .cvg-u2-g5 .so-card b {
+html body .quest-game .cvg-u2-g5 .so-card b,
+html body .quest-game .cvg-u2-h4 .so-card b {
   display: block; margin-top: 8px; padding: 10px 12px; border-radius: 10px;
   font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-size: 17px; font-weight: 600;
   line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
   color: #E7ECFA !important; background: #0A0E2A !important; border: 1px solid rgba(125, 184, 255, .25);
 }
-html body .quest-game .cvg-u2-g5 .so-card b { margin-top: 0; }
+html body .quest-game .cvg-u2-g5 .so-card b,
+html body .quest-game .cvg-u2-h4 .so-card b { margin-top: 0; }
 
 /* 5 levels: compact vertical cards in one row */
 html body .quest-game .cvg-levels { grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 10px; }
 html body .quest-game .cvg-level { flex-direction: column; justify-content: flex-start; text-align: center; gap: 6px; padding: 12px 8px; }
 html body .quest-game .cvg-level-t { justify-items: center; }
 html body .quest-game .cvg-level-t b { font-size: 14px; }
-@media (max-width: 900px) { html body .quest-game .cvg-levels { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* เกมที่มีแค่ 2 ด่าน: การ์ดกว้าง จัดแนวนอน ตัวใหญ่ขึ้น */
+html body .quest-game .cvg-levels.few .cvg-level { flex-direction: row; justify-content: flex-start; text-align: left; gap: 16px; padding: 16px 22px; }
+html body .quest-game .cvg-levels.few .cvg-level-n { width: 52px; height: 52px; font-size: 24px; border-radius: 14px; }
+html body .quest-game .cvg-levels.few .cvg-level-t { justify-items: start; gap: 2px; }
+html body .quest-game .cvg-levels.few .cvg-level-t small { font-size: 15px; }
+html body .quest-game .cvg-levels.few .cvg-level-t b { font-size: 22px; }
+html body .quest-game .cvg-levels.few .cvg-stars-row { font-size: 24px; margin-left: auto; }
+@media (max-width: 900px) { html body .quest-game .cvg-levels:not(.few) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 480px) { html body .quest-game .cvg-levels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 

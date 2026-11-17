@@ -945,6 +945,12 @@ const SCORE_ITEM_NAMES = {
   'u1-a3': 'ด่าน 3: Tech Explorer',
   'u1-a4': 'ด่าน 4: Ethics Challenge',
   'u1-a5': 'ด่าน 5: Deepfake Detective',
+  'u2-g1': 'CV QUEST ด่าน 1: ใช่ CV ไหม?',
+  'u2-g3': 'CV QUEST ด่าน 2: เรียงขั้นตอนการมองเห็น',
+  'u2-g4': 'CV QUEST ด่าน 3: คำสั่งนี้ทำอะไร?',
+  'u2-g5': 'CV QUEST ด่าน 4: เรียงโค้ดให้รันได้',
+  'u2-h1': 'PIXEL QUEST ด่าน 1: งานนี้ใช้คำสั่งไหน?',
+  'u2-h4': 'PIXEL QUEST ด่าน 2: เรียงโค้ดให้รันได้',
   'posttest': 'แบบทดสอบหลังเรียน',
 };
 
