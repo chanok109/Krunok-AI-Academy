@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { UnitHeroBg, UnitObjectives } from '../components/UnitHero.jsx';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext.jsx';
-import { useRoute } from '../context/RouteContext.jsx';
-import { Icon, Button, Badge, DemoBadge, ProgressRing, AIraBot } from '../components/UIPrimitives.jsx';
+import { Icon, Badge, DemoBadge, ProgressRing, AIraBot } from '../components/UIPrimitives.jsx';
 import { Modal, Callout } from '../components/UIHelpers.jsx';
 import { QuizRunner } from '../components/QuizRunner.jsx';
 import { U2_QUIZ, U2_REFS } from '../data/unit2Data.js';
@@ -310,7 +309,6 @@ function VisionStage({ mood = "happy" }) {
 
 export default function Unit2Page() {
   const { progress, summary, visitUnit, markItem } = useApp();
-  const { navigate } = useRoute();
   const curriculumRef = useRef(null);
 
   // Checked state for 10 curriculum items
@@ -440,10 +438,6 @@ export default function Unit2Page() {
     }
     setActivePortal(null);
   }, []);
-
-  const scrollToCurriculum = () => {
-    curriculumRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const timelineSteps = [
     {
@@ -874,6 +868,33 @@ export default function Unit2Page() {
           )
         }
       ]
+    },
+    {
+      id: 'u2-step-10',
+      stepNum: 10,
+      tone: 'purple',
+      kicker: 'ค้นคว้าต่อ',
+      title: 'แหล่งเรียนรู้เพิ่มเติม',
+      desc: 'เอกสารอ้างอิงคำสั่งและชุดข้อมูลภาพที่ใช้ในหน่วยที่ 2 สำหรับอ่านทบทวนหรือศึกษาต่อ',
+      items: [
+        {
+          id: 'u2-item-11',
+          title: 'แหล่งอ้างอิง หน่วยที่ 2',
+          subtext: 'เอกสาร OpenCV · NumPy · ชุดข้อมูลภาพ COCO และ scikit-image',
+          actions: (
+            <button
+              type="button"
+              className="curr-btn-solid purple"
+              onClick={() => {
+                markChecked('u2-item-11');
+                setRefsOpen(true);
+              }}
+            >
+              <Icon name="book" size={14} /> เปิดแหล่งอ้างอิง
+            </button>
+          )
+        }
+      ]
     }
   ];
 
@@ -922,35 +943,6 @@ export default function Unit2Page() {
                   : 'ยังไม่ได้ทำแบบทดสอบ'}
               </Badge>
             </div>
-          </div>
-
-          <div className="btn-inline">
-            <Button className="btn-glow" icon="play" onClick={scrollToCurriculum}>
-              เริ่มเรียน
-            </Button>
-            <a
-              href="unit2/setup.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              <Icon name="cpu" size={16} /> คู่มือติดตั้ง ↗
-            </a>
-            <a
-              href="code/code-2.3-2.5.zip"
-              download
-              className="btn btn-ghost"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              <Icon name="download" size={15} /> โค้ดตัวอย่าง
-            </a>
-            <Button variant="ghost" icon="book" onClick={() => setRefsOpen(true)}>
-              แหล่งอ้างอิง
-            </Button>
-            <Button variant="ghost" icon="grid" onClick={() => navigate('home')}>
-              กลับ Dashboard
-            </Button>
           </div>
         </div>
 
