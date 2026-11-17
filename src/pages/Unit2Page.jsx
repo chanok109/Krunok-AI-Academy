@@ -481,7 +481,7 @@ export default function Unit2Page() {
       items: [
         {
           id: 'u2-item-2',
-          title: 'แนวคิดคอมพิวเตอร์วิทัศน์',
+          title: '2.1.1 แนวคิดคอมพิวเตอร์วิทัศน์',
           subtext: 'งานหลัก 4 แบบ · ภาพคือตารางตัวเลข · ผสมสี B G R',
           actions: (
             <>
@@ -492,7 +492,7 @@ export default function Unit2Page() {
                   openViewer(
                     'read',
                     'unit2/index.html?only=t21,t22#t21',
-                    '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
+                    '2.1.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                     'unit2/index.html#a21-1',
                     'u2-item-2'
                   )
@@ -507,7 +507,7 @@ export default function Unit2Page() {
                   openViewer(
                     'slide',
                     'unit2/index.html#a21-1',
-                    '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
+                    '2.1.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                     null,
                     'u2-item-2'
                   )
@@ -520,7 +520,7 @@ export default function Unit2Page() {
         },
         {
           id: 'u2-item-3',
-          title: 'การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
+          title: '2.1.2 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
           codePills: ['cv2.imread()', 'cv2.imshow()', 'cv2.imwrite()'],
           actions: (
             <>
@@ -531,7 +531,7 @@ export default function Unit2Page() {
                   openViewer(
                     'read',
                     'unit2/index.html?only=t21,t22#t22',
-                    '2.1 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
+                    '2.1.2 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
                     'unit2/index.html#a21-t22',
                     'u2-item-3'
                   )
@@ -546,7 +546,7 @@ export default function Unit2Page() {
                   openViewer(
                     'slide',
                     'unit2/index.html#a21-t22',
-                    '2.1 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
+                    '2.1.2 การอ่าน แสดงผล และบันทึกภาพด้วย OpenCV',
                     null,
                     'u2-item-3'
                   )
@@ -614,47 +614,36 @@ export default function Unit2Page() {
       kicker: 'ใบความรู้ 2.2',
       title: 'พื้นฐานการประมวลผลภาพ',
       desc: 'เปลี่ยนตัวเลขในตารางพิกเซลเพื่อสร้างภาพใหม่ เข้าถึงพิกเซล ตัดภาพ ปรับขนาด และพลิกภาพด้วย OpenCV',
+      // one item per topic; 'u2-item-5' (last topic) keeps the lesson/activity progress mapping
       items: [
-        {
-          id: 'u2-item-5',
-          title: 'การเข้าถึงพิกเซล ตัดภาพ ปรับขนาด และพลิกภาพ',
-          codePills: ['img[y, x]', 'img[y1:y2, x1:x2]', 'cv2.resize()', 'cv2.flip()'],
-          actions: (
-            <>
-              <button
-                type="button"
-                className="curr-btn-ghost teal"
-                onClick={() =>
-                  openViewer(
-                    'read',
-                    'unit2/index.html?only=t23#t23',
-                    '2.2 พื้นฐานการประมวลผลภาพ',
-                    'unit2/index.html#a22-1',
-                    'u2-item-5'
-                  )
-                }
-              >
-                <Icon name="openBook" size={14} /> อ่าน
-              </button>
-              <button
-                type="button"
-                className="curr-btn-solid teal"
-                onClick={() =>
-                  openViewer(
-                    'slide',
-                    'unit2/index.html#a22-1',
-                    '2.2 พื้นฐานการประมวลผลภาพ',
-                    null,
-                    'u2-item-5'
-                  )
-                }
-              >
-                <Icon name="slidePlay" size={14} /> สไลด์
-              </button>
-            </>
-          )
-        }
-      ]
+        { id: 'u2-item-5a', anchor: 't221', title: '2.2.1 การประมวลผลภาพ', subtext: 'เปลี่ยนตัวเลขในตารางพิกเซลเพื่อสร้างภาพใหม่' },
+        { id: 'u2-item-5b', anchor: 't222', title: '2.2.2 การเข้าถึงพิกเซล', codePills: ['img[y, x]'] },
+        { id: 'u2-item-5c', anchor: 't223', title: '2.2.3 การตัดภาพ', codePills: ['img[y1:y2, x1:x2]'] },
+        { id: 'u2-item-5d', anchor: 't224', title: '2.2.4 การปรับขนาด', codePills: ['cv2.resize()'] },
+        { id: 'u2-item-5', anchor: 't225', title: '2.2.5 การพลิกภาพ', codePills: ['cv2.flip()'] }
+      ].map(it => ({
+        ...it,
+        actions: (
+          <>
+            <button
+              type="button"
+              className="curr-btn-ghost teal"
+              onClick={() =>
+                openViewer('read', `unit2/index.html?only=t23#${it.anchor}`, it.title, `unit2/index.html#a22-${it.anchor}`, it.id)
+              }
+            >
+              <Icon name="openBook" size={14} /> อ่าน
+            </button>
+            <button
+              type="button"
+              className="curr-btn-solid teal"
+              onClick={() => openViewer('slide', `unit2/index.html#a22-${it.anchor}`, it.title, null, it.id)}
+            >
+              <Icon name="slidePlay" size={14} /> สไลด์
+            </button>
+          </>
+        )
+      }))
     },
     {
       id: 'u2-step-5',
@@ -1140,16 +1129,6 @@ export default function Unit2Page() {
                       <Icon name="slidePlay" size={14} /> สไลด์เต็มจอ
                     </button>
                   )}
-                  <a
-                    href={activePortal.src}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="deck-fullscreen-btn"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <Icon name="external" size={14} />
-                    <span>เปิดแท็บใหม่</span>
-                  </a>
                   <button
                     type="button"
                     className={`deck-fullscreen-btn ${isBrowserFs ? 'active' : ''}`}
@@ -1216,7 +1195,7 @@ export default function Unit2Page() {
                       openViewer(
                         'slide',
                         'unit2/index.html#a21-1',
-                        '2.1 แนวคิดคอมพิวเตอร์วิทัศน์',
+                        '2.1.1 แนวคิดคอมพิวเตอร์วิทัศน์',
                         null,
                         'u2-item-2'
                       )
