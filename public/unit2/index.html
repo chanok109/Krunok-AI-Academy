@@ -2330,8 +2330,8 @@ img = cv2.<span class="fn">imread</span>(<span class="str">"fruits.png"</span>)
 gray = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2GRAY)
 <span class="fn">print</span>(<span class="str">"ขนาดภาพเทา (สูง, กว้าง):"</span>, gray.shape)
 
-<span class="cm"># อ่านพิกเซลแถว 600 คอลัมน์ 420</span>
-b, g, r = img[<span class="nu">600</span>, <span class="nu">420</span>]
+<span class="cm"># อ่านพิกเซลแถว 660 คอลัมน์ 420</span>
+b, g, r = img[<span class="nu">660</span>, <span class="nu">420</span>]
 <span class="fn">print</span>(<span class="str">"B ="</span>, b, <span class="str">"G ="</span>, g, <span class="str">"R ="</span>, r)
 
 <span class="cm"># แสดงภาพสีและภาพเทา</span>
@@ -2348,9 +2348,9 @@ cv2.<span class="fn">imwrite</span>(<span class="str">"fruits_gray.png"</span>, 
   <p class="prose">ตัวอย่างผลลัพธ์เมื่อรันกับ <code>fruits.png</code> ตัวเลขใน Terminal จะขึ้นก่อน จากนั้นหน้าต่าง Color และ Gray จะเปิดขึ้นมา กดปุ่มใดก็ได้บนหน้าต่างภาพเพื่อปิด แล้วโปรแกรมจึงบันทึกไฟล์</p>
   <div class="win"><div class="tb"><i></i><i></i><i></i><span>ผลลัพธ์ใน Terminal</span></div><div class="tm wrapit"><span class="o">ขนาดภาพ (สูง, กว้าง, ช่องสี): (817, 1275, 3)
 ขนาดภาพเทา (สูง, กว้าง): (817, 1275)
-B = 21 G = 1 R = 155
+B = 48 G = 38 R = 152
 บันทึกภาพเทาแล้ว</span></div></div>
-  <p class="note tip"><b>อ่านผล:</b> ภาพเทาเหลือแค่ (สูง, กว้าง) เพราะแต่ละพิกเซลมีค่าเดียว พิกเซลแถว 600 คอลัมน์ 420 อยู่บนแอปเปิลแดง ค่า R จึงสูงกว่า B และ G มาก และในโฟลเดอร์จะมีไฟล์ใหม่ชื่อ <code>fruits_gray.png</code></p>
+  <p class="note tip"><b>อ่านผล:</b> ภาพเทาเหลือแค่ (สูง, กว้าง) เพราะแต่ละพิกเซลมีค่าเดียว พิกเซลแถว 660 คอลัมน์ 420 อยู่บนแอปเปิลแดง (จุดเดียวกับในบทเรียน) ค่า R จึงสูงกว่า B และ G มาก และในโฟลเดอร์จะมีไฟล์ใหม่ชื่อ <code>fruits_gray.png</code></p>
  </div>
 </div></section>
 
