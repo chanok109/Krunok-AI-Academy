@@ -2357,7 +2357,6 @@ B = 48 G = 38 R = 152
   <div class="win"><div class="tb"><i></i><i></i><i></i><span>D:\cv\unit2</span></div><div class="tm wrapit"><span class="o">fruits.png         ภาพต้นฉบับ
 summary_2_1.py     โค้ดสรุป
 <b>fruits_gray.png    ไฟล์ใหม่ ภาพเทาที่บันทึก</b></span></div></div>
-  <p class="note tip"><b>อ่านผล:</b> ภาพเทาเหลือแค่ (สูง, กว้าง) เพราะแต่ละพิกเซลมีค่าเดียว พิกเซลแถว 660 คอลัมน์ 420 อยู่บนแอปเปิลแดง (จุดเดียวกับในบทเรียน) ค่า R จึงสูงกว่า B และ G มาก ส่วนไฟล์ <code>fruits_gray.png</code> ที่บันทึกได้จะเป็นภาพเดียวกับในหน้าต่าง Gray</p>
  </div>
 </div></section>
 
@@ -4540,6 +4539,7 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
 (function(){
  const only=new URLSearchParams(location.search).get('only');if(!only)return;
  const keep=only.split(',');
+ const hero=document.querySelector('header.hero');if(hero)hero.style.display='none';
  const parts=[...document.querySelectorAll('main section.part[id]')];
  parts.forEach(s=>{if(!keep.includes(s.id))s.style.display='none'});
  document.querySelectorAll('a[href^="#"]').forEach(a=>{const id=a.getAttribute('href').slice(1);if(parts.some(s=>s.id===id)&&!keep.includes(id))a.style.display='none'});
