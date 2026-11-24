@@ -846,6 +846,8 @@ function sanitizeProgress_(raw) {
     return Array.isArray(x) ? x.filter(function (s) { return typeof s === 'string' && s.length <= 100; }).slice(0, 300) : [];
   };
   const out = { version: 1, updatedAt: str_(raw.updatedAt, 40), lastVisited: null };
+  // วันที่เข้าเรียน 'YYYY-MM-DD' (สถิติการเข้าเรียน)
+  out.visitDays = Array.isArray(raw.visitDays) ? raw.visitDays.filter(function (k) { return typeof k === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(k); }).slice(-400) : [];
   if (raw.lastVisited && SEED_UNITS.some(function (u) { return u.unitId === raw.lastVisited.unitId; })) {
     out.lastVisited = { unitId: raw.lastVisited.unitId, at: str_(raw.lastVisited.at, 40) };
   }
@@ -887,6 +889,7 @@ function mergeProgress_(a, b) {
     return out;
   };
   const out = { version: 1, updatedAt: newer_(a.updatedAt, b.updatedAt), lastVisited: null };
+  out.visitDays = union(a.visitDays || [], b.visitDays || []).sort().slice(-400);
   out.lastVisited = !a.lastVisited ? b.lastVisited : !b.lastVisited ? a.lastVisited
     : (String(b.lastVisited.at) > String(a.lastVisited.at) ? b.lastVisited : a.lastVisited);
   SEED_UNITS.forEach(function (unit) {
@@ -992,6 +995,90 @@ function unitLeaderboard_(unitId, viewerId) {
       quiz: b.quiz[1] ? avg2(b.quiz) : null,
       records: b.records,
       me: username === String(viewerId)
+    });
+  });
+  return out;
+}
+
+/**
+ * สถิติการเข้าเรียนของนักเรียนทั้งหมด (ไม่ระบุตัวตน): รายชื่อจาก Users, วันที่เข้าเรียนจาก ProgressSnapshots
+ * ส่งแค่ห้องกับวันที่เข้าเรียน 60 วันล่าสุดของแต่ละคน ไม่ส่งชื่อ เลขที่ หรือ username
+ */
+function visitSummary_() {
+  const sheet = getDb_().getSheetByName('Users');
+  if (!sheet) throw new Error('ไม่พบแผ่นงานชื่อ Users ใน Google Sheet');
+  const days = {}; // username -> visitDays
+  readAll_('ProgressSnapshots').forEach(function (r) {
+    let p = null;
+    try { p = JSON.parse(r.progressJson || '{}'); } catch (e) { return; }
+    const v = Array.isArray(p.visitDays) ? p.visitDays.filter(function (k) { return typeof k === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(k); }) : [];
+    days[String(r.userId).replace(/^'/, '').trim()] = v.slice(-60);
+  });
+  const out = [];
+  sheet.getDataRange().getValues().slice(1).forEach(function (row) {
+    const cls = String(row[0] != null ? row[0] : '').trim();
+    const username = String(row[2] != null ? row[2] : '').trim();
+    const title = String(row[4] != null ? row[4] : '').trim();
+    if (!username || cls === '0' || title.indexOf('ครู') !== -1) return; // ข้ามครูและแถวว่าง
+    out.push({ classroom: cls.indexOf('ม.') === 0 ? cls : 'ม.5/' + cls, days: days[username] || [] });
+  });
+  return out;
+}
+
+/**
+ * ข้อมูลแดชบอร์ดครู (เฉพาะครู/แอดมิน): นักเรียนทุกคนจาก Users + ความก้าวหน้าจาก ProgressSnapshots
+ * + ประวัติสอบจาก QuizAttempts + ผลประเมินโครงงานล่าสุดจาก Assessments (อ่านแต่ละแผ่นงานครั้งเดียว)
+ */
+function teacherOverview_() {
+  const sheet = getDb_().getSheetByName('Users');
+  if (!sheet) throw new Error('ไม่พบแผ่นงานชื่อ Users ใน Google Sheet');
+  const key = function (id) { return String(id).replace(/^'/, '').trim().replace(/^0+/, ''); };
+  const optional = function (name) { try { return readAll_(name); } catch (e) { return []; } };
+  const snaps = {};
+  optional('ProgressSnapshots').forEach(function (r) {
+    let p;
+    try { p = sanitizeProgress_(JSON.parse(r.progressJson || '{}')); } catch (e) { return; }
+    SEED_UNITS.forEach(function (u) { p[u.unitId].reflections = {}; }); // ไม่ส่งข้อความยาว ลดขนาดข้อมูล
+    snaps[key(r.userId)] = { progress: p, syncedAt: String(r.serverUpdatedAt || '') };
+  });
+  const attempts = {};
+  optional('QuizAttempts').forEach(function (r) {
+    (attempts[key(r.userId)] = attempts[key(r.userId)] || []).push(r);
+  });
+  const assess = {};
+  optional('Assessments').forEach(function (r) {
+    const k = key(r.userId);
+    if (!assess[k] || String(r.updatedAt) >= String(assess[k].updatedAt)) assess[k] = r;
+  });
+  const out = [];
+  sheet.getDataRange().getValues().slice(1).forEach(function (row) {
+    const cls = String(row[0] != null ? row[0] : '').trim();
+    const username = String(row[2] != null ? row[2] : '').trim();
+    const title = String(row[4] != null ? row[4] : '').trim();
+    if (!username || cls === '0' || title.indexOf('ครู') !== -1) return; // ข้ามครูและแถวว่าง
+    const k = key(username);
+    const snap = snaps[k];
+    const progress = snap ? snap.progress : sanitizeProgress_({});
+    (attempts[k] || [])
+      .sort(function (p, q) { return String(p.submittedAt) < String(q.submittedAt) ? -1 : 1; })
+      .forEach(function (r) {
+        if (!progress[r.unitId]) return;
+        progress[r.unitId].quizAttempts.push({
+          correct: Number(r.score) || 0, total: Number(r.maxScore) || 0, percent: Number(r.percentage) || 0,
+          passed: r.passed === true || String(r.passed).toUpperCase() === 'TRUE', at: String(r.submittedAt)
+        });
+      });
+    const a = assess[k];
+    let rubric = {};
+    if (a) { try { rubric = JSON.parse(a.rubricScores || '{}'); } catch (e) { rubric = {}; } }
+    out.push({
+      userId: username,
+      no: Number(row[1]) || 0,
+      name: (title + String(row[5] || '').trim() + ' ' + String(row[6] || '').trim()).trim() || username,
+      classroom: cls.indexOf('ม.') === 0 ? cls : 'ม.5/' + cls,
+      progress: progress,
+      syncedAt: snap ? snap.syncedAt : '',
+      assessment: a ? { totalScore: Number(a.totalScore) || 0, maxScore: Number(a.maxScore) || 16, rubricScores: rubric, feedback: String(a.feedback || ''), updatedAt: String(a.updatedAt || '') } : null
     });
   });
   return out;
@@ -1333,6 +1420,11 @@ function doPost(e) {
 
     // 3c. Leaderboard: คะแนนรายหน่วยของนักเรียนทุกห้อง (ผู้ที่เข้าสู่ระบบแล้วดูได้)
     //     รายชื่อจากแผ่นงาน Users คะแนนจากแผ่นงาน ScoreLog; ส่งเฉพาะชื่อ เลขที่ ห้อง คะแนน (ไม่ส่ง username/รหัสผ่าน)
+    // 3d. สถิติการเข้าเรียนของนักเรียนทั้งหมด (ผู้ที่เข้าสู่ระบบแล้วดูได้ ข้อมูลไม่ระบุตัวตน)
+    else if (action === 'visits/summary') {
+      resolveUser_(payload);
+      responseData = { success: true, students: visitSummary_() };
+    }
     else if (action === 'leaderboard/get') {
       const user = resolveUser_(payload);
       const unitId = String(payload.unitId || '');
@@ -1432,54 +1524,10 @@ function doPost(e) {
     }
 
     // 7. Teacher: Get Roster with Scores & Progress (Phase D)
-    else if (action === 'teacher/getRoster') {
+    else if (action === 'teacher/overview') {
       const user = resolveUser_(payload);
       requireRole_(user, ['TEACHER', 'ADMIN']);
-
-      const classroom = payload.classroom; // filter by classroom or 'all'
-      const allUsers = readAll_('GoogleUsers').filter(function (u) {
-        return u.role === 'STUDENT';
-      });
-
-      const allAttempts = readAll_('QuizAttempts');
-      const allProgress = readAll_('Progress');
-      const allProjects = readAll_('Projects');
-      const allAssessments = readAll_('Assessments');
-
-      const roster = allUsers
-        .filter(function (u) {
-          return !classroom || classroom === 'all' || u.classroom === classroom;
-        })
-        .map(function (u) {
-          const userAttempts = allAttempts.filter(function (a) { return a.userId === u.userId; });
-          const userProgress = allProgress.filter(function (p) { return p.userId === u.userId && p.completionStatus === 'COMPLETED'; });
-          const userProject = allProjects.find(function (p) { return p.userId === u.userId; });
-          const userAssess = allAssessments.filter(function (as) { return as.userId === u.userId; });
-
-          // Best quiz scores per unit
-          const bestScores = { unit1: 0, unit2: 0, unit3: 0 };
-          userAttempts.forEach(function (a) {
-            if (bestScores[a.unitId] === undefined || a.percentage > bestScores[a.unitId]) {
-              bestScores[a.unitId] = a.percentage;
-            }
-          });
-
-          return {
-            userId: u.userId,
-            displayName: u.displayName,
-            email: u.email,
-            classroom: u.classroom,
-            status: u.status,
-            completedLessonsCount: userProgress.length,
-            quizScores: bestScores,
-            projectStatus: userProject ? userProject.status : 'NOT_STARTED',
-            projectTitle: userProject ? userProject.projectTitle : '',
-            latestAssessment: userAssess.length ? userAssess[userAssess.length - 1] : null,
-            updatedAt: u.updatedAt
-          };
-        });
-
-      responseData = { success: true, classroom: classroom || 'all', roster: roster };
+      responseData = { success: true, students: teacherOverview_(), generatedAt: nowIso_() };
     }
 
     // 8. Teacher: Assess Project & Give Feedback (Phase D)
@@ -1513,36 +1561,6 @@ function doPost(e) {
 
       writeAuditLog(user.userId, 'PROJECT_ASSESS', payload.studentUserId + ':' + assessmentId, 'SUCCESS');
       responseData = { success: true, assessmentId: assessmentId };
-    }
-
-    // 9. Teacher: Summary Analytics across Classrooms (Phase D)
-    else if (action === 'teacher/getAnalytics') {
-      const user = resolveUser_(payload);
-      requireRole_(user, ['TEACHER', 'ADMIN']);
-
-      const users = readAll_('GoogleUsers').filter(function (u) { return u.role === 'STUDENT'; });
-      const attempts = readAll_('QuizAttempts');
-      const projects = readAll_('Projects');
-
-      const classStats = {};
-      APP.classrooms.forEach(function (c) {
-        classStats[c] = { total: 0, passedU1: 0, passedU2: 0, passedU3: 0, submittedProjects: 0 };
-      });
-
-      users.forEach(function (u) {
-        if (classStats[u.classroom]) {
-          classStats[u.classroom].total++;
-          const uAttempts = attempts.filter(function (a) { return a.userId === u.userId && a.passed; });
-          if (uAttempts.some(function (a) { return a.unitId === 'unit1'; })) classStats[u.classroom].passedU1++;
-          if (uAttempts.some(function (a) { return a.unitId === 'unit2'; })) classStats[u.classroom].passedU2++;
-          if (uAttempts.some(function (a) { return a.unitId === 'unit3'; })) classStats[u.classroom].passedU3++;
-          if (projects.some(function (p) { return p.userId === u.userId && (p.status === 'SUBMITTED' || p.status === 'ASSESSED'); })) {
-            classStats[u.classroom].submittedProjects++;
-          }
-        }
-      });
-
-      responseData = { success: true, classStats: classStats, totalStudents: users.length };
     }
 
     // 10. Progress: Sync whole progress snapshot (merge with server copy)

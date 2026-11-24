@@ -51,10 +51,10 @@ assert.strictEqual(T.verifyGoogleIdToken_('DEMO_MOCK_TOKEN:x:a@b:x').email, 'a@b
 
 // --- progress sync: two devices merge, quiz scores come only from QuizAttempts ---
 const plain = x => JSON.parse(JSON.stringify(x));
-const deviceA = { updatedAt: '2026-11-16T01:00:00Z', unit1: {
+const deviceA = { updatedAt: '2026-11-16T01:00:00Z', visitDays: ['2026-11-15'], unit1: {
   completedLessons: ['u1-l1'], activityScores: { a1: { best: 5, last: 5, max: 10, attempts: 1, at: '2026-11-16T01:00:00Z' } },
   reflections: { lab1: 'A' }, quizAttempts: [{ percent: 100, passed: true }] } };
-const deviceB = { updatedAt: '2026-11-16T02:00:00Z', unit1: {
+const deviceB = { updatedAt: '2026-11-16T02:00:00Z', visitDays: ['2026-11-16', 'bad'], unit1: {
   completedLessons: ['u1-l2'], activityScores: { a1: { best: 3, last: 3, max: 10, attempts: 2, at: '2026-11-16T02:00:00Z' } } },
   unit9: { completedLessons: ['x'] } };
 db.QuizAttempts.appendRow(['ATT-1', 6999, 'unit1', '2026-11-16T01:30:00Z', 8, 10, 80, true, 60]); // old row: leading 0 lost
@@ -64,7 +64,8 @@ assert.strictEqual(db.ProgressSnapshots.rows.length, 2, 'one row per student, no
 assert.strictEqual(db.ProgressSnapshots.rows[1][0], '06999', 'userId stored as text');
 const u1 = merged.unit1;
 assert.deepStrictEqual(u1.completedLessons.sort(), ['u1-l1', 'u1-l2']);
-assert.deepStrictEqual(u1.activityScores.a1, { best: 5, last: 3, max: 10, attempts: 2, at: '2026-11-16T02:00:00Z' });
+assert.deepStrictEqual(u1.activityScores.a1, { best: 5, last: 3, sum: 0, max: 10, attempts: 2, at: '2026-11-16T02:00:00Z' });
+assert.deepStrictEqual(merged.visitDays, ['2026-11-15', '2026-11-16'], 'visit days merged, junk dropped');
 assert.strictEqual(u1.reflections.lab1, 'A');
 assert.deepStrictEqual(u1.quizAttempts.map(a => [a.percent, a.passed]), [[80, true]], 'forged client quiz ignored');
 assert.strictEqual(merged.unit9, undefined, 'unknown unit dropped');
@@ -98,4 +99,18 @@ assert.deepStrictEqual(log, [
   ['06999', 'ม.5/1', 'POSTTEST', 'แบบทดสอบหลังเรียน', 10, 10, 100, true],
   ['06999', 'ม.5/1', 'MINIGAME', 'ด่าน 2: Timeline Challenge', 4, 6, 67, ''],
 ]);
+// --- teacher overview: real roster from Users + progress + quiz history; teachers only ---
+db.Users = usersSheet; // production keeps Users in the same file as the DB
+assert.match(post({ action: 'teacher/overview' }).error || '', /FORBIDDEN/, 'students cannot read the class overview');
+const ttok = T.createSession_(t);
+const ov = JSON.parse(T.doPost({ postData: { contents: JSON.stringify({ sessionToken: ttok, action: 'teacher/overview' }) } }));
+assert.strictEqual(ov.success, true, ov.error);
+assert.strictEqual(ov.students.length, 1, 'teacher row skipped');
+const st = ov.students[0];
+assert.deepStrictEqual([st.userId, st.no, st.name, st.classroom], ['06999', 3, 'นายสมชาย ใจดี', 'ม.5/1']);
+assert.ok(st.progress.unit1.completedLessons.includes('u1-l1'), 'progress comes from ProgressSnapshots');
+assert.deepStrictEqual(st.progress.visitDays, ['2026-11-15', '2026-11-16']);
+assert.ok(st.progress.unit1.quizAttempts.length >= 1 && st.progress.unit1.quizAttempts.every(a => typeof a.percent === 'number'), 'quiz history from QuizAttempts');
+assert.deepStrictEqual(st.progress.unit1.reflections, {}, 'long reflections not sent');
+assert.strictEqual(st.assessment, null);
 console.log('backend-check: all passed');

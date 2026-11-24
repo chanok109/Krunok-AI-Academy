@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { UNITS, KEYS } from '../data/courseData.js';
 import { storage } from '../services/storageService.js';
 import { auth, api } from '../services/apiService.js';
+import { dayKey } from '../services/visitStats.js';
 import {
   emptyProgress,
   normalizeProgress,
@@ -302,6 +303,18 @@ export function AppProvider({ children }) {
     },
     [commit]
   );
+
+  // บันทึกวันที่เข้าเรียน วันละครั้ง (ใช้ทำสถิติการเข้าเรียนหน้าแรก)
+  const signedIn = !!student;
+  useEffect(() => {
+    if (status !== 'ready' || !signedIn) return;
+    const today = dayKey();
+    if (progressRef.current.visitDays?.includes(today)) return;
+    commit(p => {
+      if (!p.visitDays.includes(today)) p.visitDays = [...p.visitDays, today].sort().slice(-400);
+      return p;
+    });
+  }, [status, signedIn, commit]);
 
   const summary = useMemo(() => buildSummary(progress), [progress]);
   const prevAch = useRef(null);

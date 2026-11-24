@@ -100,7 +100,7 @@
 
 ### 4.6 หน้าครู
 
-- `teacher/getRoster` อ่าน `ProgressSnapshots` (กรองห้อง) + `QuizAttempts` (คะแนนสูงสุดต่อหน่วย) และต้องเป็น role `TEACHER/ADMIN` (`requireRole_` มีอยู่แล้ว)
+- `teacher/overview` (แทน `teacher/getRoster` เดิม) อ่าน `Users` + `ProgressSnapshots` + `QuizAttempts` (คะแนนสูงสุดต่อหน่วย) และต้องเป็น role `TEACHER/ADMIN` (`requireRole_` มีอยู่แล้ว)
 - คืน `progressJson` ของแต่ละคน แล้วให้ไคลเอนต์ใช้ `buildSummary` ตัวเดิมคำนวณ % ครูจึงเห็นตัวเลขเดียวกับที่นักเรียนเห็น แทนสูตรประมาณ `quiz > 0 ? 100 : 50`
 - ลบ mock roster ในโหมดจริง และแสดง “ยังไม่มีข้อมูล” เมื่อห้องยังว่าง
 - นักเรียนที่อยู่ในชีต `Users` แต่ยังไม่มี snapshot ให้แสดงเป็น 0% (ครูจะได้เห็นว่าใครยังไม่เริ่ม)
@@ -113,7 +113,7 @@
 | 2 | `mergeProgress` + ชุดทดสอบ | ทดสอบ union / max / ใหม่กว่า ผ่าน |
 | 3 | ชีต `ProgressSnapshots` + `progress/sync` | ทำบทเรียนบนเครื่อง A แล้วเปิดเครื่อง B เห็นข้อมูลเดียวกัน |
 | 4 | คิวซิงก์ + สถานะใน Navbar | ปิดเน็ต ทำกิจกรรม เปิดเน็ต แล้วข้อมูลขึ้นชีต |
-| 5 | `teacher/getRoster` แบบใหม่ + หน้าครู | ครูเห็น % ตรงกับหน้านักเรียน |
+| 5 | `teacher/overview` + หน้าครู (เสร็จแล้ว) | ครูเห็น % ตรงกับหน้านักเรียน |
 
 ครูต้องทำเอง: ปิดแชร์สาธารณะของชีต `Users`, รัน `setupDatabase()`, deploy Apps Script เวอร์ชันใหม่
 

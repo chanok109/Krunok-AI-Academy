@@ -1,176 +1,112 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { COURSE, UNITS, QUIZ_PASS_PERCENT, API_CONFIG } from '../data/courseData.js';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { COURSE, API_CONFIG, LOCKED_UNITS } from '../data/courseData.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useRoute } from '../context/RouteContext.jsx';
-import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from '../components/UIPrimitives.jsx';
-import { Modal } from '../components/UIHelpers.jsx';
+import { Icon, GlassCard, Button, Badge, DemoBadge, ProgressBar } from '../components/UIPrimitives.jsx';
+import { Modal, thaiDateTime } from '../components/UIHelpers.jsx';
 import { api } from '../services/apiService.js';
 import { UnitScoreBoard } from '../components/UnitScoreBoard.jsx';
-import { U1_SCORE_COLS, U2_SCORE_COLS } from '../components/unitScoreColumns.js';
+import { StudentDetail, projectTitle } from '../components/StudentDetail.jsx';
+import { dayTh } from '../components/VisitCalendar.jsx';
+import {
+  OPEN_UNITS, QUIZ_UNITS, SCORE_COLS, IDLE_DAYS, QUIZ_BINS,
+  toRow, groupSummary, quizBins, itemCompletion, demoOverview, passMark
+} from '../services/teacherData.js';
 
-const SCORE_TABS = { unit1: U1_SCORE_COLS, unit2: U2_SCORE_COLS };
+// แท็บคะแนนรายกิจกรรม: เฉพาะหน่วยที่เปิดเรียนแล้วและมีมินิเกม
+const SCORE_TABS = Object.fromEntries(OPEN_UNITS.filter(u => SCORE_COLS[u.id]).map(u => [u.id, SCORE_COLS[u.id]]));
 
-// โหมดสาธิต: สร้างคะแนนตัวอย่างจากคะแนนแบบทดสอบของนักเรียนจำลอง (ไม่ใช้กับข้อมูลจริง)
-const demoUnitScores = s => {
-  const f = (s.q1 || 0) / 100, sc = (max, d) => Math.max(0, Math.min(max, Math.round(max * f) - d));
-  const unit = (cols, quizMax) => ({
-    activities: Object.fromEntries(cols.map((c, i) => [c.id, { best: sc(c.max, i % 3), max: c.max }])),
-    quiz: { correct: Math.round(f * quizMax), total: quizMax, percent: s.q1 || 0 }
-  });
-  return { unit1: unit(U1_SCORE_COLS, 10), unit2: unit(U2_SCORE_COLS, 15) };
+const RUBRIC = [
+  { key: 'problem', label: '1. การระบุปัญหาและขอบเขต', desc: 'ความชัดเจนของปัญหา ประโยชน์ต่อผู้ใช้ และความเหมาะสมในการใช้ AI' },
+  { key: 'data', label: '2. คุณภาพและการเตรียมข้อมูล', desc: 'ปริมาณข้อมูล ความหลากหลาย การทำความสะอาด และการป้องกันความลำเอียง' },
+  { key: 'model', label: '3. การเลือกและทดสอบโมเดล AI', desc: 'ความถูกต้องของโมเดล การทดสอบด้วยชุดข้อมูลทดสอบ และค่าความแม่นยำ' },
+  { key: 'ethics', label: '4. จริยธรรมและความปลอดภัย', desc: 'การปฏิบัติตาม PDPA การคำนึงถึงความเป็นธรรม และการจัดการความเสี่ยง' }
+];
+
+const STATUS_FILTERS = [
+  { id: 'all', label: 'นักเรียนทั้งหมด', test: () => true },
+  { id: 'idle', label: `ต้องติดตาม (ไม่เข้าเรียน ${IDLE_DAYS} วันขึ้นไป)`, test: r => r.flags.idle },
+  { id: 'notStarted', label: 'ยังไม่เริ่มเรียน', test: r => r.flags.notStarted },
+  { id: 'quizFailed', label: 'ทำแบบทดสอบแล้วยังไม่ผ่าน', test: r => r.flags.quizFailed },
+  { id: 'quizPending', label: 'ยังไม่ผ่านแบบทดสอบบางหน่วย', test: r => r.flags.quizPending },
+  { id: 'quizAll', label: 'ผ่านแบบทดสอบครบทุกหน่วย', test: r => !r.flags.quizPending }
+];
+const SORTS = {
+  no: { label: 'ห้อง / เลขที่', fn: (a, b) => a.classroom.localeCompare(b.classroom) || a.no - b.no },
+  progressDesc: { label: 'ความก้าวหน้า มาก → น้อย', fn: (a, b) => b.openPct - a.openPct },
+  progressAsc: { label: 'ความก้าวหน้า น้อย → มาก', fn: (a, b) => a.openPct - b.openPct },
+  idle: { label: 'ไม่ได้เข้าเรียนนานที่สุด', fn: (a, b) => (b.daysIdle ?? 9999) - (a.daysIdle ?? 9999) }
 };
+
+const idleText = r => (r.lastVisit == null ? 'ยังไม่เคยเข้า' : r.daysIdle === 0 ? 'วันนี้' : `${r.daysIdle} วันที่แล้ว`);
+const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
+const csvCell = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+// คะแนนรายกิจกรรมโหมดสาธิต: ค่าเฉลี่ยจาก activityScores ในข้อมูลจำลอง (โหมดจริงใช้ ScoreLog ผ่าน leaderboard/get)
+const demoUnitScores = r => Object.fromEntries(Object.keys(SCORE_TABS).map(id => {
+  const up = r.progress[id];
+  const tries = up.quizAttempts;
+  return [id, {
+    activities: Object.fromEntries(Object.entries(up.activityScores).map(([k, s]) => [k, { best: +((s.sum ?? s.best) / (s.attempts || 1)).toFixed(2), max: s.max }])),
+    quiz: tries.length ? { correct: +(tries.reduce((n, a) => n + a.correct, 0) / tries.length).toFixed(2) } : null
+  }];
+}));
 
 export function TeacherDashboard() {
   const { user, notify } = useApp();
   const { navigate } = useRoute();
 
+  const [activeTab, setActiveTab] = useState('roster');
   const [selectedClass, setSelectedClass] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('no');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('roster'); // 'roster' | 'unit1' | 'unit2' | 'analytics' | 'settings'
+  const [detail, setDetail] = useState(null);
 
-  // Assessment Modal State
-  const [evaluatingStudent, setEvaluatingStudent] = useState(null);
-  const [rubricScores, setRubricScores] = useState({
-    problem: 4,
-    data: 3,
-    model: 4,
-    ethics: 4
-  });
-  const [feedbackText, setFeedbackText] = useState('');
-  const [isSavingEval, setIsSavingEval] = useState(false);
-
-  // Endpoint settings
-  const [gasUrlInput, setGasUrlInput] = useState(API_CONFIG.gasEndpoint || '');
-  const [isTestingGas, setIsTestingGas] = useState(false);
-  const [gasTestResult, setGasTestResult] = useState(null);
-
-  // Student Data (Initial Mock Dataset for 6 classes, expandable with GAS API)
-  const [students, setStudents] = useState([
-    {
-      id: 'STD-50101',
-      name: 'ชญานนท์ เจริญวิทย์',
-      classroom: 'ม.5/1',
-      email: 'chayanon@student.pcccr.ac.th',
-      u1: 100, u2: 100, u3: 90, u4: 75,
-      q1: 100, q2: 93, q3: 87,
-      quizAvg: 93,
-      projectTitle: 'ระบบตรวจจับและจำแนกพันธุ์ข้าวเหนียวเขี้ยวงูเชียงรายด้วย Computer Vision',
-      projectDesc: 'พัฒนาโมเดล AI ตรวจจับเมล็ดข้าวเหนียวที่มีรอยตำหนิและจำแนกสายพันธุ์บริสุทธิ์เพื่อเกษตรกรท้องถิ่น',
-      projectEvidence: 'https://github.com/pcccr-ai/sticky-rice-vision',
-      projectStatus: 'SUBMITTED',
-      projectScore: null,
-      teacherFeedback: ''
-    },
-    {
-      id: 'STD-50102',
-      name: 'กานต์พิชชา วงศ์สุวรรณ',
-      classroom: 'ม.5/1',
-      email: 'kanpitcha@student.pcccr.ac.th',
-      u1: 100, u2: 95, u3: 85, u4: 60,
-      q1: 93, q2: 87, q3: 80,
-      quizAvg: 87,
-      projectTitle: 'แบบจำลองทำนายค่าฝุ่น PM2.5 ในพื้นที่โรงเรียนด้วย Machine Learning',
-      projectDesc: 'วิเคราะห์ข้อมูลสภาพอากาศ ความชื้น และทิศทางลมเพื่อแจ้งเตือนกิจกรรมกลางแจ้งของนักเรียน',
-      projectEvidence: 'https://drive.google.com/pcccr-pm25-model',
-      projectStatus: 'ASSESSED',
-      projectScore: 15,
-      teacherFeedback: 'โมเดลและขั้นตอนการทดสอบดีเยี่ยม ควรเพิ่มช่วงเวลาการพยากรณ์ล่วงหน้า 3 ชั่วโมง'
-    },
-    {
-      id: 'STD-50201',
-      name: 'ณภัทร สิริโสภณ',
-      classroom: 'ม.5/2',
-      email: 'naphat@student.pcccr.ac.th',
-      u1: 100, u2: 100, u3: 100, u4: 100,
-      q1: 100, q2: 100, q3: 100,
-      quizAvg: 100,
-      projectTitle: 'AI ผู้ช่วยแปลภาษามือไทยแบบเรียลไทม์ด้วย MediaPipe & Hand Landmark',
-      projectDesc: 'ประยุกต์ใช้ 21 Hand Keypoints แปลภาษามือพื้นฐาน 10 ท่าเป็นเสียงพูดสำหรับผู้บกพร่องทางการได้ยิน',
-      projectEvidence: 'https://github.com/naphat/thai-sign-language-ai',
-      projectStatus: 'ASSESSED',
-      projectScore: 16,
-      teacherFeedback: 'โครงงานระดับยอดเยี่ยม มีการคำนึงถึงจริยธรรมและการใช้งานจริงอย่างครบถ้วน'
-    },
-    {
-      id: 'STD-50202',
-      name: 'พิมพ์มาดา รัตนกุล',
-      classroom: 'ม.5/2',
-      email: 'pimmada@student.pcccr.ac.th',
-      u1: 100, u2: 85, u3: 65, u4: 40,
-      q1: 87, q2: 73, q3: 67,
-      quizAvg: 76,
-      projectTitle: 'ระบบคัดแยกใบชาอู่หลงแม่สลองด้วยการประมวลผลภาพ',
-      projectDesc: 'คัดแยกใบชาตามคุณภาพยอดอ่อน 3 ใบเพื่อเพิ่มมูลค่าผลผลิตชาเชียงราย',
-      projectEvidence: '',
-      projectStatus: 'DRAFT',
-      projectScore: null,
-      teacherFeedback: ''
-    },
-    {
-      id: 'STD-50301',
-      name: 'ธนกฤต ปัญญาวงศ์',
-      classroom: 'ม.5/3',
-      email: 'thanakrit@student.pcccr.ac.th',
-      u1: 95, u2: 70, u3: 60, u4: 20,
-      q1: 80, q2: 67, q3: 60,
-      quizAvg: 69,
-      projectTitle: 'ตรวจจับการสวมหมวกนิรภัยบริเวณทางเข้าโรงเรียน',
-      projectDesc: 'ตรวจจับผู้ขับขี่รถจักรยานยนต์ที่ไม่สวมหมวกนิรภัยเพื่อสถิติด้านความปลอดภัย',
-      projectEvidence: '',
-      projectStatus: 'DRAFT',
-      projectScore: null,
-      teacherFeedback: ''
-    },
-    {
-      id: 'STD-50401',
-      name: 'มนัสวี ตามวงค์',
-      classroom: 'ม.5/4',
-      email: 'manaswee@student.pcccr.ac.th',
-      u1: 100, u2: 100, u3: 95, u4: 90,
-      q1: 100, q2: 93, q3: 93,
-      quizAvg: 95,
-      projectTitle: 'Smart Greenhouse: การตรวจจับโรคใบจุดในผักสลัดไฮโดรโปนิกส์',
-      projectDesc: 'ใช้อุปกรณ์ Edge AI ตรวจจับโรคใบไหม้และใบจุดในโรงเรือนอัจฉริยะ',
-      projectEvidence: 'https://github.com/manaswee/smart-greenhouse-ai',
-      projectStatus: 'SUBMITTED',
-      projectScore: null,
-      teacherFeedback: ''
-    },
-    {
-      id: 'STD-50501',
-      name: 'ภานุวัฒน์ แสงแก้ว',
-      classroom: 'ม.5/5',
-      email: 'panuwat@student.pcccr.ac.th',
-      u1: 100, u2: 90, u3: 80, u4: 50,
-      q1: 87, q2: 80, q3: 73,
-      quizAvg: 80,
-      projectTitle: 'ระบบตรวจนับจำนวนรถเข้า-ออกลานจอดรถด้วย OpenCV & YOLO',
-      projectDesc: 'ตรวจนับการจราจรและแจ้งเตือนจำนวนช่องจอดรถว่างแบบเรียลไทม์',
-      projectEvidence: 'https://github.com/panuwat/parking-vision',
-      projectStatus: 'DRAFT',
-      projectScore: null,
-      teacherFeedback: ''
-    },
-    {
-      id: 'STD-50601',
-      name: 'อภิชญา บุญเรือง',
-      classroom: 'ม.5/6',
-      email: 'apichaya@student.pcccr.ac.th',
-      u1: 100, u2: 100, u3: 90, u4: 85,
-      q1: 93, q2: 87, q3: 87,
-      quizAvg: 89,
-      projectTitle: 'AI คัดแยกขยะรีไซเคิลในโรงอาหารด้วยเสียงและภาพ',
-      projectDesc: 'จำแนกขวดพลาสติก กระป๋องอลูมิเนียม และกล่องนมพร้อมระบบคะแนนสะสมความดี',
-      projectEvidence: 'https://github.com/apichaya/smart-bin-ai',
-      projectStatus: 'SUBMITTED',
-      projectScore: null,
-      teacherFeedback: ''
+  // ข้อมูลนักเรียนทั้งหมด (แผ่นงาน Users + ProgressSnapshots + QuizAttempts + Assessments)
+  const [raw, setRaw] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  const [loadedAt, setLoadedAt] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError('');
+    try {
+      if (api.isDemo()) {
+        setRaw(demoOverview());
+      } else {
+        const r = await api.getTeacherOverview();
+        if (!r || !r.success) throw new Error((r && r.error) || 'โหลดข้อมูลไม่สำเร็จ');
+        setRaw(r.students);
+      }
+      setLoadedAt(new Date().toISOString());
+    } catch (e) {
+      setLoadError(e.message || String(e));
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, []);
+  useEffect(() => { load(); }, [load]);
 
-  // แท็บคะแนนรายหน่วย: รายชื่อจากแผ่นงาน Users คะแนนจาก ScoreLog (endpoint เดียวกับ Leaderboard)
-  const [boards, setBoards] = useState({}); // unitId -> { error, students }
+  const rows = useMemo(() => (raw || []).map(s => toRow(s)), [raw]);
+  const classes = useMemo(() => {
+    const found = [...new Set(rows.map(r => r.classroom))];
+    return [...new Set([...COURSE.classrooms.filter(c => found.includes(c)), ...found.sort()])];
+  }, [rows]);
+  const classRows = useMemo(() => (selectedClass === 'all' ? rows : rows.filter(r => r.classroom === selectedClass)), [rows, selectedClass]);
+  const stats = useMemo(() => groupSummary(classRows), [classRows]);
+
+  const filteredRows = useMemo(() => {
+    const f = STATUS_FILTERS.find(x => x.id === filterStatus) || STATUS_FILTERS[0];
+    const q = searchQuery.trim().toLowerCase();
+    return classRows
+      .filter(f.test)
+      .filter(r => !q || r.name.toLowerCase().includes(q) || String(r.userId).includes(q) || String(r.no) === q)
+      .sort(SORTS[sortBy].fn);
+  }, [classRows, filterStatus, searchQuery, sortBy]);
+
+  // แท็บคะแนนรายกิจกรรม (โหมดจริง: ScoreLog ค่าเฉลี่ยทุกครั้ง แบบเดียวกับ Leaderboard ของนักเรียน)
+  const [boards, setBoards] = useState({});
   useEffect(() => {
     const unitId = activeTab;
     if (!SCORE_TABS[unitId] || api.isDemo() || boards[unitId]?.students) return undefined;
@@ -193,790 +129,413 @@ export function TeacherDashboard() {
     return () => { alive = false; };
   }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
   const board = boards[activeTab] || {};
+  const demoBoardRows = useMemo(() => (api.isDemo() ? rows.map(r => ({ ...r, unitScores: demoUnitScores(r) })) : []), [rows]);
 
-  // Load real roster from GAS if configured
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        if (!api.isDemo()) {
-          const resp = await api.getTeacherRoster(selectedClass);
-          if (alive && resp && resp.success && Array.isArray(resp.roster) && resp.roster.length > 0) {
-            // Merge with local structure
-            const mapped = resp.roster.map(r => ({
-              id: r.userId,
-              name: r.displayName,
-              classroom: r.classroom || 'ม.5/1',
-              email: r.email,
-              u1: r.quizScores.unit1 > 0 ? 100 : 50,
-              u2: r.quizScores.unit2 > 0 ? 100 : 30,
-              u3: r.quizScores.unit3 > 0 ? 100 : 20,
-              u4: r.projectStatus === 'SUBMITTED' ? 80 : 20,
-              q1: r.quizScores.unit1 || 0,
-              q2: r.quizScores.unit2 || 0,
-              q3: r.quizScores.unit3 || 0,
-              quizAvg: Math.round(((r.quizScores.unit1 || 0) + (r.quizScores.unit2 || 0) + (r.quizScores.unit3 || 0)) / 3),
-              projectTitle: r.projectTitle || 'โครงงานปัญญาประดิษฐ์',
-              projectDesc: '',
-              projectEvidence: '',
-              projectStatus: r.projectStatus || 'NOT_STARTED',
-              projectScore: r.latestAssessment ? r.latestAssessment.totalScore : null,
-              teacherFeedback: r.latestAssessment ? r.latestAssessment.feedback : ''
-            }));
-            setStudents(mapped);
-          }
-        }
-      } catch (e) {
-        console.warn('Failed to load server roster:', e);
-      }
-    })();
-    return () => { alive = false; };
-  }, [selectedClass]);
-
-  // Filter students based on classroom, status, and search query
-  const filteredStudents = useMemo(() => {
-    return students.filter(s => {
-      if (selectedClass !== 'all' && s.classroom !== selectedClass) return false;
-      if (filterStatus === 'passed' && s.quizAvg < QUIZ_PASS_PERCENT) return false;
-      if (filterStatus === 'failed' && s.quizAvg >= QUIZ_PASS_PERCENT) return false;
-      if (filterStatus === 'submitted' && s.projectStatus !== 'SUBMITTED') return false;
-      if (filterStatus === 'assessed' && s.projectStatus !== 'ASSESSED') return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
-        return s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) || s.classroom.includes(q);
-      }
-      return true;
-    });
-  }, [students, selectedClass, filterStatus, searchQuery]);
-
-  // Aggregate statistics
-  const stats = useMemo(() => {
-    const list = selectedClass === 'all' ? students : students.filter(s => s.classroom === selectedClass);
-    const total = list.length;
-    if (!total) return { total: 0, passRate: 0, avgQuiz: 0, avgProgress: 0, submittedProjects: 0, assessedProjects: 0 };
-
-    const passedCount = list.filter(s => s.quizAvg >= QUIZ_PASS_PERCENT).length;
-    const avgQuiz = Math.round(list.reduce((acc, s) => acc + s.quizAvg, 0) / total);
-    const avgProgress = Math.round(list.reduce((acc, s) => acc + (s.u1 + s.u2 + s.u3 + s.u4) / 4, 0) / total);
-    const submittedProjects = list.filter(s => s.projectStatus === 'SUBMITTED' || s.projectStatus === 'ASSESSED').length;
-    const assessedProjects = list.filter(s => s.projectStatus === 'ASSESSED').length;
-
-    return {
-      total,
-      passRate: Math.round((passedCount / total) * 100),
-      avgQuiz,
-      avgProgress,
-      submittedProjects,
-      assessedProjects
-    };
-  }, [students, selectedClass]);
-
-  // Open Assessment Modal for a student
-  const handleOpenAssess = (student) => {
-    setEvaluatingStudent(student);
-    setRubricScores({
-      problem: 4,
-      data: 3,
-      model: 4,
-      ethics: 4
-    });
-    setFeedbackText(student.teacherFeedback || '');
+  // ประเมินโครงงาน (หน่วยที่ 4)
+  const [evaluating, setEvaluating] = useState(null);
+  const [rubricScores, setRubricScores] = useState({ problem: 3, data: 3, model: 3, ethics: 3 });
+  const [feedbackText, setFeedbackText] = useState('');
+  const [isSavingEval, setIsSavingEval] = useState(false);
+  const openAssess = r => {
+    setDetail(null);
+    setEvaluating(r);
+    setRubricScores({ problem: 3, data: 3, model: 3, ethics: 3, ...(r.assessment?.rubricScores || {}) });
+    setFeedbackText(r.assessment?.feedback || '');
   };
-
-  // Submit Assessment
-  const handleSaveAssessment = async () => {
-    if (!evaluatingStudent) return;
+  const totalRubric = RUBRIC.reduce((n, c) => n + (rubricScores[c.key] || 0), 0);
+  const saveAssessment = async () => {
+    if (!evaluating) return;
     setIsSavingEval(true);
-    const totalScore = rubricScores.problem + rubricScores.data + rubricScores.model + rubricScores.ethics;
-
     try {
-      await api.assessStudentProject({
-        studentUserId: evaluatingStudent.id,
-        projectId: 'PRJ-' + evaluatingStudent.id,
+      const r = await api.assessStudentProject({
+        studentUserId: evaluating.userId,
+        projectId: 'PRJ-' + evaluating.userId,
         rubricScores,
-        totalScore,
+        totalScore: totalRubric,
         maxScore: 16,
         feedback: feedbackText
       });
-
-      // Update in local state
-      setStudents(prev => prev.map(s => {
-        if (s.id === evaluatingStudent.id) {
-          return {
-            ...s,
-            projectStatus: 'ASSESSED',
-            projectScore: totalScore,
-            teacherFeedback: feedbackText
-          };
-        }
-        return s;
-      }));
-
-      notify({
-        type: 'success',
-        title: 'บันทึกผลการประเมินแล้ว',
-        message: `ประเมินโครงงานของ ${evaluatingStudent.name} (${totalScore}/16 คะแนน) เรียบร้อย`
-      });
-      setEvaluatingStudent(null);
+      if (r && r.success === false) throw new Error(r.error || 'บันทึกไม่สำเร็จ');
+      const assessment = { totalScore: totalRubric, maxScore: 16, rubricScores, feedback: feedbackText, updatedAt: new Date().toISOString() };
+      setRaw(prev => prev.map(s => (s.userId === evaluating.userId ? { ...s, assessment } : s)));
+      notify({ type: 'success', title: 'บันทึกผลการประเมินแล้ว', message: `${evaluating.name} ได้ ${totalRubric}/16 คะแนน` });
+      setEvaluating(null);
     } catch (e) {
-      notify({
-        type: 'error',
-        title: 'บันทึกผลการประเมินไม่สำเร็จ',
-        message: e.message || 'กรุณาลองใหม่อีกครั้ง'
-      });
+      notify({ type: 'error', title: 'บันทึกผลการประเมินไม่สำเร็จ', message: e.message || 'กรุณาลองใหม่อีกครั้ง' });
     } finally {
       setIsSavingEval(false);
     }
   };
 
-  // Export Roster to CSV with UTF-8 BOM
-  const handleExportCSV = () => {
+  // ส่งออก CSV (เปิดใน Excel ได้ภาษาไทยถูกต้อง)
+  const exportCSV = () => {
     const headers = [
-      'รหัสนักเรียน',
-      'ชื่อ-นามสกุล',
-      'ห้องเรียน',
-      'อีเมล',
-      'ความก้าวหน้า U1 (%)',
-      'ความก้าวหน้า U2 (%)',
-      'ความก้าวหน้า U3 (%)',
-      'ความก้าวหน้า U4 (%)',
-      'คะแนน Quiz U1 (%)',
-      'คะแนน Quiz U2 (%)',
-      'คะแนน Quiz U3 (%)',
-      'คะแนนเฉลี่ยรวม (%)',
-      'ผลการประเมินแบบทดสอบ',
-      'ชื่อโครงงาน AI',
-      'สถานะโครงงาน',
-      'คะแนนโครงงาน (เต็ม 16)',
-      'ข้อเสนอแนะครูผู้สอน'
+      'ห้อง', 'เลขที่', 'รหัสนักเรียน', 'ชื่อ-นามสกุล',
+      ...OPEN_UNITS.map(u => `ความก้าวหน้าหน่วยที่ ${u.no} (%)`),
+      ...QUIZ_UNITS.flatMap(u => [`แบบทดสอบหน่วยที่ ${u.no} ดีที่สุด (%)`, `แบบทดสอบหน่วยที่ ${u.no} จำนวนครั้ง`, `แบบทดสอบหน่วยที่ ${u.no} ผล`]),
+      'เข้าเรียนทั้งหมด (วัน)', 'เข้าเรียนล่าสุด', 'สถานะ'
     ];
-
-    const rows = filteredStudents.map(s => [
-      `"${s.id}"`,
-      `"${s.name}"`,
-      `"${s.classroom}"`,
-      `"${s.email}"`,
-      s.u1,
-      s.u2,
-      s.u3,
-      s.u4,
-      s.q1,
-      s.q2,
-      s.q3,
-      s.quizAvg,
-      s.quizAvg >= QUIZ_PASS_PERCENT ? 'ผ่านเกณฑ์' : 'ไม่ผ่านเกณฑ์',
-      `"${(s.projectTitle || '').replace(/"/g, '""')}"`,
-      `"${s.projectStatus}"`,
-      s.projectScore != null ? s.projectScore : '-',
-      `"${(s.teacherFeedback || '').replace(/"/g, '""')}"`
-    ]);
-
-    // Prepend UTF-8 BOM (\uFEFF) so Microsoft Excel opens Thai characters without garbling
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    const lines = filteredRows.map(r => [
+      r.classroom, r.no, r.userId, r.name,
+      ...OPEN_UNITS.map(u => r.summary.units[u.id].percent),
+      ...QUIZ_UNITS.flatMap(u => [r.quiz[u.id].best ?? '', r.quiz[u.id].attempts, r.quiz[u.id].attempts ? (r.quiz[u.id].passed ? 'ผ่าน' : 'ไม่ผ่าน') : 'ยังไม่ทำ']),
+      r.visit.total, r.lastVisit ? dayTh(r.lastVisit) : 'ยังไม่เคยเข้า',
+      r.flags.idle ? 'ต้องติดตาม' : 'ปกติ'
+    ].map(csvCell).join(','));
+    const csv = '﻿' + [headers.map(csvCell).join(','), ...lines].join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `KruNok_AI_Academy_คะแนน_${selectedClass === 'all' ? 'ทุกห้อง' : selectedClass}_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `KruNok_AI_Academy_ผลการเรียน_${selectedClass === 'all' ? 'ทุกห้อง' : selectedClass.replace('/', '-')}_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    a.remove();
     URL.revokeObjectURL(url);
-
-    notify({
-      type: 'success',
-      title: 'ส่งออกไฟล์ CSV สำเร็จ',
-      message: 'ดาวน์โหลดไฟล์ผลการเรียนสำหรับเปิดใน Excel เรียบร้อยแล้ว'
-    });
+    notify({ type: 'success', title: 'ส่งออกไฟล์ CSV แล้ว', message: `${filteredRows.length} คน · เปิดด้วย Excel ได้` });
   };
 
-  // Test GAS Endpoint Connection
-  const handleTestGas = async () => {
-    if (!gasUrlInput.trim()) {
-      alert('กรุณากรอก URL ของ Google Apps Script Web App');
-      return;
-    }
+  // ทดสอบการเชื่อมต่อ Apps Script
+  const [gasUrlInput, setGasUrlInput] = useState(API_CONFIG.gasEndpoint || '');
+  const [isTestingGas, setIsTestingGas] = useState(false);
+  const [gasTestResult, setGasTestResult] = useState(null);
+  const testGas = async () => {
+    if (!gasUrlInput.trim()) { setGasTestResult({ ok: false, msg: 'กรุณากรอก URL ของ Google Apps Script Web App' }); return; }
     setIsTestingGas(true);
     setGasTestResult(null);
     try {
-      const resp = await fetch(gasUrlInput.trim() + '?action=ping');
-      const data = await resp.json();
-      if (data && data.status === 'online') {
-        localStorage.setItem('krunok_gas_endpoint', gasUrlInput.trim());
-        localStorage.setItem('krunok_data_mode', 'gas');
-        setGasTestResult({
-          ok: true,
-          msg: `เชื่อมต่อสำเร็จ! ระบบ: ${data.app} (ว32281) Schema v${data.version}`
-        });
-        notify({
-          type: 'success',
-          title: 'เชื่อมต่อ Google Apps Script สำเร็จ',
-          message: 'บันทึก URL ลงในระบบเรียบร้อยแล้ว'
-        });
-      } else {
-        throw new Error('ตอบกลับไม่ตรงรูปแบบ');
-      }
+      const data = await (await fetch(gasUrlInput.trim() + '?action=ping')).json();
+      if (!data || data.status !== 'online') throw new Error('ตอบกลับไม่ตรงรูปแบบ');
+      localStorage.setItem('krunok_gas_endpoint', gasUrlInput.trim());
+      localStorage.setItem('krunok_data_mode', 'gas');
+      setGasTestResult({ ok: true, msg: `เชื่อมต่อสำเร็จ: ${data.app} (${data.courseCode || COURSE.code}) · ${thaiDateTime(data.timestamp)}` });
     } catch (err) {
-      setGasTestResult({
-        ok: false,
-        msg: `เชื่อมต่อไม่สำเร็จ: ${err.message}. ตรวจสอบว่าได้ Deploy เป็น Web App (Who has access: Anyone) หรือยัง`
-      });
+      setGasTestResult({ ok: false, msg: `เชื่อมต่อไม่สำเร็จ: ${err.message} — ตรวจว่า Deploy เป็น Web App (Who has access: Anyone) แล้ว` });
     } finally {
       setIsTestingGas(false);
     }
   };
 
-  // Role Guard Check (RBAC)
   const isAuthorized = user && (user.role === 'TEACHER' || user.role === 'ADMIN' || user.mode === 'demo');
-
   if (!isAuthorized) {
     return (
       <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 16px' }}>
         <GlassCard style={{ textAlign: 'center', padding: '40px 24px' }}>
-          <div style={{ color: 'var(--warn)', marginBottom: 16 }}>
-            <Icon name="lock" size={48} />
-          </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>สิทธิ์การเข้าถึงถูกจำกัด (Access Restricted)</h2>
+          <div style={{ color: 'var(--warn)', marginBottom: 16 }}><Icon name="lock" size={48} /></div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>หน้านี้สำหรับครูผู้สอนเท่านั้น</h2>
           <p style={{ color: 'var(--muted)', fontSize: 15, lineHeight: 1.6, marginBottom: 24 }}>
-            หน้านี้สำหรับคุณครูผู้สอนและผู้ดูแลระบบรายวิชา ว32281 เท่านั้น<br />
-            บัญชีปัจจุบันของคุณ <strong>({user?.displayName || 'นักเรียน'})</strong> ไม่มีสิทธิ์เข้าถึงข้อมูลผลการเรียนของผู้อื่น
+            บัญชี <strong>{user?.displayName || 'นักเรียน'}</strong> ไม่มีสิทธิ์ดูผลการเรียนของผู้อื่น
           </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <Button variant="primary" icon="home" onClick={() => navigate('home')}>
-              กลับสู่บทเรียนนักเรียน
-            </Button>
-          </div>
+          <Button variant="primary" icon="home" onClick={() => navigate('home')}>กลับหน้าหลัก</Button>
         </GlassCard>
       </div>
     );
   }
 
-  return (
-    <div style={{ display: 'grid', gap: 24, padding: '16px 0' }}>
-      {/* Header Banner */}
-      <GlassCard pad={false} className="welcome" style={{ padding: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-              <Badge tone="cyan" dot>แดชบอร์ดครูผู้สอน (Teacher Dashboard)</Badge>
-              <Badge>{COURSE.code} {COURSE.name}</Badge>
-              {api.isDemo() ? <DemoBadge /> : <Badge tone="ok">GAS Production Connected</Badge>}
-            </div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 6 }}>
-              ระบบติดตามผลการเรียนรู้และประเมินผล <span className="grad-text">KruNok AI Academy</span>
-            </h1>
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-              ครูผู้สอน: <strong>{COURSE.teacher}</strong> · {COURSE.school}
-            </p>
-          </div>
+  const classPicker = (
+    <div className="td-classes" role="tablist" aria-label="เลือกห้องเรียน">
+      {['all', ...classes].map(c => (
+        <button key={c} type="button" role="tab" aria-selected={selectedClass === c} className={`tag ${selectedClass === c ? 'active' : ''}`} onClick={() => setSelectedClass(c)}>
+          {c === 'all' ? 'ทุกห้อง' : c}
+        </button>
+      ))}
+    </div>
+  );
 
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-            <Button
-              variant={activeTab === 'roster' ? 'primary' : 'ghost'}
-              icon="grid"
-              onClick={() => setActiveTab('roster')}
-            >
-              รายชื่อนักเรียน
-            </Button>
-            {Object.keys(SCORE_TABS).map((u, i) => (
-              <Button key={u} variant={activeTab === u ? 'primary' : 'ghost'} icon="trophy" onClick={() => setActiveTab(u)}>
-                คะแนนหน่วยที่ {i + 1}
-              </Button>
-            ))}
-            <Button
-              variant={activeTab === 'analytics' ? 'primary' : 'ghost'}
-              icon="chart"
-              onClick={() => setActiveTab('analytics')}
-            >
-              สถิติภาพรวม
-            </Button>
-            <Button
-              variant={activeTab === 'settings' ? 'primary' : 'ghost'}
-              icon="cpu"
-              onClick={() => setActiveTab('settings')}
-            >
-              สถานะ Backend
-            </Button>
-            <Button variant="ghost" icon="home" onClick={() => navigate('home')}>
-              มุมมองนักเรียน
-            </Button>
+  return (
+    <div className="td">
+      {/* หัวแดชบอร์ด */}
+      <GlassCard pad={false} className="welcome td-head">
+        <div>
+          <div className="td-badges">
+            <Badge tone="cyan" dot>แดชบอร์ดครูผู้สอน</Badge>
+            <Badge>{COURSE.code} {COURSE.name}</Badge>
+            {api.isDemo() ? <DemoBadge /> : <Badge tone="ok">ข้อมูลจริงจาก Google Sheets</Badge>}
           </div>
+          <h1>ระบบติดตามผลการเรียนรู้และประเมินผล <span className="grad-text">KruNok AI Academy</span></h1>
+          <p className="td-sub">
+            ครูผู้สอน: <strong>{COURSE.teacher}</strong> · {COURSE.school}
+            {loadedAt && <> · ข้อมูลเมื่อ {thaiDateTime(loadedAt)}</>}
+          </p>
+        </div>
+        <div className="td-tabs">
+          <Button variant={activeTab === 'roster' ? 'primary' : 'ghost'} icon="users" onClick={() => setActiveTab('roster')}>ติดตามรายบุคคล</Button>
+          {Object.keys(SCORE_TABS).map(u => (
+            <Button key={u} variant={activeTab === u ? 'primary' : 'ghost'} icon="trophy" onClick={() => setActiveTab(u)}>
+              คะแนนหน่วยที่ {OPEN_UNITS.find(x => x.id === u).no}
+            </Button>
+          ))}
+          <Button variant={activeTab === 'analytics' ? 'primary' : 'ghost'} icon="chart" onClick={() => setActiveTab('analytics')}>วิเคราะห์ภาพรวม</Button>
+          <Button variant={activeTab === 'settings' ? 'primary' : 'ghost'} icon="cpu" onClick={() => setActiveTab('settings')}>ระบบหลังบ้าน</Button>
+          <Button variant="ghost" icon="refresh" disabled={loading} onClick={load}>{loading ? 'กำลังโหลด…' : 'โหลดใหม่'}</Button>
         </div>
       </GlassCard>
 
-      {/* KPI Stats Overview */}
-      <section className="stats4" aria-label="ภาพรวมสถิติชั้นเรียน">
-        <GlassCard pad={false} className="stat">
-          <div className="stat-body">
-            <span className="stat-num grad-text">{stats.total}</span>
-            <span className="stat-lbl">นักเรียนในห้องที่เลือก</span>
-            <small style={{ color: 'var(--muted)', fontSize: 12 }}>ระดับชั้น ม.5 (ห้อง {selectedClass === 'all' ? 'ทั้งหมด' : selectedClass})</small>
-          </div>
+      {loadError && (
+        <GlassCard className="td-error" role="alert">
+          <b>โหลดข้อมูลนักเรียนไม่สำเร็จ:</b> {loadError}
+          <p>ถ้าเพิ่งอัปเดต backend/Code.gs ให้ Deploy เวอร์ชันใหม่ใน Apps Script (Deploy → Manage deployments → New version) แล้วกด “โหลดใหม่”</p>
         </GlassCard>
+      )}
 
-        <GlassCard pad={false} className="stat">
-          <div className="stat-body">
-            <span className="stat-num" style={{ color: stats.passRate >= 70 ? 'var(--ok)' : 'var(--warn)' }}>
-              {stats.passRate}%
-            </span>
-            <span className="stat-lbl">อัตราผ่าน Quiz</span>
-            <small style={{ color: 'var(--muted)', fontSize: 12 }}>เกณฑ์ผ่าน {QUIZ_PASS_PERCENT}% ขึ้นไป</small>
+      {/* ตัวเลขสรุป */}
+      {raw && (
+        <section className="td-kpis" aria-label="สรุปภาพรวม">
+          <div className="td-kpi">
+            <span className="td-kpi-lbl"><Icon name="users" size={15} />นักเรียน {selectedClass === 'all' ? 'ทุกห้อง' : selectedClass}</span>
+            <b>{stats.total}<small>คน</small></b>
+            <span className="td-kpi-sub">เข้าเรียนใน {IDLE_DAYS} วันล่าสุด {stats.activeWeek} คน ({pct(stats.activeWeek, stats.total)}%)</span>
           </div>
-        </GlassCard>
-
-        <GlassCard pad={false} className="stat">
-          <div className="stat-body">
-            <span className="stat-num" style={{ color: 'var(--cyan)' }}>{stats.avgProgress}%</span>
-            <span className="stat-lbl">ความก้าวหน้าเฉลี่ย</span>
-            <small style={{ color: 'var(--muted)', fontSize: 12 }}>หน่วยที่ 1 ถึง 4</small>
+          <div className="td-kpi">
+            <span className="td-kpi-lbl"><Icon name="chart" size={15} />ความก้าวหน้าเฉลี่ย</span>
+            <b>{stats.avgOpen}<small>%</small></b>
+            <span className="td-kpi-sub">{OPEN_UNITS.map(u => `หน่วย ${u.no}: ${stats.unitAvg[u.id]}%`).join(' · ')}</span>
           </div>
-        </GlassCard>
-
-        <GlassCard pad={false} className="stat">
-          <div className="stat-body">
-            <span className="stat-num" style={{ color: 'var(--gold)' }}>
-              {stats.submittedProjects} / {stats.total}
-            </span>
-            <span className="stat-lbl">โครงงานที่ส่งแล้ว</span>
-            <small style={{ color: 'var(--muted)', fontSize: 12 }}>ตรวจแล้ว {stats.assessedProjects} รายการ</small>
+          <div className="td-kpi">
+            <span className="td-kpi-lbl"><Icon name="target" size={15} />ผ่านแบบทดสอบหลังเรียน</span>
+            {QUIZ_UNITS.map(u => (
+              <span key={u.id} className="td-kpi-line">
+                หน่วย {u.no} <b>{stats.quizPassed[u.id]}</b> คน <small>({pct(stats.quizPassed[u.id], stats.total)}%)</small>
+              </span>
+            ))}
           </div>
-        </GlassCard>
-      </section>
+          <button type="button" className={`td-kpi td-kpi-alert ${filterStatus === 'idle' && activeTab === 'roster' ? 'on' : ''}`} onClick={() => { setActiveTab('roster'); setFilterStatus('idle'); }}>
+            <span className="td-kpi-lbl"><Icon name="alert" size={15} />ต้องติดตาม</span>
+            <b>{stats.idle}<small>คน</small></b>
+            <span className="td-kpi-sub">ไม่ได้เข้าเรียน {IDLE_DAYS} วันขึ้นไป · ยังไม่เริ่ม {stats.notStarted} คน</span>
+          </button>
+        </section>
+      )}
 
-      {/* TAB 1: STUDENT ROSTER & SCORE MANAGEMENT */}
-      {activeTab === 'roster' && (
+      {!raw && !loadError && <GlassCard><p className="td-empty">กำลังโหลดข้อมูลนักเรียนจาก Google Sheets…</p></GlassCard>}
+
+      {/* แท็บ 1: ติดตามรายบุคคล */}
+      {raw && activeTab === 'roster' && (
         <GlassCard>
-          {/* Controls Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
-            {/* Classrooms Selector */}
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>ห้องเรียน:</span>
-              <button
-                className={`tag ${selectedClass === 'all' ? 'active' : ''}`}
-                style={{ cursor: 'pointer', padding: '6px 14px' }}
-                onClick={() => setSelectedClass('all')}
-              >
-                ทุกห้อง
-              </button>
-              {COURSE.classrooms.map(c => (
-                <button
-                  key={c}
-                  className={`tag ${selectedClass === c ? 'active' : ''}`}
-                  style={{ cursor: 'pointer', padding: '6px 14px' }}
-                  onClick={() => setSelectedClass(c)}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-
-            {/* Actions: Export CSV & Filter */}
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                placeholder="ค้นหาชื่อหรือรหัสนักเรียน..."
-                className="input"
-                style={{ width: 200, padding: '6px 12px', fontSize: 13 }}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-
-              <select
-                className="input"
-                style={{ width: 'auto', padding: '6px 12px', fontSize: 13 }}
-                value={filterStatus}
-                onChange={e => setFilterStatus(e.target.value)}
-              >
-                <option value="all">สถานะทั้งหมด</option>
-                <option value="passed">ผ่าน Quiz (≥70%)</option>
-                <option value="failed">ยังไม่ผ่าน Quiz (&lt;70%)</option>
-                <option value="submitted">ส่งโครงงานแล้ว</option>
-                <option value="assessed">ตรวจโครงงานแล้ว</option>
+          <div className="td-toolbar">
+            {classPicker}
+            <div className="td-filters">
+              <input type="search" className="input" placeholder="ค้นหาชื่อ รหัส หรือเลขที่" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} aria-label="ค้นหานักเรียน" />
+              <select className="input" value={filterStatus} onChange={e => setFilterStatus(e.target.value)} aria-label="กรองตามสถานะ">
+                {STATUS_FILTERS.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
               </select>
-
-              <Button
-                variant="primary"
-                icon="trophy"
-                onClick={handleExportCSV}
-                title="ส่งออกไฟล์คะแนนในรูปแบบ CSV สำหรับเปิดด้วย Microsoft Excel"
-              >
-                ส่งออก CSV (Excel)
-              </Button>
+              <select className="input" value={sortBy} onChange={e => setSortBy(e.target.value)} aria-label="เรียงลำดับ">
+                {Object.entries(SORTS).map(([k, s]) => <option key={k} value={k}>เรียงตาม{s.label}</option>)}
+              </select>
+              <Button variant="primary" icon="download" onClick={exportCSV} disabled={!filteredRows.length}>ส่งออก CSV</Button>
             </div>
           </div>
+          <p className="td-count">แสดง {filteredRows.length} จาก {classRows.length} คน · คลิกชื่อเพื่อดูรายละเอียด</p>
 
-          {/* Table Container */}
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <div className="td-table-wrap">
+            <table className="td-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--line)', textAlign: 'left', color: 'var(--muted)', fontSize: 13 }}>
-                  <th style={{ padding: '12px' }}>รหัส</th>
-                  <th style={{ padding: '12px' }}>ชื่อ - นามสกุล</th>
-                  <th style={{ padding: '12px' }}>ห้อง</th>
-                  <th style={{ padding: '12px' }}>Unit 1</th>
-                  <th style={{ padding: '12px' }}>Unit 2</th>
-                  <th style={{ padding: '12px' }}>Unit 3</th>
-                  <th style={{ padding: '12px' }}>Unit 4</th>
-                  <th style={{ padding: '12px' }}>Quiz เฉลี่ย</th>
-                  <th style={{ padding: '12px' }}>สถานะโครงงาน</th>
-                  <th style={{ padding: '12px' }}>จัดการ</th>
+                <tr>
+                  <th>ห้อง</th><th>เลขที่</th><th className="l">ชื่อ - นามสกุล</th>
+                  {OPEN_UNITS.map(u => <th key={u.id}>หน่วยที่ {u.no}</th>)}
+                  {QUIZ_UNITS.map(u => <th key={u.id}>แบบทดสอบ {u.no}</th>)}
+                  <th>เข้าเรียน</th><th>สถานะ</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.length === 0 ? (
-                  <tr>
-                    <td colSpan={10} style={{ textAlign: 'center', padding: '36px', color: 'var(--muted)' }}>
-                      ไม่พบข้อมูลนักเรียนตามเงื่อนไขที่เลือก
+                {filteredRows.length === 0 ? (
+                  <tr><td colSpan={5 + OPEN_UNITS.length + QUIZ_UNITS.length} className="td-empty">ไม่พบนักเรียนตามเงื่อนไขที่เลือก</td></tr>
+                ) : filteredRows.map(r => (
+                  <tr key={r.userId}>
+                    <td>{r.classroom}</td>
+                    <td>{r.no}</td>
+                    <td className="l">
+                      <button type="button" className="td-name" onClick={() => setDetail(r)}>{r.name}</button>
+                      <small>{r.userId}</small>
+                    </td>
+                    {OPEN_UNITS.map(u => (
+                      <td key={u.id} className="td-prog">
+                        <span>{r.summary.units[u.id].percent}%</span>
+                        <ProgressBar value={r.summary.units[u.id].percent} />
+                      </td>
+                    ))}
+                    {QUIZ_UNITS.map(u => {
+                      const q = r.quiz[u.id];
+                      return (
+                        <td key={u.id}>
+                          {q.attempts === 0 ? <span className="td-dim">ยังไม่ทำ</span> : (
+                            <span className={`td-quiz ${q.passed ? 'ok' : 'no'}`} title={`ทำ ${q.attempts} ครั้ง · เกณฑ์ ${passMark(u.id)}%`}>
+                              {q.best}%<small>{q.passed ? 'ผ่าน' : 'ไม่ผ่าน'} · {q.attempts} ครั้ง</small>
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
+                    <td><span className="td-visit">{r.visit.total} วัน<small>{idleText(r)}</small></span></td>
+                    <td>
+                      {r.flags.notStarted ? <Badge tone="demo">ยังไม่เริ่ม</Badge>
+                        : r.flags.idle ? <Badge tone="demo">ต้องติดตาม</Badge>
+                        : <Badge tone="ok">ปกติ</Badge>}
                     </td>
                   </tr>
-                ) : (
-                  filteredStudents.map((s, idx) => (
-                    <tr
-                      key={s.id}
-                      style={{
-                        borderBottom: '1px solid rgba(155,135,245,.1)',
-                        background: idx % 2 === 0 ? 'transparent' : '#FFFDF6'
-                      }}
-                    >
-                      <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--dim)' }}>
-                        {s.id}
-                      </td>
-                      <td style={{ padding: '12px', fontWeight: 600 }}>
-                        {s.name}
-                        <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>{s.email}</div>
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <Badge tone="cyan">{s.classroom}</Badge>
-                      </td>
-                      <td style={{ padding: '12px', minWidth: 90 }}>
-                        <div style={{ fontSize: 12, marginBottom: 2 }}>{s.u1}%</div>
-                        <ProgressBar value={s.u1} />
-                      </td>
-                      <td style={{ padding: '12px', minWidth: 90 }}>
-                        <div style={{ fontSize: 12, marginBottom: 2 }}>{s.u2}%</div>
-                        <ProgressBar value={s.u2} />
-                      </td>
-                      <td style={{ padding: '12px', minWidth: 90 }}>
-                        <div style={{ fontSize: 12, marginBottom: 2 }}>{s.u3}%</div>
-                        <ProgressBar value={s.u3} />
-                      </td>
-                      <td style={{ padding: '12px', minWidth: 90 }}>
-                        <div style={{ fontSize: 12, marginBottom: 2 }}>{s.u4}%</div>
-                        <ProgressBar value={s.u4} />
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{
-                            fontWeight: 700,
-                            color: s.quizAvg >= QUIZ_PASS_PERCENT ? 'var(--ok)' : 'var(--warn)'
-                          }}>
-                            {s.quizAvg}%
-                          </span>
-                          <Badge tone={s.quizAvg >= QUIZ_PASS_PERCENT ? 'ok' : 'demo'}>
-                            {s.quizAvg >= QUIZ_PASS_PERCENT ? 'ผ่าน' : 'ไม่ผ่าน'}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        {s.projectStatus === 'ASSESSED' ? (
-                          <Badge tone="ok">ตรวจแล้ว ({s.projectScore}/16)</Badge>
-                        ) : s.projectStatus === 'SUBMITTED' ? (
-                          <Badge tone="cyan">รอตรวจ</Badge>
-                        ) : (
-                          <Badge tone="info">ยังไม่ส่ง</Badge>
-                        )}
-                      </td>
-                      <td style={{ padding: '12px' }}>
-                        <Button
-                          size="sm"
-                          variant={s.projectStatus === 'SUBMITTED' ? 'primary' : 'ghost'}
-                          icon="target"
-                          onClick={() => handleOpenAssess(s)}
-                        >
-                          {s.projectStatus === 'ASSESSED' ? 'ดู/แก้ผลตรวจ' : 'ตรวจโครงงาน'}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
         </GlassCard>
       )}
 
-      {/* TAB: UNIT SCORES PER ACTIVITY (unit 1 / unit 2, by classroom) */}
-      {SCORE_TABS[activeTab] && !api.isDemo() && !board.students && (
+      {/* แท็บคะแนนรายกิจกรรมของแต่ละหน่วย */}
+      {raw && SCORE_TABS[activeTab] && !api.isDemo() && !board.students && (
         <GlassCard>
-          <p style={{ textAlign: 'center', padding: 24, color: 'var(--muted)' }}>
-            {board.error ? `โหลดคะแนนไม่สำเร็จ: ${board.error}` : 'กำลังโหลดคะแนนจากแผ่นงาน Users และ ScoreLog…'}
-          </p>
+          <p className="td-empty">{board.error ? `โหลดคะแนนไม่สำเร็จ: ${board.error}` : 'กำลังโหลดคะแนนจากแผ่นงาน Users และ ScoreLog…'}</p>
         </GlassCard>
       )}
-      {SCORE_TABS[activeTab] && (api.isDemo() || board.students) && (
+      {raw && SCORE_TABS[activeTab] && (api.isDemo() || board.students) && (
         <UnitScoreBoard
           key={activeTab}
           unitId={activeTab}
           columns={SCORE_TABS[activeTab]}
-          students={api.isDemo() ? students.map(s => (s.unitScores ? s : { ...s, unitScores: demoUnitScores(s) })) : board.students}
+          students={api.isDemo() ? demoBoardRows : board.students}
           selectedClass={selectedClass}
           onSelectClass={setSelectedClass}
         />
       )}
 
-      {/* TAB 2: VISUAL ANALYTICS & LEARNING PROGRESS */}
-      {activeTab === 'analytics' && (
-        <div style={{ display: 'grid', gap: 20 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
-            <GlassCard>
-              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Icon name="chart" size={18} />
-                อัตราการผ่านเกณฑ์ Quiz แต่ละหน่วยการเรียน (≥70%)
-              </h3>
-              <div style={{ display: 'grid', gap: 14 }}>
-                {UNITS.slice(0, 3).map(u => {
-                  const passCount = filteredStudents.filter(s => (s['q' + u.no] || 0) >= QUIZ_PASS_PERCENT).length;
-                  const pct = filteredStudents.length ? Math.round((passCount / filteredStudents.length) * 100) : 0;
-                  return (
-                    <div key={u.id}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                        <span><strong>หน่วยที่ {u.no}:</strong> {u.title}</span>
-                        <span style={{ fontWeight: 700, color: pct >= 70 ? 'var(--ok)' : 'var(--warn)' }}>
-                          {pct}% ({passCount}/{filteredStudents.length} คน)
-                        </span>
-                      </div>
-                      <ProgressBar value={pct} />
+      {/* แท็บ 2: วิเคราะห์ภาพรวม */}
+      {raw && activeTab === 'analytics' && (
+        <div className="td-grid">
+          <GlassCard className="td-wide">
+            <h3><Icon name="grid" size={18} />เปรียบเทียบรายห้อง</h3>
+            <div className="td-table-wrap">
+              <table className="td-table">
+                <thead>
+                  <tr>
+                    <th className="l">ห้อง</th><th>นักเรียน</th>
+                    {OPEN_UNITS.map(u => <th key={u.id}>ความก้าวหน้า หน่วย {u.no}</th>)}
+                    {QUIZ_UNITS.map(u => <th key={u.id}>ผ่านแบบทดสอบ หน่วย {u.no}</th>)}
+                    <th>เข้าเรียนใน {IDLE_DAYS} วัน</th><th>เข้าเรียนเฉลี่ย</th><th>ต้องติดตาม</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...classes, 'all'].map(c => {
+                    const g = groupSummary(c === 'all' ? rows : rows.filter(r => r.classroom === c));
+                    return (
+                      <tr key={c} className={c === 'all' ? 'td-total' : ''}>
+                        <td className="l">{c === 'all' ? 'รวมทุกห้อง' : c}</td>
+                        <td>{g.total}</td>
+                        {OPEN_UNITS.map(u => <td key={u.id} className="td-prog"><span>{g.unitAvg[u.id]}%</span><ProgressBar value={g.unitAvg[u.id]} /></td>)}
+                        {QUIZ_UNITS.map(u => <td key={u.id}>{g.quizPassed[u.id]}/{g.total} <small className="td-dim">({pct(g.quizPassed[u.id], g.total)}%)</small></td>)}
+                        <td>{pct(g.activeWeek, g.total)}%</td>
+                        <td>{g.avgVisitDays} วัน</td>
+                        <td>{g.idle} คน</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="td-wide td-classbar">{classPicker}</GlassCard>
+
+          {QUIZ_UNITS.map(u => {
+            const bins = quizBins(classRows, u.id);
+            const peak = Math.max(1, ...bins);
+            return (
+              <GlassCard key={u.id}>
+                <h3><Icon name="target" size={18} />คะแนนแบบทดสอบหน่วยที่ {u.no} (คะแนนดีที่สุดของแต่ละคน)</h3>
+                <p className="td-note">ทำแล้ว {stats.quizTried[u.id]} จาก {stats.total} คน · ผ่าน {stats.quizPassed[u.id]} คน (เกณฑ์ {passMark(u.id)}%)</p>
+                <div className="td-bins">
+                  {QUIZ_BINS.map((b, i) => (
+                    <div key={b.label} className="td-bin">
+                      <span className="td-bin-val">{bins[i]} คน</span>
+                      <span className="td-bin-bar"><i style={{ height: `${(bins[i] / peak) * 100}%` }} /></span>
+                      <span className="td-bin-lbl">{b.label}</span>
                     </div>
-                  );
-                })}
-              </div>
-            </GlassCard>
-
-            <GlassCard>
-              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Icon name="puzzle" size={18} />
-                สถานะการส่งโครงงาน AI Capstone (Unit 4)
-              </h3>
-              <div style={{ display: 'grid', gap: 14 }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                    <span>ตรวจและประเมินแล้ว (Assessed)</span>
-                    <span style={{ fontWeight: 700, color: 'var(--ok)' }}>
-                      {filteredStudents.filter(s => s.projectStatus === 'ASSESSED').length} คน
-                    </span>
-                  </div>
-                  <ProgressBar value={filteredStudents.length ? Math.round((filteredStudents.filter(s => s.projectStatus === 'ASSESSED').length / filteredStudents.length) * 100) : 0} />
+                  ))}
                 </div>
+              </GlassCard>
+            );
+          })}
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                    <span>รอการตรวจ (Pending Review)</span>
-                    <span style={{ fontWeight: 700, color: 'var(--cyan)' }}>
-                      {filteredStudents.filter(s => s.projectStatus === 'SUBMITTED').length} คน
-                    </span>
-                  </div>
-                  <ProgressBar value={filteredStudents.length ? Math.round((filteredStudents.filter(s => s.projectStatus === 'SUBMITTED').length / filteredStudents.length) * 100) : 0} />
+          {OPEN_UNITS.map(u => {
+            const items = itemCompletion(classRows, u);
+            return (
+              <GlassCard key={u.id}>
+                <h3><Icon name="list" size={18} />หน่วยที่ {u.no}: นักเรียนทำส่วนไหนเสร็จแล้วบ้าง</h3>
+                <p className="td-note">ส่วนที่มีคนทำน้อยคือจุดที่ควรทบทวนหรือติดตาม</p>
+                <div className="td-items">
+                  {items.map(it => (
+                    <div key={it.id} className="td-item">
+                      <div><span className="td-kind">{it.kind}</span>{it.title}<b>{it.done}/{stats.total}</b></div>
+                      <ProgressBar value={pct(it.done, stats.total)} />
+                    </div>
+                  ))}
                 </div>
-
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                    <span>กำลังพัฒนา / ยังไม่ส่ง (Drafting)</span>
-                    <span style={{ fontWeight: 700, color: 'var(--muted)' }}>
-                      {filteredStudents.filter(s => s.projectStatus !== 'SUBMITTED' && s.projectStatus !== 'ASSESSED').length} คน
-                    </span>
-                  </div>
-                  <ProgressBar value={filteredStudents.length ? Math.round((filteredStudents.filter(s => s.projectStatus !== 'SUBMITTED' && s.projectStatus !== 'ASSESSED').length / filteredStudents.length) * 100) : 0} />
-                </div>
-              </div>
-            </GlassCard>
-          </div>
+              </GlassCard>
+            );
+          })}
         </div>
       )}
 
-      {/* TAB 3: BACKEND & SETTINGS */}
+      {/* แท็บ 3: ระบบหลังบ้าน */}
       {activeTab === 'settings' && (
-        <div style={{ display: 'grid', gap: 20 }}>
-          <GlassCard style={{ borderLeft: '4px solid var(--neon)' }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>
-              การเชื่อมต่อ Google Apps Script & Google Sheets Backend
-            </h3>
-            <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
-              ระบบรองรับการเชื่อมต่อกับ Google Apps Script Web App เพื่อบันทึกคะแนนนักเรียนลงใน Google Sheets ทั้ง 8 ตารางอย่างปลอดภัย
-            </p>
-
-            <div style={{ display: 'grid', gap: 12, maxWidth: 600 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
-                Google Apps Script Web App URL:
-              </label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  type="url"
-                  placeholder="https://script.google.com/macros/s/.../exec"
-                  className="input"
-                  value={gasUrlInput}
-                  onChange={e => setGasUrlInput(e.target.value)}
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  variant="primary"
-                  icon="refresh"
-                  disabled={isTestingGas}
-                  onClick={handleTestGas}
-                >
-                  {isTestingGas ? 'กำลังทดสอบ...' : 'ทดสอบ & บันทึก'}
-                </Button>
-              </div>
-
-              {gasTestResult && (
-                <div style={{
-                  padding: 12,
-                  borderRadius: 8,
-                  fontSize: 13,
-                  background: gasTestResult.ok ? 'rgba(76, 217, 100, 0.12)' : 'rgba(255, 69, 58, 0.12)',
-                  color: gasTestResult.ok ? 'var(--ok)' : 'var(--warn)',
-                  border: `1px solid ${gasTestResult.ok ? 'var(--ok)' : 'var(--warn)'}`
-                }}>
-                  {gasTestResult.msg}
-                </div>
-              )}
+        <div className="td-grid">
+          <GlassCard className="td-wide">
+            <h3><Icon name="cpu" size={18} />การเชื่อมต่อ Google Apps Script</h3>
+            <p className="td-note">ทดสอบ URL ของ Web App ที่ Deploy ไว้ ถ้าเชื่อมต่อได้ระบบจะจำ URL นี้ไว้ในเครื่องนี้</p>
+            <div className="td-gas">
+              <input type="url" className="input" placeholder="https://script.google.com/macros/s/.../exec" value={gasUrlInput} onChange={e => setGasUrlInput(e.target.value)} aria-label="URL ของ Apps Script Web App" />
+              <Button variant="primary" icon="refresh" disabled={isTestingGas} onClick={testGas}>{isTestingGas ? 'กำลังทดสอบ…' : 'ทดสอบการเชื่อมต่อ'}</Button>
             </div>
+            {gasTestResult && <p className={`td-gas-result ${gasTestResult.ok ? 'ok' : 'no'}`} role="status">{gasTestResult.msg}</p>}
           </GlassCard>
-
-          <GlassCard>
-            <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>โครงสร้างฐานข้อมูล Google Sheets (Schema 8 แผ่นงาน)</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-              {['Users', 'Units', 'Lessons', 'Progress', 'QuizAttempts', 'Projects', 'Assessments', 'AuditLogs'].map(sheet => (
-                <div key={sheet} style={{
-                  padding: '10px 14px',
-                  borderRadius: 8,
-                  background: '#FFFDF6',
-                  border: '1px solid var(--line)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>{sheet}</span>
-                  <Badge tone="cyan">Ready</Badge>
-                </div>
+          <GlassCard className="td-wide">
+            <h3><Icon name="layers" size={18} />แผ่นงานที่ระบบใช้ใน Google Sheets</h3>
+            <div className="td-sheets">
+              {[
+                ['Users', 'รายชื่อนักเรียนและครู ใช้เข้าสู่ระบบ (class, no, username, password, title, name, lastname)'],
+                ['ProgressSnapshots', 'ความก้าวหน้าของนักเรียนแต่ละคน รวมวันที่เข้าเรียน (ซิงก์อัตโนมัติจากเว็บไซต์)'],
+                ['QuizAttempts', 'ผลแบบทดสอบหลังเรียนทุกครั้ง (เซิร์ฟเวอร์ตรวจคำตอบเอง)'],
+                ['ScoreLog', 'คะแนนมินิเกมและแบบทดสอบทุกครั้งที่ทำ ใช้คิดคะแนนเฉลี่ยในแท็บคะแนนรายหน่วย'],
+                ['Assessments', 'ผลประเมินโครงงานหน่วยที่ 4 โดยครู'],
+                ['AuditLogs', 'บันทึกการเข้าสู่ระบบและการกระทำสำคัญ']
+              ].map(([name, desc]) => (
+                <div key={name} className="td-sheet"><b>{name}</b><span>{desc}</span></div>
               ))}
             </div>
+            {LOCKED_UNITS.length > 0 && (
+              <p className="td-note">หน่วยที่ยังปิดสำหรับนักเรียน: {LOCKED_UNITS.join(', ')} (ไม่นับในตัวเลขสรุป เปิดได้ที่ LOCKED_UNITS ใน courseData.js)</p>
+            )}
           </GlassCard>
         </div>
       )}
 
-      {/* PROJECT EVALUATION MODAL */}
-      {evaluatingStudent && (
-        <Modal
-          title={`ตรวจและประเมินโครงงาน AI: ${evaluatingStudent.name} (${evaluatingStudent.classroom})`}
-          onClose={() => setEvaluatingStudent(null)}
-        >
-          <div style={{ display: 'grid', gap: 16 }}>
-            {/* Project Overview */}
-            <div style={{ padding: 14, borderRadius: 10, background: '#FFFDF6', border: '1px solid var(--line)' }}>
-              <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 2 }}>ชื่อโครงงาน:</div>
-              <strong style={{ fontSize: 16, color: 'var(--cyan)' }}>
-                {evaluatingStudent.projectTitle || 'ยังไม่ได้ระบุชื่อโครงงาน'}
-              </strong>
-              {evaluatingStudent.projectDesc && (
-                <p style={{ fontSize: 13, color: 'var(--text)', marginTop: 8, lineHeight: 1.5 }}>
-                  {evaluatingStudent.projectDesc}
-                </p>
-              )}
-              {evaluatingStudent.projectEvidence && (
-                <div style={{ marginTop: 8 }}>
-                  <a
-                    href={evaluatingStudent.projectEvidence}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ fontSize: 13, color: 'var(--neon)', textDecoration: 'underline' }}
-                  >
-                    🔗 เปิดดูผลงาน / ซอร์สโค้ด / เอกสารแนบ
-                  </a>
+      <StudentDetail row={detail} onClose={() => setDetail(null)} onAssess={openAssess} />
+
+      {/* ประเมินโครงงาน (หน่วยที่ 4) */}
+      <Modal open={!!evaluating} onClose={() => setEvaluating(null)} title={evaluating ? `ประเมินโครงงาน: ${evaluating.name} (${evaluating.classroom})` : ''}>
+        {evaluating && (
+          <div className="td-rubric">
+            <p className="td-note">โครงงาน: <b>{projectTitle(evaluating.project) || 'ยังไม่ได้ระบุชื่อ'}</b></p>
+            {RUBRIC.map(c => (
+              <fieldset key={c.key} className="td-crit">
+                <legend>{c.label} <Badge tone="cyan">{rubricScores[c.key]}/4</Badge></legend>
+                <p>{c.desc}</p>
+                <div className="td-pts">
+                  {[1, 2, 3, 4].map(pt => (
+                    <button key={pt} type="button" aria-pressed={rubricScores[c.key] === pt} className={`btn ${rubricScores[c.key] === pt ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setRubricScores(p => ({ ...p, [c.key]: pt }))}>
+                      {pt} คะแนน
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
-
-            {/* Rubric Evaluation (4 Criteria x 4 Points = 16 Points) */}
-            <div style={{ display: 'grid', gap: 12 }}>
-              <h4 style={{ fontSize: 15, fontWeight: 700 }}>เกณฑ์การประเมินรูบริก (Rubric Assessment — เต็ม 16 คะแนน)</h4>
-
-              {[
-                { key: 'problem', label: '1. การระบุปัญหาและขอบเขต (Problem Definition)', desc: 'ความชัดเจนของปัญหา ประโยชน์ต่อผู้ใช้ และความเหมาะสมในการใช้ AI' },
-                { key: 'data', label: '2. คุณภาพและการเตรียมข้อมูล (Data Preparation)', desc: 'ปริมาณข้อมูล ความหลากหลาย การทำความสะอาด และการป้องกันความลำเอียง' },
-                { key: 'model', label: '3. การเลือกและฝึกโมเดล AI (Model & Evaluation)', desc: 'ความถูกต้องของโมเดล การทดสอบด้วยชุดข้อมูลทดสอบ และค่าความแม่นยำ' },
-                { key: 'ethics', label: '4. จริยธรรมและความปลอดภัย (Ethics & Safety)', desc: 'การปฏิบัติตาม PDPA การคำนึงถึงความเป็นธรรม และการจัดการความเสี่ยง' },
-              ].map(crit => (
-                <div key={crit.key} style={{ padding: 10, borderRadius: 8, background: '#FFFDF6', border: '1px solid #E2DCEC' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                    <strong style={{ fontSize: 13 }}>{crit.label}</strong>
-                    <Badge tone="cyan">{rubricScores[crit.key]} / 4 คะแนน</Badge>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>{crit.desc}</p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[1, 2, 3, 4].map(pt => (
-                      <button
-                        key={pt}
-                        type="button"
-                        className={`btn ${rubricScores[crit.key] === pt ? 'btn-primary' : 'btn-ghost'}`}
-                        style={{ flex: 1, padding: '4px 0', fontSize: 12 }}
-                        onClick={() => setRubricScores(prev => ({ ...prev, [crit.key]: pt }))}
-                      >
-                        {pt} คะแนน
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Total Rubric Score */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '12px 16px',
-              borderRadius: 8,
-              background: 'rgba(0, 229, 255, 0.08)',
-              border: '1px solid rgba(0, 229, 255, 0.2)'
-            }}>
-              <span style={{ fontWeight: 600 }}>คะแนนรวมรูบริก:</span>
-              <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--neon)' }}>
-                {rubricScores.problem + rubricScores.data + rubricScores.model + rubricScores.ethics} / 16 คะแนน
-              </span>
-            </div>
-
-            {/* Individual Feedback */}
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
-                ข้อเสนอแนะและคำแนะนำรายบุคคลจากคุณครู:
-              </label>
-              <textarea
-                className="input"
-                rows={3}
-                placeholder="เขียนคำแนะนำ คำชมเชย หรือจุดที่ควรพัฒนาเพิ่มเติมให้นักเรียน..."
-                value={feedbackText}
-                onChange={e => setFeedbackText(e.target.value)}
-                style={{ width: '100%', resize: 'vertical' }}
-              />
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
-              <Button variant="ghost" onClick={() => setEvaluatingStudent(null)}>
-                ยกเลิก
-              </Button>
-              <Button
-                variant="primary"
-                icon="check"
-                disabled={isSavingEval}
-                onClick={handleSaveAssessment}
-              >
-                {isSavingEval ? 'กำลังบันทึก...' : 'บันทึกผลการประเมิน'}
-              </Button>
+              </fieldset>
+            ))}
+            <p className="td-rubric-total">คะแนนรวม <b>{totalRubric}/16</b></p>
+            <label className="td-note" htmlFor="td-feedback">ข้อเสนอแนะถึงนักเรียน</label>
+            <textarea id="td-feedback" className="input" rows={3} value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="คำชม จุดที่ควรพัฒนา หรือคำแนะนำเพิ่มเติม" />
+            <div className="td-actions">
+              <Button variant="ghost" onClick={() => setEvaluating(null)}>ยกเลิก</Button>
+              <Button variant="primary" icon="check" disabled={isSavingEval} onClick={saveAssessment}>{isSavingEval ? 'กำลังบันทึก…' : 'บันทึกผลการประเมิน'}</Button>
             </div>
           </div>
-        </Modal>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

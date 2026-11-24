@@ -32,6 +32,7 @@ export const emptyProgress = () => ({
   version: PROGRESS_VERSION,
   updatedAt: null,
   lastVisited: null,
+  visitDays: [],
   ...Object.fromEntries(UNITS.map(u => [u.id, emptyUnitProgress()]))
 });
 
@@ -41,6 +42,7 @@ export function normalizeProgress(raw) {
   const base = emptyProgress();
   if (!raw || typeof raw !== 'object') return base;
   base.updatedAt = raw.updatedAt || null;
+  base.visitDays = asIdList(raw.visitDays).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
   base.lastVisited = raw.lastVisited && UNITS.some(u => u.id === raw.lastVisited.unitId) ? raw.lastVisited : null;
   for (const u of UNITS) {
     const r = raw[u.id] || {};

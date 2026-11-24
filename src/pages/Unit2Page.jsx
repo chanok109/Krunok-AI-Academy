@@ -13,7 +13,7 @@ import { U2_QUIZ, U2_REFS } from '../data/unit2Data.js';
 import { isStaff } from '../data/courseData.js';
 
 // หัวข้อหลัง PIXEL QUEST ยังไม่พร้อม: นักเรียนเข้าไม่ได้ ครูยังเปิดดูได้
-const U2_LOCKED_STEPS = new Set(['u2-step-5', 'u2-step-6', 'u2-step-7', 'u2-step-8', 'u2-step-9', 'u2-step-10']);
+const U2_LOCKED_STEPS = new Set(['u2-step-sheet23', 'u2-step-act23', 'u2-step-5', 'u2-step-6', 'u2-step-7', 'u2-step-8', 'u2-step-9', 'u2-step-10']);
 
 const U2_OBJECTIVES = [
   "อธิบายหลักการมองเห็นของคอมพิวเตอร์และโครงสร้างข้อมูลภาพดิจิทัล (พิกเซล, BGR, Grayscale) ได้",
@@ -767,10 +767,106 @@ export default function Unit2Page() {
       ]
     },
     {
-      id: 'u2-step-5',
+      id: 'u2-step-sheet23',
       stepNum: 8,
-      tone: 'blue',
+      tone: 'purple',
       kicker: 'ใบความรู้ 2.3',
+      title: 'ปริภูมิสี และการวาดรูปทรง',
+      desc: 'แปลงภาพเป็นภาพเทาและ HSV ด้วย cv2.cvtColor() แล้ววาดเส้น กรอบ วงกลม และข้อความลงบนภาพ เพื่อแสดงผลลัพธ์ที่ AI ตรวจพบ',
+      items: [
+        {
+          id: 'u2-item-5f',
+          title: '2.3.1 การแปลงปริภูมิสี (BGR / Gray / HSV)',
+          codePills: ['cv2.cvtColor()'],
+          actions: (
+            <>
+              <button
+                type="button"
+                className="curr-btn-ghost teal"
+                onClick={() => openViewer('read', 'unit2/index.html?only=t2cs#t2206', '2.3.1 การแปลงปริภูมิสี (BGR / Gray / HSV)', 'unit2/index.html#a23-t2206', 'u2-item-5f')}
+              >
+                <Icon name="openBook" size={14} /> อ่าน
+              </button>
+              <button
+                type="button"
+                className="curr-btn-solid teal"
+                onClick={() => openViewer('slide', 'unit2/index.html#a23-t2206', '2.3.1 การแปลงปริภูมิสี (BGR / Gray / HSV)', null, 'u2-item-5f')}
+              >
+                <Icon name="slidePlay" size={14} /> สไลด์
+              </button>
+            </>
+          )
+        },
+        {
+          id: 'u2-item-5g',
+          title: '2.3.2 การวาดรูปทรงและข้อความบนภาพ',
+          codePills: ['cv2.rectangle()', 'cv2.putText()'],
+          actions: (
+            <>
+              <button
+                type="button"
+                className="curr-btn-ghost teal"
+                onClick={() => openViewer('read', 'unit2/index.html?only=t2cs#t2207', '2.3.2 การวาดรูปทรงและข้อความบนภาพ', 'unit2/index.html#a23-t2207', 'u2-item-5g')}
+              >
+                <Icon name="openBook" size={14} /> อ่าน
+              </button>
+              <button
+                type="button"
+                className="curr-btn-solid teal"
+                onClick={() => openViewer('slide', 'unit2/index.html#a23-t2207', '2.3.2 การวาดรูปทรงและข้อความบนภาพ', null, 'u2-item-5g')}
+              >
+                <Icon name="slidePlay" size={14} /> สไลด์
+              </button>
+            </>
+          )
+        },
+        {
+          id: 'u2-item-5t',
+          title: 'สรุปโค้ดคำสั่ง ใบความรู้ 2.3',
+          subtext: 'รวมทุกคำสั่งไว้ในโปรแกรมเดียว · คัดลอกไปรันได้ทันที',
+          actions: (
+            <button
+              type="button"
+              className="curr-btn-ghost teal"
+              onClick={() => openViewer('read', 'unit2/index.html?only=t2cs#sum23', 'สรุปโค้ดคำสั่ง ใบความรู้ 2.3', null, 'u2-item-5t')}
+            >
+              <Icon name="openBook" size={14} /> อ่าน
+            </button>
+          )
+        }
+      ]
+    },
+    {
+      id: 'u2-step-act23',
+      stepNum: 9,
+      tone: 'amber',
+      kicker: 'ลงมือทำ',
+      title: 'กิจกรรมที่ 2.3 นักติดป้ายภาพ',
+      desc: 'แปลงภาพของตนเองเป็นภาพเทาและ HSV แล้ววาดกรอบ ข้อความ และรูปทรงลงบนภาพ ใช้ความรู้จากใบความรู้ 2.3',
+      items: [
+        {
+          id: 'u2-item-act23',
+          title: 'ใบงานกิจกรรมที่ 2.3',
+          subtext: 'งานเดี่ยว · 50 นาที · 3 ตอน · 20 คะแนน',
+          actions: (
+            <a
+              href="unit2/activity-2-3.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="curr-btn-solid amber"
+              onClick={() => markChecked('u2-item-act23')}
+            >
+              <Icon name="external" size={14} /> เปิดกิจกรรม
+            </a>
+          )
+        }
+      ]
+    },
+    {
+      id: 'u2-step-5',
+      stepNum: 10,
+      tone: 'blue',
+      kicker: 'ใบความรู้ 2.4',
       title: 'อ่านภาพจากกล้องและวิดีโอ',
       desc: 'เข้าใจเฟรมและ FPS เปิดกล้องหรืออ่านไฟล์วิดีโอ ประมวลผลทีละเฟรมด้วยลูป และบันทึกวิดีโอออกเป็นไฟล์',
       items: [
@@ -787,8 +883,8 @@ export default function Unit2Page() {
                   openViewer(
                     'read',
                     'unit2/index.html?only=t24#t24',
-                    '2.3 อ่านภาพจากกล้องและวิดีโอ',
-                    'unit2/index.html#a23-1',
+                    '2.4 อ่านภาพจากกล้องและวิดีโอ',
+                    'unit2/index.html#a24-1',
                     'u2-item-6'
                   )
                 }
@@ -801,8 +897,8 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    'unit2/index.html#a23-1',
-                    '2.3 อ่านภาพจากกล้องและวิดีโอ',
+                    'unit2/index.html#a24-1',
+                    '2.4 อ่านภาพจากกล้องและวิดีโอ',
                     null,
                     'u2-item-6'
                   )
@@ -817,9 +913,9 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-6',
-      stepNum: 9,
+      stepNum: 11,
       tone: 'rose',
-      kicker: 'ใบความรู้ 2.4',
+      kicker: 'ใบความรู้ 2.5',
       title: 'การตรวจจับสีด้วยปริภูมิสี HSV',
       desc: 'เข้าใจค่า Hue · Saturation · Value แปลงสีจาก BGR เป็น HSV สร้างหน้ากาก (Mask) และแยกวัตถุตามสีแบบเรียลไทม์',
       items: [
@@ -836,8 +932,8 @@ export default function Unit2Page() {
                   openViewer(
                     'read',
                     'unit2/index.html?only=t25#t25',
-                    '2.4 การตรวจจับสีด้วยปริภูมิสี HSV',
-                    'unit2/index.html#a24-1',
+                    '2.5 การตรวจจับสีด้วยปริภูมิสี HSV',
+                    'unit2/index.html#a25-1',
                     'u2-item-7'
                   )
                 }
@@ -850,8 +946,8 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    'unit2/index.html#a24-1',
-                    '2.4 การตรวจจับสีด้วยปริภูมิสี HSV',
+                    'unit2/index.html#a25-1',
+                    '2.5 การตรวจจับสีด้วยปริภูมิสี HSV',
                     null,
                     'u2-item-7'
                   )
@@ -866,9 +962,9 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-7',
-      stepNum: 10,
+      stepNum: 12,
       tone: 'teal',
-      kicker: 'ใบความรู้ 2.5',
+      kicker: 'ใบความรู้ 2.6',
       title: 'การตรวจจับใบหน้าด้วย Haar Cascade',
       desc: 'เรียนรู้ลักษณะเด่น Haar โหลดโมเดล ตรวจจับใบหน้า วาดกรอบนับจำนวน ต่อยอด YuNet และจริยธรรมการใช้ภาพบุคคล (PDPA)',
       items: [
@@ -885,8 +981,8 @@ export default function Unit2Page() {
                   openViewer(
                     'read',
                     'unit2/index.html?only=t26#t26',
-                    '2.5 การตรวจจับใบหน้าด้วย Haar Cascade',
-                    'unit2/index.html#a25-1',
+                    '2.6 การตรวจจับใบหน้าด้วย Haar Cascade',
+                    'unit2/index.html#a26-1',
                     'u2-item-8'
                   )
                 }
@@ -899,8 +995,8 @@ export default function Unit2Page() {
                 onClick={() =>
                   openViewer(
                     'slide',
-                    'unit2/index.html#a25-1',
-                    '2.5 การตรวจจับใบหน้าด้วย Haar Cascade',
+                    'unit2/index.html#a26-1',
+                    '2.6 การตรวจจับใบหน้าด้วย Haar Cascade',
                     null,
                     'u2-item-8'
                   )
@@ -915,15 +1011,15 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-8',
-      stepNum: 11,
+      stepNum: 13,
       tone: 'amber',
       kicker: 'ลงมือทำ & ทบทวน',
       title: 'ชุดโค้ดตัวอย่างและสรุปทบทวนหน่วยที่ 2',
-      desc: 'ดาวน์โหลดไฟล์โค้ดตัวอย่าง Python บทที่ 2.3–2.5 พร้อมไฟล์ภาพและวิดีโอตัวอย่างสำหรับรันจริงใน VS Code และทบทวนคำศัพท์สำคัญ',
+      desc: 'ดาวน์โหลดไฟล์โค้ดตัวอย่าง Python บทที่ 2.4–2.6 พร้อมไฟล์ภาพและวิดีโอตัวอย่างสำหรับรันจริงใน VS Code และทบทวนคำศัพท์สำคัญ',
       items: [
         {
           id: 'u2-item-9',
-          title: 'ชุดโค้ดตัวอย่าง Python บทที่ 2.3–2.5 และสรุปคำศัพท์',
+          title: 'ชุดโค้ดตัวอย่าง Python บทที่ 2.4–2.6 และสรุปคำศัพท์',
           codePills: ['code-2.3-2.5.zip', 'fruits.png', 'balls.mp4', 'faces.png'],
           actions: (
             <>
@@ -957,7 +1053,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-9',
-      stepNum: 12,
+      stepNum: 14,
       tone: 'indigo',
       kicker: 'วัดผลสัมฤทธิ์',
       title: 'แบบทดสอบหลังเรียน หน่วยที่ 2 (15 ข้อ)',
@@ -981,7 +1077,7 @@ export default function Unit2Page() {
     },
     {
       id: 'u2-step-10',
-      stepNum: 13,
+      stepNum: 15,
       tone: 'purple',
       kicker: 'ค้นคว้าต่อ',
       title: 'แหล่งเรียนรู้เพิ่มเติม',

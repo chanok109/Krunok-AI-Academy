@@ -238,15 +238,19 @@ export const api = {
     return api.callGas('leaderboard/get', { unitId });
   },
 
+  /** สถิติการเข้าเรียนของนักเรียนทั้งหมด (ไม่ระบุตัวตน) โหมดสาธิตคืน null */
+  async getVisitSummary() {
+    if (api.isDemo()) return null;
+    return api.callGas('visits/summary', {});
+  },
+
   /**
-   * ดึงข้อมูลรายชื่อนักเรียนและคะแนนสำหรับครูผู้สอน
+   * ข้อมูลแดชบอร์ดครู: นักเรียนทุกคน (Users) + ความก้าวหน้า + ประวัติสอบ + ผลประเมินโครงงาน
+   * โหมดสาธิตคืน null ให้หน้าใช้ข้อมูลจำลองแทน
    */
-  async getTeacherRoster(classroom = 'all') {
-    if (!api.isDemo()) {
-      return api.callGas('teacher/getRoster', { classroom });
-    }
-    // Return null in Demo Mode to use local mock data
-    return null;
+  async getTeacherOverview() {
+    if (api.isDemo()) return null;
+    return api.callGas('teacher/overview', {});
   },
 
   /**

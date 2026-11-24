@@ -5,6 +5,9 @@ import { useRoute } from '../context/RouteContext.jsx';
 import { Icon, AIraBot, GlassCard, Button, Badge, DemoBadge, ProgressRing, ProgressBar } from '../components/UIPrimitives.jsx';
 import { BRAIN_PATH, BRAIN_GYRI } from '../components/BackgroundEffects.jsx';
 import { thaiDate } from '../components/UIHelpers.jsx';
+import { visitStats, classVisitStats, dayKey } from '../services/visitStats.js';
+import { api } from '../services/apiService.js';
+import { VisitCalendar, dayTh } from '../components/VisitCalendar.jsx';
 import { goToProgress } from '../components/Navigation.jsx';
 import { HeroCircuit } from '../components/HeroCircuit.jsx';
 import unit1Photo from '../assets/images/units/unit1.jpg';
@@ -601,6 +604,138 @@ function relTime(iso) {
   return thaiDate(iso);
 }
 
+
+// โหมดสาธิต: ข้อมูลจำลอง 6 ห้อง ห้องละ 30 คน (สุ่มแบบคงที่ เปิดกี่ครั้งก็เหมือนเดิม)
+function demoVisitStudents() {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const today = new Date();
+  return COURSE.classrooms.flatMap((classroom, r) =>
+    Array.from({ length: 30 }, () => {
+      const keen = 0.15 + rnd() * 0.5 - r * 0.03;
+      const days = [];
+      for (let i = 59; i >= 0; i--) {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+        const school = d.getDay() > 0 && d.getDay() < 6;
+        if (rnd() < keen * (school ? 1 : 0.25)) days.push(dayKey(d));
+      }
+      return { classroom, days };
+    })
+  );
+}
+
+function ClassVisitStatsCard() {
+  const [students, setStudents] = useState(null);
+  const [error, setError] = useState('');
+  const [room, setRoom] = useState('all');
+  const [hover, setHover] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    if (api.isDemo()) { setStudents(demoVisitStudents()); return undefined; }
+    api.getVisitSummary()
+      .then(r => {
+        if (!alive) return;
+        if (!r || !r.success) throw new Error((r && r.error) || 'โหลดข้อมูลไม่สำเร็จ');
+        setStudents(r.students);
+      })
+      .catch(e => alive && setError(e.message || String(e)));
+    return () => { alive = false; };
+  }, []);
+
+  const rooms = useMemo(() => [...new Set((students || []).map(s => s.classroom))].sort(), [students]);
+  const s = useMemo(() => students && classVisitStats(room === 'all' ? students : students.filter(x => x.classroom === room)), [students, room]);
+  const pct = n => (s && s.total ? Math.round((n / s.total) * 100) : 0);
+  const shown = s && (hover || s.daily[s.daily.length - 1]);
+
+  return (
+    <section className="classroom-card visit-section" aria-label="สถิติการเข้าเรียนเว็บไซต์ของนักเรียนทั้งหมด">
+      <div className="section-head-clean">
+        <div>
+          <h2 className="clean-section-title"><Icon name="users" size={22} />สถิติการเข้าเรียนเว็บไซต์ของนักเรียนทั้งหมด</h2>
+          <p className="clean-section-desc">จำนวนนักเรียนที่เปิดเว็บไซต์ในแต่ละวัน · 30 วันล่าสุด</p>
+        </div>
+      </div>
+
+      {!s ? (
+        <p className="visit-empty">{error ? `โหลดข้อมูลไม่สำเร็จ: ${error}` : 'กำลังโหลดข้อมูล…'}</p>
+      ) : (
+        <>
+          {rooms.length > 1 && (
+            <div className="visit-rooms" role="tablist" aria-label="เลือกห้อง">
+              {['all', ...rooms].map(r => (
+                <button key={r} type="button" role="tab" aria-selected={room === r} className={room === r ? 'on' : ''} onClick={() => setRoom(r)}>
+                  {r === 'all' ? 'ทุกห้อง' : r}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <dl className="visit-tiles">
+            <div className="visit-tile"><dt><Icon name="users" size={15} />นักเรียนทั้งหมด</dt><dd>{s.total}<small>คน</small></dd></div>
+            <div className="visit-tile"><dt><Icon name="check" size={15} />เข้าเรียนวันนี้</dt><dd>{s.today}<small>คน · {pct(s.today)}%</small></dd></div>
+            <div className="visit-tile"><dt><Icon name="clock" size={15} />7 วันล่าสุด</dt><dd>{s.activeWeek}<small>คน · {pct(s.activeWeek)}%</small></dd></div>
+            <div className="visit-tile"><dt><Icon name="chart" size={15} />เฉลี่ยต่อวัน</dt><dd>{s.avg}<small>คน</small></dd></div>
+          </dl>
+
+          <p className="visit-readout" aria-live="polite">
+            {dayTh(shown.key)}{hover ? '' : ' (วันนี้)'} · <b>{shown.count}</b> คน
+          </p>
+          <div
+            className="visit-bars"
+            role="img"
+            aria-label={`กราฟจำนวนนักเรียนที่เข้าเรียนรายวัน 30 วันล่าสุด เฉลี่ยวันละ ${s.avg} คน สูงสุด ${s.peak} คน`}
+            onMouseLeave={() => setHover(null)}
+          >
+            <span className="visit-peak" aria-hidden="true">{s.peak} คน</span>
+            {s.daily.map(d => (
+              <span key={d.key} className={`visit-bar${hover?.key === d.key ? ' is-hover' : ''}`} onMouseEnter={() => setHover(d)}>
+                <i style={{ height: `${s.peak ? (d.count / s.peak) * 100 : 0}%` }} />
+              </span>
+            ))}
+          </div>
+          <div className="visit-axis" aria-hidden="true">
+            <span>{dayTh(s.daily[0].key)}</span>
+            <span>วันนี้</span>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function VisitStatsCard({ visitDays }) {
+  const s = useMemo(() => visitStats(visitDays), [visitDays]);
+  const tiles = [
+    { icon: 'book', label: 'เข้าเรียนทั้งหมด', value: s.total },
+    { icon: 'sparkle', label: 'ต่อเนื่องตอนนี้', value: s.streak },
+    { icon: 'trophy', label: 'ต่อเนื่องสูงสุด', value: s.best },
+    { icon: 'clock', label: 'เดือนนี้', value: s.month }
+  ];
+  return (
+    <section className="classroom-card visit-section" aria-label="สถิติการเข้าเรียนเว็บไซต์ของฉัน">
+      <div className="section-head-clean">
+        <div>
+          <h2 className="clean-section-title"><Icon name="user" size={22} />สถิติการเข้าเรียนเว็บไซต์ของฉัน</h2>
+          <p className="clean-section-desc">
+            {s.first ? `เริ่มเข้าเรียนเมื่อ ${dayTh(s.first)} · นับวันละ 1 ครั้งที่เปิดเว็บไซต์` : 'นับวันละ 1 ครั้งที่เปิดเว็บไซต์'}
+          </p>
+        </div>
+      </div>
+
+      <dl className="visit-tiles">
+        {tiles.map(t => (
+          <div key={t.label} className="visit-tile">
+            <dt><Icon name={t.icon} size={15} />{t.label}</dt>
+            <dd>{t.value}<small>วัน</small></dd>
+          </div>
+        ))}
+      </dl>
+
+      <VisitCalendar weeks={s.weeks} />
+    </section>
+  );
+}
+
 function continueTarget(summary, student) {
   const open = u => u && !unitLocked(u.id, student);
   const last0 = summary.lastVisited && unitById(summary.lastVisited.unitId);
@@ -877,33 +1012,42 @@ function HomePage() {
             </span>
           </div>
 
-          <div className="ach-classroom-grid">
-            {summary.achievements.map(a => (
-              <div
-                key={a.id}
-                className={`ach-classroom-item ${a.unlocked ? 'is-unlocked' : 'is-locked'}`}
-                aria-label={`${a.name} ${a.unlocked ? 'ได้รับแล้ว' : 'ยังไม่ได้รับ: ' + a.rule}`}
-              >
-                <div className="ach-medal-box">
-                  <Icon name={MEDAL_ICON[a.art] || "award"} size={22} />
+          <div className="medal-grid">
+            {summary.achievements.map((a, i) => {
+              // เหรียญหน่วย 1–4 ใช้ % ของหน่วยนั้น เหรียญสุดท้ายใช้ % รวม
+              const pct = a.unlocked ? 100 : (UNITS[i] ? summary.units[UNITS[i].id]?.percent : summary.overall) || 0;
+              return (
+                <div
+                  key={a.id}
+                  className={`medal-card tone-${i + 1} ${a.unlocked ? 'is-unlocked' : 'is-locked'}`}
+                  aria-label={`${a.name} ${a.unlocked ? 'ได้รับแล้ว' : `ยังไม่ได้รับ: ${a.rule} ความคืบหน้า ${pct}%`}`}
+                >
+                  <div className="medal-art" aria-hidden="true">
+                    <span className="medal-ribbon" />
+                    <span className="medal-disc">
+                      <Icon name={MEDAL_ICON[a.art] || "award"} size={26} stroke={2.1} />
+                    </span>
+                    {!a.unlocked && <span className="medal-lock"><Icon name="lock" size={11} stroke={2.4} /></span>}
+                  </div>
+                  <strong className="medal-name">{a.name}</strong>
+                  <span className="medal-th">{a.th}</span>
+                  <span className="medal-rule">{a.rule}</span>
+                  {a.unlocked ? (
+                    <span className="medal-got"><Icon name="check" size={12} stroke={2.6} /> ได้รับแล้ว</span>
+                  ) : (
+                    <span className="medal-progress">
+                      <span className="medal-bar"><i style={{ width: `${pct}%` }} /></span>
+                      <b>{pct}%</b>
+                    </span>
+                  )}
                 </div>
-                <div className="ach-item-content">
-                  <strong className="ach-item-title">{a.name}</strong>
-                  <span className="ach-item-th">{a.th}</span>
-                  <span className="ach-item-status">
-                    {a.unlocked ? (
-                      <span className="ach-status-ok">
-                        <Icon name="check" size={11} /> ได้รับแล้ว
-                      </span>
-                    ) : (
-                      <span className="ach-status-lock">{a.rule}</span>
-                    )}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
+
+        <ClassVisitStatsCard />
+        <VisitStatsCard visitDays={progress.visitDays || []} />
 
       </div>
     </div>

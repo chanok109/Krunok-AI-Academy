@@ -247,7 +247,8 @@ function Modal({
     };
   }, [open, onClose]);
   if (!open) return null;
-  return React.createElement("div", {
+  // วาดที่ body: ถ้าอยู่ใต้กล่องที่มี transform (เช่นแอนิเมชันหน้า) position: fixed จะไม่อิงหน้าจอ
+  return createPortal(React.createElement("div", {
     className: "modal-backdrop",
     onClick: e => {
       if (e.target === e.currentTarget) onClose();
@@ -278,7 +279,7 @@ function Modal({
   }, React.createElement(Icon, {
     name: "x",
     size: 18
-  }))), children));
+  }))), children)), document.body);
 }
 function ActScore({
   score,
