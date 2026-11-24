@@ -793,7 +793,7 @@ details.hint>div{padding-bottom:12px;display:flex;flex-direction:column;gap:8px}
 
  <div class="block prog-c" style="--c:var(--neon)">
   <h3><span class="prog-n">2</span>ติดป้ายวัตถุบนภาพ</h3>
-  <ol class="sub-steps"><li>สร้างไฟล์โปรแกรมชื่อ <code data-pfile="label.py">ห้อง_เลขที่_label.py</code> <button type="button" class="act sm" data-copy="ห้อง_เลขที่_label.py" data-pfile-btn="label.py">คัดลอก</button></li><li>เขียนโปรแกรมให้สมบูรณ์ โดย<b class="hl">วาดกรอบสี่เหลี่ยมล้อมรอบวัตถุ</b> 1 ชิ้น <b class="hl">วาดวงกลม</b> 1 วง และ<b class="hl">เขียนชื่อวัตถุเป็นภาษาอังกฤษ</b>ไว้เหนือกรอบ แล้ว<b class="hl">บันทึกภาพชื่อ <code>label.png</code></b></li></ol>
+  <ol class="sub-steps"><li>สร้างไฟล์โปรแกรมชื่อ <code data-pfile="label.py">ห้อง_เลขที่_label.py</code> <button type="button" class="act sm" data-copy="ห้อง_เลขที่_label.py" data-pfile-btn="label.py">คัดลอก</button></li><li>เขียนโปรแกรมให้สมบูรณ์ โดย<b class="hl">วาดกรอบสี่เหลี่ยมล้อมรอบวัตถุ</b> 1 ชิ้น <b class="hl">วาดวงกลม</b> 1 วง และ<b class="hl">เขียนชื่อวัตถุเป็นภาษาอังกฤษ</b>ไว้เหนือกรอบสี่เหลี่ยมและเหนือวงกลม แล้ว<b class="hl">บันทึกภาพชื่อ <code>label.png</code></b></li></ol>
   <div class="code"><div class="cap"><span class="cap-f"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M10 12.5 8 15l2 2.5" /> <path d="m14 12.5 2 2.5-2 2.5" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" /> </svg><span data-pfile="label.py">ห้อง_เลขที่_label.py</span></span><span class="cap-h">โค้ดตั้งต้น คัดลอกไปวางในไฟล์</span><button class="copy" type="button"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด</span></button></div><pre><span class="kw">import</span> cv2
 
 <span class="cm">#1. อ่านไฟล์ภาพ my_photo2.png เก็บไว้ในตัวแปรชื่อ my_img</span>
@@ -801,17 +801,15 @@ details.hint>div{padding-bottom:12px;display:flex;flex-direction:column;gap:8px}
 
 <span class="cm">#2. วาดกรอบสี่เหลี่ยมล้อมรอบวัตถุ cv2.rectangle(img, pt1, pt2, color, thickness)</span>
 
+<span class="cm">#3. เขียนชื่อวัตถุเหนือกรอบสี่เหลี่ยม cv2.putText(img, text, org, fontFace, fontScale, color, thickness)</span>
 
-<span class="cm">#3. วาดรูปทรงวงกลม cv2.circle(img, center, radius, color, thickness)</span>
+<span class="cm">#4. วาดรูปทรงวงกลม cv2.circle(img, center, radius, color, thickness)</span>
 
+<span class="cm">#5. เขียนชื่อวัตถุเหนือกรอบวงกลม cv2.putText(img, text, org, fontFace, fontScale, color, thickness)</span>
 
-<span class="cm">#4. เขียนชื่อวัตถุเหนือกรอบ cv2.putText(img, text, org, fontFace, fontScale, color, thickness)</span>
+<span class="cm">#6. แสดงผลลัพธ์</span>
 
-
-<span class="cm">#5. แสดงผลลัพธ์</span>
-
-
-<span class="cm">#6. บันทึกผลลัพธ์ label.png</span></pre></div>
+<span class="cm">#7. บันทึกผลลัพธ์ label.png</span></pre></div>
   <p class="note tip"><b>คำใบ้:</b> หาพิกัดมุมซ้ายบน <code>pt1</code> และมุมขวาล่าง <code>pt2</code> จากภาพต้นฉบับที่มีแกน x, y ด้านบน ส่วน <code>org</code> ของข้อความให้อยู่เหนือมุมซ้ายบนของกรอบเล็กน้อย เช่น <code>(x1, y1 - 10)</code> ข้อความใน <code>putText</code> ต้องเป็นภาษาอังกฤษ</p>
   <p class="prose">กรอกค่าที่ใช้ในโค้ดของตนเอง</p>
   <div class="form" style="grid-template-columns:repeat(4,minmax(0,1fr))">
@@ -843,7 +841,7 @@ details.hint>div{padding-bottom:12px;display:flex;flex-direction:column;gap:8px}
  <div class="part-h" style="--c:var(--ok);margin-bottom:16px"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M20 6 9 17l-5-5" /> </svg></span><h2>ตรวจงานและส่งงาน</h2></div>
  <div class="block first" style="--c:var(--warn)">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /> <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /> <path d="M4 22h16" /> <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /> <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /> <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /> </svg></span>เกณฑ์การให้คะแนน 20 คะแนน</h3>
-  <div class="tw"><table class="score"><tbody><tr><th colspan="2">ตอนที่ 1 เลือกเครื่องมือให้ AI (4 คะแนน)</th></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ก</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ข</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ค</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ง</td><td>1</td></tr><tr><th colspan="2">ตอนที่ 2 โปรแกรมนักติดป้ายภาพ (12 คะแนน)</th></tr><tr><td>โปรแกรมที่ 1 แปลงภาพเป็นภาพเทาได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 1 แปลงภาพเป็น HSV ได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 1 กรอก shape ของ gray และ hsv ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 วาดกรอบสี่เหลี่ยมล้อมรอบวัตถุได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 2 เขียนชื่อวัตถุเหนือกรอบได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 2 วาดวงกลมได้ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 กรอกพิกัด ข้อความ และสี ตรงกับภาพผลลัพธ์</td><td>1</td></tr><tr><td>อัปโหลดภาพครบทุกช่อง และตั้งชื่อไฟล์ถูกต้อง</td><td>1</td></tr><tr><th colspan="2">ตอนที่ 3 สะท้อนคิด (4 คะแนน)</th></tr><tr><td>อธิบายสาเหตุที่ภาพ HSV สีดูแปลก และวิธีแก้ได้ถูกต้อง</td><td>2</td></tr><tr><td>ตัดสินใจเรื่องการใช้ภาพที่วาดป้ายเป็นภาพฝึก AI พร้อมเหตุผลที่เหมาะสม</td><td>2</td></tr></tbody><tfoot><tr><td>คะแนนรวม</td><td>20</td></tr></tfoot></table></div>
+  <div class="tw"><table class="score"><tbody><tr><th colspan="2">ตอนที่ 1 เลือกเครื่องมือให้ AI (4 คะแนน)</th></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ก</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ข</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ค</td><td>1</td></tr><tr><td>เลือกคำสั่งถูกต้อง สถานการณ์ ง</td><td>1</td></tr><tr><th colspan="2">ตอนที่ 2 โปรแกรมนักติดป้ายภาพ (12 คะแนน)</th></tr><tr><td>โปรแกรมที่ 1 แปลงภาพเป็นภาพเทาได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 1 แปลงภาพเป็น HSV ได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 1 กรอก shape ของ gray และ hsv ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 วาดกรอบสี่เหลี่ยมล้อมรอบวัตถุได้ถูกต้อง</td><td>2</td></tr><tr><td>โปรแกรมที่ 2 เขียนชื่อวัตถุเหนือกรอบสี่เหลี่ยมได้ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 วาดวงกลมได้ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 เขียนชื่อวัตถุเหนือวงกลมได้ถูกต้อง</td><td>1</td></tr><tr><td>โปรแกรมที่ 2 กรอกพิกัด ข้อความ และสี ตรงกับภาพผลลัพธ์</td><td>1</td></tr><tr><td>อัปโหลดภาพครบทุกช่อง และตั้งชื่อไฟล์ถูกต้อง</td><td>1</td></tr><tr><th colspan="2">ตอนที่ 3 สะท้อนคิด (4 คะแนน)</th></tr><tr><td>อธิบายสาเหตุที่ภาพ HSV สีดูแปลก และวิธีแก้ได้ถูกต้อง</td><td>2</td></tr><tr><td>ตัดสินใจเรื่องการใช้ภาพที่วาดป้ายเป็นภาพฝึก AI พร้อมเหตุผลที่เหมาะสม</td><td>2</td></tr></tbody><tfoot><tr><td>คะแนนรวม</td><td>20</td></tr></tfoot></table></div>
  </div>
  <div class="block" style="--c:var(--cyan)">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12 7v14" /> <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /> </svg></span>บันทึกกิจกรรม</h3>
