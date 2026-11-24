@@ -9,7 +9,7 @@
  s.textContent='header.hero{display:none!important}main section.part'+o.split(',').map(function(id){return':not(#'+CSS.escape(id)+')'}).join('')+'{display:none!important}';
  document.head.appendChild(s)})();
 /* #a22-t223 / #a22-3 (slide buttons): keep the page invisible until slide mode opens, so the header never flashes */
-if(/^#(a21|a22|a23|a24|a25|mission)-/.test(location.hash)){
+if(/^#(a21|a22|a23|a24|a25|a26|mission)-/.test(location.hash)){
  document.documentElement.classList.add('sl-boot');
  var b=document.createElement('style');b.textContent='html.sl-boot body{visibility:hidden}';document.head.appendChild(b);
  addEventListener('load',function(){document.documentElement.classList.remove('sl-boot')});}
@@ -794,6 +794,29 @@ code{background:rgba(12,111,150,.1);color:#16294A}
 .tm{background:var(--term)}
 /* pale accent text -> readable on light */
 .def{background:#FFF7E3;border-color:#E3C67A}.def-t{color:#8A5A00}.def p{color:var(--ink)}
+.cs-term{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:0}.cs-term b{font-family:var(--f-head);font-size:2em;line-height:1.2;background:linear-gradient(90deg,#2563EB,#16A34A 45%,#DC2626);-webkit-background-clip:text;background-clip:text;color:transparent}.cs-term span{font-family:var(--f-head);font-weight:600;font-size:1.15em;color:#5B21B6;background:#EDE9FE;padding:1px 12px;border-radius:999px}
+.cs-hl{color:#B91C1C}
+.cvt-syn{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 8px;background:#1B1640;border-radius:14px;padding:16px 20px;margin-bottom:6px}
+.cvt-syn .cs-p{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cvt-syn .cs-p code{font-size:1.25em;font-weight:800;padding:4px 12px;border-radius:9px;background:var(--pb);color:var(--pc);white-space:nowrap}
+.cvt-syn .cs-p small{font-family:var(--f-head);font-size:.82em;font-weight:600;color:var(--pb)}
+.cvt-syn .cs-op{font-family:var(--f-code);font-size:1.5em;font-weight:800;color:#CBD5E1;line-height:1.5}
+.cvt-syn .p-out{--pb:#FDE68A;--pc:#78350F}.cvt-syn .p-fn{--pb:#99F6E4;--pc:#115E59}.cvt-syn .p-in{--pb:#BFDBFE;--pc:#1E3A8A}.cvt-syn .p-code{--pb:#F5D0FE;--pc:#86198F}
+html body .cs-tbl code.cvt-c{font-size:1.05em;font-weight:600;color:#64748B;background:#F8FAFC;border:1px solid #E2E8F0}
+.cvt-c b{font-weight:800}.cvt-c i{font-style:normal;font-weight:800;color:#7C3AED;padding:0 1px}
+.cvt-c .k-bgr{color:#1D4ED8}.cvt-c .k-gray{color:#111827}.cvt-c .k-hsv{color:#C026D3}.cvt-c .k-rgb{color:#DC2626}
+.hue-box{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:center}
+.hue-wheel{display:block;width:100%;height:auto}
+.hue-wheel text{text-anchor:middle;dominant-baseline:middle;font-family:var(--f-head)}
+.hw-h{font-size:15px;font-weight:700;fill:#1B1640}.hw-d{font-size:13px;font-weight:700;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:3.5px}
+.hw-c{font-size:14px;font-weight:700;fill:#5B21B6}.hw-c2{font-size:18px;font-weight:800;fill:#1B1640;font-family:var(--f-code)!important}
+.hw-red{fill:none;stroke:#7F1D1D;stroke-width:6;stroke-linecap:round}
+.hue-t{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hue-ex{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.hue-ex li{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #E4DEFF;border-radius:999px;padding:3px 12px 3px 6px}
+.hue-ex i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.2)}
+.hue-red{margin:0}.hue-red span{display:inline-block;vertical-align:middle;margin-right:10px;width:28px;height:6px;border-radius:3px;background:#7F1D1D}.hue-red code,.hue-ex code{white-space:nowrap}
+@media (max-width:820px){.hue-box{grid-template-columns:minmax(0,1fr)}.hue-wheel{max-width:300px;margin-inline:auto}}
 .cv-full b{color:#9A6200}.cv-hl{color:#0C6F96}.cv-logo{color:#14223F}
 .cvk .ic,.cmd-h .ic,.see-h .ic,.see-sub .ic{color:#0C6F96}
 .cvk .imp{background:#F1EEFF;border-color:#A99AEC}
@@ -1742,6 +1765,117 @@ body.slmode .code-ex .tm{font-size:1.7em;line-height:1.4;padding:10px 14px}
 body.slmode .yn-two img{max-width:520px;margin-inline:auto}body.slmode .yn-two figure{padding:6px}
 .ys{grid-template-columns:60px minmax(0,1fr) 80px}.ys b{white-space:nowrap}body.slmode .ip-sum code{font-size:.74em}
 body.slmode .cmdg.ip-sum>div>code{font-size:.72em!important}
+/* 2.2.6 ปริภูมิสี / 2.2.7 วาดรูปทรง */
+.cs-same{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cs-same>div{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;background:#fff;border:1px solid #E4DEFF;border-radius:12px;padding:10px 12px}
+.cs-same .cs-sw{grid-row:span 3}
+.cs-same code{font-weight:700;color:#4B2FD0}.cs-same small{color:#6B6890}
+.cs-sw{display:inline-block;width:34px;height:34px;border-radius:9px;border:1px solid rgba(0,0,0,.15);flex:none}
+.cs-hue{background:conic-gradient(from 0deg,hsl(0 100% 50%),hsl(60 100% 50%),hsl(120 100% 50%),hsl(180 100% 50%),hsl(240 100% 50%),hsl(300 100% 50%),hsl(360 100% 50%));position:relative}
+.cs-hue::after{content:"";position:absolute;inset:9px;border-radius:50%;background:hsl(var(--h) 99% 31%);border:2px solid #fff}
+.cs-gray{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-radius:12px;overflow:hidden;border:1px solid #D9D4F0}
+.cs-gray>div{background:rgb(var(--g),var(--g),var(--g));padding:16px 8px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.cs-gray b{font-family:var(--f-code);font-size:1.15em}.cs-gray span{font-size:.9em}
+.cs-gray>div:nth-child(-n+2){color:#fff}.cs-gray>div:nth-child(n+3){color:#111}
+.cs-hues{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.cs-hues span{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:99px;background:#F4F2FF;font-size:.92em}
+.cs-hues span::before{content:"";width:12px;height:12px;border-radius:50%;background:hsl(var(--h) 90% 50%)}
+.cs-bar{display:flex;justify-content:space-between;margin-top:6px;padding:4px 8px;border-radius:8px;font-size:.85em;font-weight:600}
+.cs-s{background:linear-gradient(90deg,#B9A9A9,#E3001B);color:#fff}.cs-v{background:linear-gradient(90deg,#000,#E3001B);color:#fff}
+#csC,#drC{display:block;width:100%;height:auto;border-radius:10px;cursor:crosshair;touch-action:none;background:#000}
+.cs-hint,.dr-xy{color:#6B6890;font-size:.9em}
+.cs-px{display:grid;gap:6px}
+.cs-px div{display:grid;grid-template-columns:28px 64px 1fr;gap:8px;align-items:center;background:#fff;border:1px solid #E4DEFF;border-radius:10px;padding:6px 10px}
+.cs-px .cs-sw{width:28px;height:28px;border-radius:7px}
+.cs-px b{font-family:var(--f-head)}.cs-px code{font-weight:700;color:#1B1640}.cs-px small{grid-column:3;color:#6B6890}
+.dr-list{margin:0;padding-left:22px;display:grid;gap:6px;line-height:1.6}
+.dr-colors-tbl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dr-colors-tbl>div{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #E4DEFF;border-radius:10px;padding:8px 10px}
+.dr-colors-tbl code{margin-left:auto;font-weight:700}
+.dr-shapes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.dr-colors{display:flex;flex-wrap:wrap;gap:6px}
+.dr-colors button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #C9C2EC;cursor:pointer}
+.dr-colors button[aria-pressed="true"]{box-shadow:0 0 0 3px #6D4AFF}
+.dr-opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.dr-opts label{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.dr-opts input[type=text]{font:inherit;padding:4px 8px;border-radius:8px;border:1px solid #C9C2EC;width:150px}
+.dr-step{margin:0;font-size:.95em;color:#4B2FD0;font-weight:600}
+.dr-act{display:flex;flex-wrap:wrap;gap:6px}
+.dr-act button{font:inherit;font-family:var(--f-head);font-weight:600;padding:6px 12px;border-radius:10px;border:2px solid #E4DEFF;background:#fff;color:#1B1640;cursor:pointer}
+.dr-act button:hover{border-color:#6D4AFF}
+.dr-act .b-demo{background:#EDE9FE;border-color:#C4B5FD;color:#5B21B6}.dr-act .b-demo:hover{background:#DDD6FE;border-color:#7C3AED}
+.dr-act .b-undo{background:#FEF3C7;border-color:#FCD34D;color:#92400E}.dr-act .b-undo:hover{background:#FDE68A;border-color:#D97706}
+.dr-act .b-clr{background:#FEE2E2;border-color:#FCA5A5;color:#B91C1C}.dr-act .b-clr:hover{background:#FECACA;border-color:#DC2626}
+.dr-act .b-undo::before{content:"↶ "}.dr-act .b-clr::before{content:"✕ "}
+.dr-how{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;counter-reset:dh}
+.dr-how li{counter-increment:dh;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid #CDEFEA;border-top:4px solid #0E9F94;border-radius:12px;padding:8px 12px;font-size:.92em;line-height:1.5;min-width:0}
+.dr-how li>b:first-child::before{content:counter(dh);display:inline-grid;place-items:center;width:22px;height:22px;margin-right:6px;border-radius:50%;background:#0E9F94;color:#fff;font-size:.85em}
+.dr-how li>b:first-child{font-family:var(--f-head);color:#0F3A52}
+@media (max-width:900px){.dr-how{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.cs-same,.dr-colors-tbl{grid-template-columns:minmax(0,1fr)}.cs-gray{grid-template-columns:repeat(5,minmax(0,1fr));font-size:.85em}}
+/* ตกแต่ง 2.2.6 / 2.2.7 */
+.cs-cap{margin:0;font-family:var(--f-head);font-weight:600;color:#4B2FD0}
+.cs-same>div{position:relative;overflow:hidden;padding-top:16px;box-shadow:0 6px 18px -12px rgba(60,40,160,.35)}
+.cs-same>div::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:var(--k)}
+.cs-same .sp{justify-self:start}
+.k-bgr{--k:linear-gradient(90deg,#2563EB,#16A34A 50%,#DC2626)}.k-gray{--k:linear-gradient(90deg,#111827,#D1D5DB)}.k-hsv{--k:linear-gradient(90deg,#DC2626,#D97706,#16A34A,#2563EB,#9333EA)}
+.chs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.ch{display:inline-block;font-family:var(--f-code);font-size:.92em;padding:2px 9px;border-radius:7px;font-weight:600;white-space:nowrap}
+.ch b{font-weight:800;font-size:1.08em}
+.ch.b{background:#DBEAFE;color:#1D4ED8}.ch.g{background:#DCFCE7;color:#15803D}.ch.r{background:#FEE2E2;color:#B91C1C}
+.ch.k{background:#E5E7EB;color:#1F2937}.ch.h{background:#FCE7F3;color:#BE185D}.ch.s{background:#FFEDD5;color:#C2410C}.ch.v{background:#FEF3C7;color:#92400E}
+.t-b{color:#1D4ED8}.t-g{color:#15803D}.t-r{color:#B91C1C}.t-h{color:#BE185D}.t-s{color:#C2410C}.t-v{color:#92400E}.t-do{color:#0E7C74}
+.sp{display:inline-block;padding:2px 12px;border-radius:99px;color:#fff;font-family:var(--f-head);font-weight:700;font-size:.95em;line-height:1.6;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.sp.bgr{background:linear-gradient(90deg,#2563EB,#16A34A 55%,#DC2626)}.sp.gray{background:linear-gradient(90deg,#111827,#6B7280)}
+.sp.hsv{background:linear-gradient(90deg,#DC2626,#D97706,#16A34A,#2563EB,#9333EA)}.sp.rgb{background:linear-gradient(90deg,#DC2626,#16A34A 45%,#2563EB)}
+.arw{color:#6D4AFF;font-weight:800;margin:0 4px}
+.cs-tw{border-color:#DDD6FE;box-shadow:0 6px 18px -14px rgba(60,40,160,.4)}
+.cs-tbl th{background:#EEF2FF;color:#3730A3}
+.cs-tbl tbody tr:nth-child(even) td{background:#FAF9FF}
+.cs-tbl tbody tr:hover td{background:#F3F0FF}
+.cs-tbl td:first-child{white-space:nowrap}
+.cs-tbl mark{padding:0 3px;border-radius:4px}
+#t2207 .cs-tbl td:first-child{white-space:normal;width:40%}#t2207 .cs-tbl td:first-child code{white-space:normal;overflow-wrap:anywhere}
+.nch{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EDE9FE;color:#5B21B6;font-weight:800}
+/* สไลด์ 2.2.6 / 2.2.7 */
+.cs-ex{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+html body .cs-tbl td code{white-space:nowrap!important}html body #t2207 .cs-tbl td:first-child code{white-space:normal!important}
+.cs-px .chs{margin:0}
+.how code.fname-h{white-space:nowrap;font-size:.88em}
+.how .act.cpy{max-width:100%;flex-wrap:wrap;justify-content:center}.how .act.cpy b{white-space:nowrap;font-size:.92em}
+.dr-coord{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:18px;align-items:center}
+.dr-axes{width:100%;height:auto;max-width:420px;justify-self:center}
+.dr-pts{list-style:none;padding-left:0;gap:10px}
+.dr-pts li{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #E4DEFF;border-radius:12px;padding:8px 12px}
+.pin{flex:none;min-width:30px;height:30px;padding:0 6px;border-radius:9px;display:grid;place-items:center;font-family:var(--f-code);font-weight:800;color:#fff;background:#111827}
+.pin.x{background:linear-gradient(135deg,#2563EB,#DB2777)}.pin.w{background:#F59E0B}.pin.i{background:#7C3AED;font-size:.8em}
+.t-x{color:#2563EB}.t-y{color:#DB2777}
+.bgr3{white-space:nowrap;font-weight:700}.bgr3 i{font-style:normal}
+.nb{color:#1D4ED8}.ng{color:#15803D}.nr{color:#B91C1C}
+.dr-colors-tbl code{white-space:nowrap}
+html body .fnn{color:#0E7C74!important;font-weight:800}
+body.slmode .dr-colors-tbl{grid-template-columns:repeat(2,minmax(0,1fr))}
+.dr-colors-tbl code{font-size:.92em}
+.dr-params{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dr-params>div{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid #E4DEFF;border-left:5px solid #0E9F94;border-radius:12px;padding:10px 14px}
+.dr-params .pk{align-self:flex-start;background:#0E9F94;color:#fff;font-weight:800;padding:2px 10px;border-radius:7px}
+.neg{background:#FEE2E2;color:#B91C1C;font-weight:800}
+/* ตารางฟังก์ชันวาด: สีประจำแต่ละฟังก์ชัน */
+.dr-fn .c-ln{--c:#2563EB;--cb:#DBEAFE}.dr-fn .c-rc{--c:#7C3AED;--cb:#EDE9FE}.dr-fn .c-ci{--c:#DB2777;--cb:#FCE7F3}.dr-fn .c-tx{--c:#EA580C;--cb:#FFEDD5}
+.dr-fn tbody td:first-child{box-shadow:inset 5px 0 0 var(--c)}
+html body .dr-fn .fnn{color:var(--c)!important}
+html body .dr-fn td:first-child code{color:#64748B}
+.dr-fn .pp{font-style:normal;font-weight:800;color:var(--c)}
+.dr-fn .t-do{display:inline-block;background:var(--c);color:#fff;padding:3px 14px;border-radius:12px;line-height:1.5}
+html body .dr-fn code.dfp{background:var(--cb);color:var(--c);font-weight:800;border:1px solid color-mix(in srgb,var(--c) 25%,transparent)}
+.dr-fn td:last-child b{color:var(--c)}
+.dr-warns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dr-warns-h{grid-column:1/-1;margin:0;display:flex;align-items:center;gap:8px;font-family:var(--f-head);font-weight:700;font-size:1.15em;color:#92400E}
+.dr-warns>div{background:#FFF7E0;border:1px solid #F5C451;border-radius:14px;padding:12px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:4px;align-items:start}
+.dr-warns>div p{grid-column:2;margin:0}
+.dw-n{grid-row:span 2;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#F59E0B;color:#fff;font-weight:800}
+.bad{background:#FEE2E2;color:#B91C1C;font-weight:800}
+@media (max-width:760px){.dr-coord,.dr-params,.dr-warns{grid-template-columns:minmax(0,1fr)}}
 </style>
 
 <header class="hero"><div class="wrap">
@@ -2882,6 +3016,9 @@ plt.<span class="fn">show</span>()</div></div>
  x.save();x.translate(20,T+PH/2);x.rotate(-Math.PI/2);x.fillText('y (row)',0,-2);x.restore();
  x.textAlign='right';x.font='14px Arial,sans-serif';x.fillStyle='#555';x.fillText('x=420  y=600',c.width-14,c.height-26);
  x.fillStyle='#FFD400';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(L+420*sx,T+600*sy,6,0,6.3);x.fill();x.stroke()};im.src='fruits.png'})();</script>
+ </div>
+
+ <div class="block" style="--c:#0E9F94">
   <h3 class="sub-h" id="t227"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>นำไปใช้</h3>
   <p class="prose">ทุกคำสั่งในใบความรู้ 2.2 คือ<mark>การเตรียมภาพก่อนส่งให้ AI</mark> แอปสแกนใบหน้า แอปแต่งภาพ หรือระบบอ่านป้ายทะเบียน ต้องผ่านขั้นตอนเหล่านี้ก่อนที่ AI จะ "คิด" ได้</p>
   <div class="vc-3">
@@ -2990,8 +3127,438 @@ cv2.<span class="fn">destroyAllWindows</span>()</pre></div>
 </div></section>
 
 
+<section id="t2cs" class="part"><div class="wrap">
+ <div class="part-h" style="--c:#7C3AED"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span><span class="part-n">2.3</span><h2>ปริภูมิสี และการวาดรูปทรง</h2></div>
+
+ <div class="block first" id="t2206" style="--c:#2F6FEB">
+  <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span>2.3.1 การแปลงปริภูมิสี (BGR / Gray / HSV)</h3>
+  <div class="def cs-def">
+   <span class="def-t"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /> <path d="M20 3v4" /> <path d="M22 5h-4" /> <path d="M4 17v2" /> <path d="M5 18H3" /> </svg>ความหมาย</span>
+   <p class="cs-term"><b>ปริภูมิสี</b><span>Color Space</span></p>
+   <p>คือ<mark>วิธีกำหนดว่าตัวเลขของแต่ละพิกเซลใช้บอกอะไรเกี่ยวกับสี</mark> เมื่อเปลี่ยนวิธีแทนสี <b class="cs-hl">ตัวเลขของพิกเซลเดิมก็เปลี่ยนตาม</b> แม้สีที่ตาเห็นจะเป็นสีเดียวกัน</p>
+  </div>
+  <p class="prose">ลองนึกถึงภาพแอปเปิล แล้วเลือกดู<b>พิกเซลสีแดงหนึ่งจุด</b>บนผิวแอปเปิล เราอธิบายพิกเซลจุดเดิมได้หลายแบบ</p>
+  <p class="cs-cap">พิกเซลเดียวกัน <code>img[600, 420]</code> บนผิวแอปเปิลแดง เขียนได้ 3 แบบ</p>
+  <div class="cs-same" aria-label="พิกเซลเดียวกันบนแอปเปิลแดง เขียนได้ 3 แบบ">
+   <div class="k-bgr"><span class="cs-sw" style="background:rgb(155,1,21)"></span><b class="sp bgr">BGR</b><div class="chs"><span class="ch b">B <b>21</b></span><span class="ch g">G <b>1</b></span><span class="ch r">R <b>155</b></span></div><small>ปริมาณสี<b class="t-b">น้ำเงิน</b> <b class="t-g">เขียว</b> <b class="t-r">แดง</b></small></div>
+   <div class="k-gray"><span class="cs-sw" style="background:rgb(49,49,49)"></span><b class="sp gray">Gray</b><div class="chs"><span class="ch k">ความเข้ม <b>49</b></span></div><small>ความเข้ม<b>ค่าเดียว</b> 0 ดำ ถึง 255 ขาว</small></div>
+   <div class="k-hsv"><span class="cs-sw cs-hue" style="--h:352deg"></span><b class="sp hsv">HSV</b><div class="chs"><span class="ch h">H <b>176</b></span><span class="ch s">S <b>253</b></span><span class="ch v">V <b>155</b></span></div><small><b class="t-h">เฉดสี</b> <b class="t-s">ความอิ่มตัว</b> <b class="t-v">ความสว่าง</b></small></div>
+  </div>
+  <div class="tw cs-tw"><table class="cs-tbl">
+   <thead><tr><th>ปริภูมิสี</th><th>ตัวเลขบอกอะไร</th><th>เหมาะกับงานอะไร</th></tr></thead>
+   <tbody>
+    <tr><td><b class="sp bgr">BGR</b></td><td>บอกปริมาณสี<b class="t-b">น้ำเงิน</b> <b class="t-g">เขียว</b> และ<b class="t-r">แดง</b> เช่น <code>(0, 0, 255)</code> คือ<b class="t-r">สีแดงล้วน</b></td><td><mark>อ่านและแสดงภาพสี</mark>ด้วย OpenCV</td></tr>
+    <tr><td><b class="sp gray">Gray</b></td><td>บอกระดับ<b>ความเข้มเพียงค่าเดียว</b> ตั้งแต่ดำถึงขาว พิกเซลสีแดงจึงกลายเป็นสีเทาระดับหนึ่ง</td><td>เตรียมภาพสำหรับ<mark>ตรวจจับใบหน้า</mark>ด้วย Haar Cascade</td></tr>
+    <tr><td><b class="sp hsv">HSV</b></td><td>บอก<b class="t-h">เฉดสี</b> <b class="t-s">ความอิ่มตัวของสี</b> และ<b class="t-v">ค่าความสว่าง</b><b>แยกกัน</b> จึงกำหนดช่วงของเฉดแดงได้</td><td><mark>ตรวจจับวัตถุตามสี</mark> เช่น ค้นหาบริเวณสีแดงของแอปเปิล</td></tr>
+   </tbody>
+  </table></div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="12" cy="12" r="10" /> <path d="M12 18a6 6 0 0 0 0-12v12z" /> </svg></span>ภาพเทา (Grayscale)</h3>
+  <p class="prose">ภาพระดับเทา คือภาพที่แต่ละพิกเซลเก็บ<mark>ค่าความเข้มเพียง 1 ค่า</mark> ตัวเลขนี้บอกว่าพิกเซลนั้นอยู่ในระดับใดระหว่างดำกับขาว</p>
+  <p class="cs-ex">พิกเซลแอปเปิลแดง <span class="ch b">B 21</span> <span class="ch g">G 1</span> <span class="ch r">R 155</span> <span class="arw">→</span> <span class="ch k">Gray <b>49</b></span> คือ<b>สีเทาเข้ม</b> ใกล้ดำ</p>
+  <div class="cs-gray" role="img" aria-label="ระดับความเข้มของภาพ 8 บิต 0 สีดำ 64 สีเทาเข้ม 128 สีเทากลาง 192 สีเทาอ่อน 255 สีขาว">
+   <div style="--g:0"><b>0</b><span>สีดำ</span></div>
+   <div style="--g:64"><b>64</b><span>สีเทาเข้ม</span></div>
+   <div style="--g:128"><b>128</b><span>สีเทากลาง</span></div>
+   <div style="--g:192"><b>192</b><span>สีเทาอ่อน</span></div>
+   <div style="--g:255"><b>255</b><span>สีขาว</span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <line x1="21" x2="14" y1="4" y2="4" /> <line x1="10" x2="3" y1="4" y2="4" /> <line x1="21" x2="12" y1="12" y2="12" /> <line x1="8" x2="3" y1="12" y2="12" /> <line x1="21" x2="16" y1="20" y2="20" /> <line x1="12" x2="3" y1="20" y2="20" /> <line x1="14" x2="14" y1="2" y2="6" /> <line x1="8" x2="8" y1="10" y2="14" /> <line x1="16" x2="16" y1="18" y2="22" /> </svg></span>ปริภูมิสี HSV</h3>
+  <p class="prose">HSV แยกข้อมูลเป็น <b>H</b> (เฉดสี) <b>S</b> (ความอิ่มตัวของสี) และ <b>V</b> (ค่าความสว่าง) ช่วยให้<mark>กำหนดช่วงสีเป้าหมายได้สะดวก</mark></p>
+  <div class="tw cs-tw"><table class="cs-tbl">
+   <thead><tr><th>ค่า</th><th>บอกอะไร</th><th>ตัวอย่างจากภาพแอปเปิลแดง</th></tr></thead>
+   <tbody>
+    <tr><td><span class="ch h">H</span> <b class="t-h">Hue</b><br>เฉดสี</td><td>พิกเซลอยู่ใน<b>กลุ่มสีใด</b>
+     <div class="cs-hues"><span style="--h:0deg">แดง <code>0–10</code> และ <code>170–179</code></span><span style="--h:60deg">เหลือง <code>26–34</code></span><span style="--h:120deg">เขียว <code>35–85</code></span><span style="--h:290deg">ม่วง <code>131–160</code></span></div></td>
+     <td>ผิวแอปเปิลส่วนใหญ่มีค่า <span class="ch h">H</span> อยู่ใน<b class="t-r">กลุ่มสีแดง</b></td></tr>
+    <tr><td><span class="ch s">S</span> <b class="t-s">Saturation</b><br>ความอิ่มตัวของสี</td><td>ค่า S <b>สูง</b>แสดงว่า<b>สีสด</b> ค่า S <b>ต่ำ</b>แสดงว่าสีจืดลงและเข้าใกล้สีเทา<div class="cs-bar cs-s"><span>0 สีซีด</span><span>255 สีสด</span></div></td><td>ผิวแอปเปิลสีแดงสดมีค่า <span class="ch s">S</span> <b class="t-s">สูง</b> กว่าจุดสะท้อนแสงที่ดู<b>เกือบขาว</b></td></tr>
+    <tr><td><span class="ch v">V</span> <b class="t-v">Value</b><br>ค่าความสว่าง</td><td>ค่า V <b>สูง</b>แสดงว่า<b>สีสว่างขึ้น</b> เมื่อ V เท่ากับ 0 พิกเซลจะเป็น<b>สีดำ</b><div class="cs-bar cs-v"><span>0 ดำสนิท</span><span>255 สว่างที่สุด</span></div></td><td>ผิวแอปเปิลส่วนที่<b>อยู่ในเงา</b>มีค่า <span class="ch v">V</span> <b class="t-v">ต่ำ</b> กว่าส่วนที่โดนแสง</td></tr>
+   </tbody>
+  </table></div>
+  <div class="hue-box">
+   <svg class="hue-wheel" viewBox="-30 -10 400 360" role="img" aria-label="วงล้อเฉดสี 360 องศา ด้านนอกเป็นค่า H ใน OpenCV 0 ถึง 179 บนวงล้อเป็นองศา สีแดงอยู่ทั้งช่วง H 0 ถึง 10 และ 170 ถึง 179"><path d="M170.0 98.0L170.0 50.0A120 120 0 0 1 181.3 50.5L176.8 98.3A72 72 0 0 0 170.0 98.0Z" fill="rgb(255,0,0)"/><path d="M176.3 98.3L180.5 50.5A120 120 0 0 1 191.7 52.0L183.0 99.2A72 72 0 0 0 176.3 98.3Z" fill="rgb(255,21,0)"/><path d="M182.5 99.1L190.8 51.8A120 120 0 0 1 201.9 54.3L189.1 100.6A72 72 0 0 0 182.5 99.1Z" fill="rgb(255,42,0)"/><path d="M188.6 100.5L201.1 54.1A120 120 0 0 1 211.8 57.5L195.1 102.5A72 72 0 0 0 188.6 100.5Z" fill="rgb(255,64,0)"/><path d="M194.6 102.3L211.0 57.2A120 120 0 0 1 221.5 61.6L200.9 105.0A72 72 0 0 0 194.6 102.3Z" fill="rgb(255,85,0)"/><path d="M200.4 104.7L220.7 61.2A120 120 0 0 1 230.7 66.5L206.4 107.9A72 72 0 0 0 200.4 104.7Z" fill="rgb(255,106,0)"/><path d="M206.0 107.6L230.0 66.1A120 120 0 0 1 239.5 72.2L211.7 111.3A72 72 0 0 0 206.0 107.6Z" fill="rgb(255,128,0)"/><path d="M211.3 111.0L238.8 71.7A120 120 0 0 1 247.8 78.6L216.7 115.2A72 72 0 0 0 211.3 111.0Z" fill="rgb(255,149,0)"/><path d="M216.3 114.8L247.1 78.1A120 120 0 0 1 255.4 85.7L221.3 119.4A72 72 0 0 0 216.3 114.8Z" fill="rgb(255,170,0)"/><path d="M220.9 119.1L254.9 85.1A120 120 0 0 1 262.5 93.5L225.5 124.1A72 72 0 0 0 220.9 119.1Z" fill="rgb(255,191,0)"/><path d="M225.2 123.7L261.9 92.9A120 120 0 0 1 268.8 101.9L229.3 129.1A72 72 0 0 0 225.2 123.7Z" fill="rgb(255,212,0)"/><path d="M229.0 128.7L268.3 101.2A120 120 0 0 1 274.3 110.7L232.6 134.4A72 72 0 0 0 229.0 128.7Z" fill="rgb(255,234,0)"/><path d="M232.4 134.0L273.9 110.0A120 120 0 0 1 279.1 120.0L235.5 140.0A72 72 0 0 0 232.4 134.0Z" fill="rgb(255,255,0)"/><path d="M235.3 139.6L278.8 119.3A120 120 0 0 1 283.0 129.7L237.8 145.8A72 72 0 0 0 235.3 139.6Z" fill="rgb(234,255,0)"/><path d="M237.7 145.4L282.8 129.0A120 120 0 0 1 286.1 139.8L239.7 151.9A72 72 0 0 0 237.7 145.4Z" fill="rgb(212,255,0)"/><path d="M239.5 151.4L285.9 138.9A120 120 0 0 1 288.3 150.0L241.0 158.0A72 72 0 0 0 239.5 151.4Z" fill="rgb(191,255,0)"/><path d="M240.9 157.5L288.2 149.2A120 120 0 0 1 289.6 160.4L241.8 164.2A72 72 0 0 0 240.9 157.5Z" fill="rgb(170,255,0)"/><path d="M241.7 163.7L289.5 159.5A120 120 0 0 1 290.0 170.8L242.0 170.5A72 72 0 0 0 241.7 163.7Z" fill="rgb(149,255,0)"/><path d="M242.0 170.0L290.0 170.0A120 120 0 0 1 289.5 181.3L241.7 176.8A72 72 0 0 0 242.0 170.0Z" fill="rgb(128,255,0)"/><path d="M241.7 176.3L289.5 180.5A120 120 0 0 1 288.0 191.7L240.8 183.0A72 72 0 0 0 241.7 176.3Z" fill="rgb(106,255,0)"/><path d="M240.9 182.5L288.2 190.8A120 120 0 0 1 285.7 201.9L239.4 189.1A72 72 0 0 0 240.9 182.5Z" fill="rgb(85,255,0)"/><path d="M239.5 188.6L285.9 201.1A120 120 0 0 1 282.5 211.8L237.5 195.1A72 72 0 0 0 239.5 188.6Z" fill="rgb(64,255,0)"/><path d="M237.7 194.6L282.8 211.0A120 120 0 0 1 278.4 221.5L235.0 200.9A72 72 0 0 0 237.7 194.6Z" fill="rgb(42,255,0)"/><path d="M235.3 200.4L278.8 220.7A120 120 0 0 1 273.5 230.7L232.1 206.4A72 72 0 0 0 235.3 200.4Z" fill="rgb(21,255,0)"/><path d="M232.4 206.0L273.9 230.0A120 120 0 0 1 267.8 239.5L228.7 211.7A72 72 0 0 0 232.4 206.0Z" fill="rgb(0,255,0)"/><path d="M229.0 211.3L268.3 238.8A120 120 0 0 1 261.4 247.8L224.8 216.7A72 72 0 0 0 229.0 211.3Z" fill="rgb(0,255,21)"/><path d="M225.2 216.3L261.9 247.1A120 120 0 0 1 254.3 255.4L220.6 221.3A72 72 0 0 0 225.2 216.3Z" fill="rgb(0,255,42)"/><path d="M220.9 220.9L254.9 254.9A120 120 0 0 1 246.5 262.5L215.9 225.5A72 72 0 0 0 220.9 220.9Z" fill="rgb(0,255,64)"/><path d="M216.3 225.2L247.1 261.9A120 120 0 0 1 238.1 268.8L210.9 229.3A72 72 0 0 0 216.3 225.2Z" fill="rgb(0,255,85)"/><path d="M211.3 229.0L238.8 268.3A120 120 0 0 1 229.3 274.3L205.6 232.6A72 72 0 0 0 211.3 229.0Z" fill="rgb(0,255,106)"/><path d="M206.0 232.4L230.0 273.9A120 120 0 0 1 220.0 279.1L200.0 235.5A72 72 0 0 0 206.0 232.4Z" fill="rgb(0,255,128)"/><path d="M200.4 235.3L220.7 278.8A120 120 0 0 1 210.3 283.0L194.2 237.8A72 72 0 0 0 200.4 235.3Z" fill="rgb(0,255,149)"/><path d="M194.6 237.7L211.0 282.8A120 120 0 0 1 200.2 286.1L188.1 239.7A72 72 0 0 0 194.6 237.7Z" fill="rgb(0,255,170)"/><path d="M188.6 239.5L201.1 285.9A120 120 0 0 1 190.0 288.3L182.0 241.0A72 72 0 0 0 188.6 239.5Z" fill="rgb(0,255,191)"/><path d="M182.5 240.9L190.8 288.2A120 120 0 0 1 179.6 289.6L175.8 241.8A72 72 0 0 0 182.5 240.9Z" fill="rgb(0,255,212)"/><path d="M176.3 241.7L180.5 289.5A120 120 0 0 1 169.2 290.0L169.5 242.0A72 72 0 0 0 176.3 241.7Z" fill="rgb(0,255,234)"/><path d="M170.0 242.0L170.0 290.0A120 120 0 0 1 158.7 289.5L163.2 241.7A72 72 0 0 0 170.0 242.0Z" fill="rgb(0,255,255)"/><path d="M163.7 241.7L159.5 289.5A120 120 0 0 1 148.3 288.0L157.0 240.8A72 72 0 0 0 163.7 241.7Z" fill="rgb(0,234,255)"/><path d="M157.5 240.9L149.2 288.2A120 120 0 0 1 138.1 285.7L150.9 239.4A72 72 0 0 0 157.5 240.9Z" fill="rgb(0,212,255)"/><path d="M151.4 239.5L138.9 285.9A120 120 0 0 1 128.2 282.5L144.9 237.5A72 72 0 0 0 151.4 239.5Z" fill="rgb(0,191,255)"/><path d="M145.4 237.7L129.0 282.8A120 120 0 0 1 118.5 278.4L139.1 235.0A72 72 0 0 0 145.4 237.7Z" fill="rgb(0,170,255)"/><path d="M139.6 235.3L119.3 278.8A120 120 0 0 1 109.3 273.5L133.6 232.1A72 72 0 0 0 139.6 235.3Z" fill="rgb(0,149,255)"/><path d="M134.0 232.4L110.0 273.9A120 120 0 0 1 100.5 267.8L128.3 228.7A72 72 0 0 0 134.0 232.4Z" fill="rgb(0,128,255)"/><path d="M128.7 229.0L101.2 268.3A120 120 0 0 1 92.2 261.4L123.3 224.8A72 72 0 0 0 128.7 229.0Z" fill="rgb(0,106,255)"/><path d="M123.7 225.2L92.9 261.9A120 120 0 0 1 84.6 254.3L118.7 220.6A72 72 0 0 0 123.7 225.2Z" fill="rgb(0,85,255)"/><path d="M119.1 220.9L85.1 254.9A120 120 0 0 1 77.5 246.5L114.5 215.9A72 72 0 0 0 119.1 220.9Z" fill="rgb(0,64,255)"/><path d="M114.8 216.3L78.1 247.1A120 120 0 0 1 71.2 238.1L110.7 210.9A72 72 0 0 0 114.8 216.3Z" fill="rgb(0,43,255)"/><path d="M111.0 211.3L71.7 238.8A120 120 0 0 1 65.7 229.3L107.4 205.6A72 72 0 0 0 111.0 211.3Z" fill="rgb(0,21,255)"/><path d="M107.6 206.0L66.1 230.0A120 120 0 0 1 60.9 220.0L104.5 200.0A72 72 0 0 0 107.6 206.0Z" fill="rgb(0,0,255)"/><path d="M104.7 200.4L61.2 220.7A120 120 0 0 1 57.0 210.3L102.2 194.2A72 72 0 0 0 104.7 200.4Z" fill="rgb(21,0,255)"/><path d="M102.3 194.6L57.2 211.0A120 120 0 0 1 53.9 200.2L100.3 188.1A72 72 0 0 0 102.3 194.6Z" fill="rgb(42,0,255)"/><path d="M100.5 188.6L54.1 201.1A120 120 0 0 1 51.7 190.0L99.0 182.0A72 72 0 0 0 100.5 188.6Z" fill="rgb(64,0,255)"/><path d="M99.1 182.5L51.8 190.8A120 120 0 0 1 50.4 179.6L98.2 175.8A72 72 0 0 0 99.1 182.5Z" fill="rgb(85,0,255)"/><path d="M98.3 176.3L50.5 180.5A120 120 0 0 1 50.0 169.2L98.0 169.5A72 72 0 0 0 98.3 176.3Z" fill="rgb(106,0,255)"/><path d="M98.0 170.0L50.0 170.0A120 120 0 0 1 50.5 158.7L98.3 163.2A72 72 0 0 0 98.0 170.0Z" fill="rgb(128,0,255)"/><path d="M98.3 163.7L50.5 159.5A120 120 0 0 1 52.0 148.3L99.2 157.0A72 72 0 0 0 98.3 163.7Z" fill="rgb(149,0,255)"/><path d="M99.1 157.5L51.8 149.2A120 120 0 0 1 54.3 138.1L100.6 150.9A72 72 0 0 0 99.1 157.5Z" fill="rgb(170,0,255)"/><path d="M100.5 151.4L54.1 138.9A120 120 0 0 1 57.5 128.2L102.5 144.9A72 72 0 0 0 100.5 151.4Z" fill="rgb(191,0,255)"/><path d="M102.3 145.4L57.2 129.0A120 120 0 0 1 61.6 118.5L105.0 139.1A72 72 0 0 0 102.3 145.4Z" fill="rgb(213,0,255)"/><path d="M104.7 139.6L61.2 119.3A120 120 0 0 1 66.5 109.3L107.9 133.6A72 72 0 0 0 104.7 139.6Z" fill="rgb(234,0,255)"/><path d="M107.6 134.0L66.1 110.0A120 120 0 0 1 72.2 100.5L111.3 128.3A72 72 0 0 0 107.6 134.0Z" fill="rgb(255,0,255)"/><path d="M111.0 128.7L71.7 101.2A120 120 0 0 1 78.6 92.2L115.2 123.3A72 72 0 0 0 111.0 128.7Z" fill="rgb(255,0,234)"/><path d="M114.8 123.7L78.1 92.9A120 120 0 0 1 85.7 84.6L119.4 118.7A72 72 0 0 0 114.8 123.7Z" fill="rgb(255,0,212)"/><path d="M119.1 119.1L85.1 85.1A120 120 0 0 1 93.5 77.5L124.1 114.5A72 72 0 0 0 119.1 119.1Z" fill="rgb(255,0,191)"/><path d="M123.7 114.8L92.9 78.1A120 120 0 0 1 101.9 71.2L129.1 110.7A72 72 0 0 0 123.7 114.8Z" fill="rgb(255,0,170)"/><path d="M128.7 111.0L101.2 71.7A120 120 0 0 1 110.7 65.7L134.4 107.4A72 72 0 0 0 128.7 111.0Z" fill="rgb(255,0,149)"/><path d="M134.0 107.6L110.0 66.1A120 120 0 0 1 120.0 60.9L140.0 104.5A72 72 0 0 0 134.0 107.6Z" fill="rgb(255,0,128)"/><path d="M139.6 104.7L119.3 61.2A120 120 0 0 1 129.7 57.0L145.8 102.2A72 72 0 0 0 139.6 104.7Z" fill="rgb(255,0,106)"/><path d="M145.4 102.3L129.0 57.2A120 120 0 0 1 139.8 53.9L151.9 100.3A72 72 0 0 0 145.4 102.3Z" fill="rgb(255,0,85)"/><path d="M151.4 100.5L138.9 54.1A120 120 0 0 1 150.0 51.7L158.0 99.0A72 72 0 0 0 151.4 100.5Z" fill="rgb(255,0,64)"/><path d="M157.5 99.1L149.2 51.8A120 120 0 0 1 160.4 50.4L164.2 98.2A72 72 0 0 0 157.5 99.1Z" fill="rgb(255,0,43)"/><path d="M163.7 98.3L159.5 50.5A120 120 0 0 1 170.8 50.0L170.5 98.0A72 72 0 0 0 163.7 98.3Z" fill="rgb(255,0,21)"/><path d="M126.6 50.7A127 127 0 0 1 170.0 43.0" class="hw-red"/><path d="M170.0 43.0A127 127 0 0 1 213.4 50.7" class="hw-red"/><circle cx="170" cy="170" r="68" fill="#fff" stroke="#E4DEFF" stroke-width="2"/><text x="170" y="160" class="hw-c">H = องศา ÷ 2</text><text x="170" y="186" class="hw-c2">0–179</text><text x="170.0" y="30.0" class="hw-h">H 0</text><text x="170.0" y="74.0" class="hw-d">0°</text><text x="291.2" y="100.0" class="hw-h">H 30</text><text x="253.1" y="122.0" class="hw-d">60°</text><text x="291.2" y="240.0" class="hw-h">H 60</text><text x="253.1" y="218.0" class="hw-d">120°</text><text x="170.0" y="310.0" class="hw-h">H 90</text><text x="170.0" y="266.0" class="hw-d">180°</text><text x="48.8" y="240.0" class="hw-h">H 120</text><text x="86.9" y="218.0" class="hw-d">240°</text><text x="48.8" y="100.0" class="hw-h">H 150</text><text x="86.9" y="122.0" class="hw-d">300°</text></svg>
+   <div class="hue-t">
+    <p class="note tip"><b>ทำไม H ไปถึงแค่ 179:</b> วงล้อสีมี 360 องศา แต่ภาพ 8 บิตเก็บได้ถึง 255 OpenCV จึง<b>หารครึ่ง</b> เหลือ 0–179 สีแดงอยู่ทั้งต้นวงล้อและปลายวงล้อ จึงมีสองช่วง</p>
+    <ul class="hue-ex"><li><i style="background:#FF0000"></i>แดง <b>0°</b> <span class="arw">→</span> <code>H 0</code></li><li><i style="background:#FFFF00"></i>เหลือง <b>60°</b> <span class="arw">→</span> <code>H 30</code></li><li><i style="background:#00FF00"></i>เขียว <b>120°</b> <span class="arw">→</span> <code>H 60</code></li><li><i style="background:#0000FF"></i>น้ำเงิน <b>240°</b> <span class="arw">→</span> <code>H 120</code></li><li><i style="background:#FF0000"></i>แดงอีกครั้ง <b>350°</b> <span class="arw">→</span> <code>H 175</code></li></ul>
+    <p class="hue-red"><span></span>เส้นสีเข้มรอบวงล้อคือช่วงสีแดง <code>H 0–10</code> และ <code>H 170–179</code> อยู่ติดกันที่จุดบนสุดของวงล้อ</p>
+   </div>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12 3v18" /> <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" /> </svg></span>ปริภูมิสีที่ใช้บ่อยใน OpenCV</h3>
+  <div class="tw cs-tw"><table class="cs-tbl">
+   <thead><tr><th>ปริภูมิสี</th><th>จำนวนช่อง</th><th>ความหมายของค่า</th><th>รูปร่าง (shape)</th><th>ใช้ทำอะไร</th></tr></thead>
+   <tbody>
+    <tr><td><b class="sp bgr">BGR</b></td><td><span class="nch">3</span></td><td><b class="t-b">น้ำเงิน (B)</b>, <b class="t-g">เขียว (G)</b>, <b class="t-r">แดง (R)</b> ช่องละ 0–255</td><td><code>(สูง, กว้าง, 3)</code></td><td><mark>ค่าเริ่มต้น</mark>เมื่ออ่านภาพด้วย <code>cv2.imread()</code></td></tr>
+    <tr><td><b class="sp gray">Grayscale</b></td><td><span class="nch">1</span></td><td>ความสว่าง 0 (ดำ) – 255 (ขาว)</td><td><code>(สูง, กว้าง)</code></td><td><mark>ลดข้อมูล</mark>ให้ประมวลผลเร็วขึ้น ตรวจจับใบหน้าด้วย Haar Cascade</td></tr>
+    <tr><td><b class="sp hsv">HSV</b></td><td><span class="nch">3</span></td><td><b class="t-h">เฉดสี (H) 0–179</b>, <b class="t-s">ความอิ่มตัว (S)</b> 0–255, <b class="t-v">ความสว่าง (V)</b> 0–255</td><td><code>(สูง, กว้าง, 3)</code></td><td><mark>ตรวจจับวัตถุตามสี</mark></td></tr>
+    <tr><td><b class="sp rgb">RGB</b></td><td><span class="nch">3</span></td><td><b class="t-r">แดง (R)</b>, <b class="t-g">เขียว (G)</b>, <b class="t-b">น้ำเงิน (B)</b> ช่องละ 0–255</td><td><code>(สูง, กว้าง, 3)</code></td><td><mark>ส่งภาพให้ไลบรารีอื่น</mark> เช่น Matplotlib หรือโมเดล ML</td></tr>
+   </tbody>
+  </table></div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 3 4 4-4 4" /> <path d="M20 7H4" /> <path d="m8 21-4-4 4-4" /> <path d="M4 17h16" /> </svg></span>คำสั่งแปลงปริภูมิสี</h3>
+  <p class="cmd-h">รูปแบบคำสั่ง</p>
+  <div class="cvt-syn" aria-label="ภาพใหม่ = cv2.cvtColor(ภาพเดิม, รหัสการแปลง)"><span class="cs-p p-out"><code>ภาพใหม่</code><small>ผลลัพธ์</small></span><span class="cs-op">=</span><span class="cs-p p-fn"><code>cv2.cvtColor</code><small>แปลงปริภูมิสี</small></span><span class="cs-op">(</span><span class="cs-p p-in"><code>ภาพเดิม</code><small>ภาพที่จะแปลง</small></span><span class="cs-op">,</span><span class="cs-p p-code"><code>รหัสการแปลง</code><small>เช่น COLOR_BGR2GRAY</small></span><span class="cs-op">)</span></div>
+  <div class="tw cs-tw"><table class="cs-tbl">
+   <thead><tr><th>รหัสการแปลง</th><th>ความหมาย</th></tr></thead>
+   <tbody>
+    <tr><td><code class="cvt-c">cv2.COLOR_<b class="k-bgr">BGR</b><i>2</i><b class="k-gray">GRAY</b></code></td><td><b class="sp bgr">BGR</b> <span class="arw">→</span> <b class="sp gray">ภาพเทา</b> </td></tr>
+    <tr><td><code class="cvt-c">cv2.COLOR_<b class="k-bgr">BGR</b><i>2</i><b class="k-hsv">HSV</b></code></td><td><b class="sp bgr">BGR</b> <span class="arw">→</span> <b class="sp hsv">HSV</b> </td></tr>
+    <tr><td><code class="cvt-c">cv2.COLOR_<b class="k-bgr">BGR</b><i>2</i><b class="k-rgb">RGB</b></code></td><td><b class="sp bgr">BGR</b> <span class="arw">→</span> <b class="sp rgb">RGB</b> </td></tr>
+    <tr><td><code class="cvt-c">cv2.COLOR_<b class="k-hsv">HSV</b><i>2</i><b class="k-bgr">BGR</b></code></td><td><b class="sp hsv">HSV</b> <span class="arw">→</span> <b class="sp bgr">BGR</b> </td></tr>
+    <tr><td><code class="cvt-c">cv2.COLOR_<b class="k-gray">GRAY</b><i>2</i><b class="k-bgr">BGR</b></code></td><td><b class="sp gray">ภาพเทา</b> <span class="arw">→</span> <b class="sp bgr">BGR</b> (ยังเป็นสีเทา แต่มี 3 ช่อง จึงวาดเส้นสีลงได้)</td></tr>
+   </tbody>
+  </table></div>
+
+  <div class="game cs" id="csGame">
+   <h4><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m3 7 5 5-5 5V7" /> <path d="m21 7-5 5 5 5V7" /> <path d="M12 20v2" /> <path d="M12 14v2" /> <path d="M12 8v2" /> <path d="M12 2v2" /> </svg>ทดลองแปลงปริภูมิสี</h4>
+   <div class="try"><span class="try-l">ลองเล่นเลย</span></div>
+   <div class="tool2">
+    <div class="tl-view"><canvas id="csC" width="640" height="410" role="img" aria-label="ภาพผลไม้ตามปริภูมิสีที่เลือก ชี้หรือแตะบนภาพเพื่ออ่านค่าพิกเซล"></canvas><small class="cs-hint">ชี้เมาส์หรือแตะบนภาพ เพื่ออ่านค่าของพิกเซลจุดนั้นทั้ง 3 แบบ</small></div>
+    <div class="tl-ctl">
+     <div class="fl-btns" id="csBtns">
+      <button type="button" data-m="bgr" aria-pressed="true">ภาพเดิม <code>BGR</code></button>
+      <button type="button" data-m="gray" aria-pressed="false">ภาพเทา <code>GRAY</code></button>
+      <button type="button" data-m="hsv" aria-pressed="false">imshow ค่า <code>HSV</code></button>
+      <button type="button" data-m="back" aria-pressed="false">แปลงกลับ <code>HSV2BGR</code></button>
+     </div>
+     <pre class="tl-code" id="csCode"></pre>
+     <div class="cs-px" id="csPx" aria-live="polite"></div>
+     <p class="fb" id="csFb"></p>
+    </div>
+   </div>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M10 12.5 8 15l2 2.5" /> <path d="m14 12.5 2 2.5-2 2.5" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" /> </svg></span>ลงมือเขียนโค้ดจริง</h3>
+  <ol class="how">
+   <li><b>สร้างไฟล์</b><span>สร้างไฟล์ใหม่ตั้งชื่อ <code class="fname-h">color_space.py</code></span></li>
+   <li><b>คัดลอกโค้ด</b><span>กดปุ่มด้านล่างแล้ววางในไฟล์ กด <code>Ctrl+S</code></span><button type="button" class="act cpy" data-src="srcCS"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด <b>color_space.py</b></span></button><pre hidden id="srcCS">import cv2
+
+img = cv2.imread("fruits.png")                # อ่านภาพ ได้ภาพ BGR
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # แปลงเป็นภาพเทา
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    # แปลงเป็น HSV
+
+print("BGR :", img.shape)    # (สูง, กว้าง, 3)
+print("GRAY:", gray.shape)   # (สูง, กว้าง) เหลือ 1 ช่อง
+print("HSV :", hsv.shape)    # (สูง, กว้าง, 3)
+
+# พิกเซลเดียวกันบนแอปเปิลแดง แต่ตัวเลขต่างกันตามปริภูมิสี
+print("BGR  ที่ (600, 420) =", img[600, 420])
+print("GRAY ที่ (600, 420) =", gray[600, 420])
+print("HSV  ที่ (600, 420) =", hsv[600, 420])
+
+cv2.imshow("BGR", img)
+cv2.imshow("Gray", gray)
+cv2.imshow("HSV", hsv)    # สีจะดูแปลก เพราะ imshow แสดงค่าเหมือนเป็น BGR
+cv2.imshow("HSV converted back to BGR", cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR))
+cv2.waitKey(0)
+cv2.destroyAllWindows()</pre></li>
+   <li><b>รันและตรวจผล</b><span>กด Run แล้วเทียบผลใน Terminal กับผลลัพธ์ด้านล่าง จะมีหน้าต่างภาพขึ้น 4 หน้าต่าง</span></li>
+  </ol>
+  <div class="resrow">
+   <div><p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>ตัวอย่างโค้ด</p><div class="win code-ex"><div class="tb"><i></i><i></i><i></i><span>color_space.py</span></div><div class="tm"><span class="kw">import</span> cv2
+
+img = cv2.<span class="fn">imread</span>(<span class="str">"fruits.png"</span>)                <span class="cm"># อ่านภาพ ได้ภาพ BGR</span>
+gray = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2GRAY)  <span class="cm"># แปลงเป็นภาพเทา</span>
+hsv = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2HSV)    <span class="cm"># แปลงเป็น HSV</span>
+
+<span class="fn">print</span>(<span class="str">"BGR :"</span>, img.shape)    <span class="cm"># (สูง, กว้าง, 3)</span>
+<span class="fn">print</span>(<span class="str">"GRAY:"</span>, gray.shape)   <span class="cm"># (สูง, กว้าง) เหลือ 1 ช่อง</span>
+<span class="fn">print</span>(<span class="str">"HSV :"</span>, hsv.shape)    <span class="cm"># (สูง, กว้าง, 3)</span>
+
+<span class="cm"># พิกเซลเดียวกันบนแอปเปิลแดง แต่ตัวเลขต่างกันตามปริภูมิสี</span>
+<span class="fn">print</span>(<span class="str">"BGR  ที่ (600, 420) ="</span>, img[<span class="nu">600</span>, <span class="nu">420</span>])
+<span class="fn">print</span>(<span class="str">"GRAY ที่ (600, 420) ="</span>, gray[<span class="nu">600</span>, <span class="nu">420</span>])
+<span class="fn">print</span>(<span class="str">"HSV  ที่ (600, 420) ="</span>, hsv[<span class="nu">600</span>, <span class="nu">420</span>])
+
+cv2.<span class="fn">imshow</span>(<span class="str">"BGR"</span>, img)
+cv2.<span class="fn">imshow</span>(<span class="str">"Gray"</span>, gray)
+cv2.<span class="fn">imshow</span>(<span class="str">"HSV"</span>, hsv)    <span class="cm"># สีจะดูแปลก เพราะ imshow แสดงค่าเหมือนเป็น BGR</span>
+cv2.<span class="fn">imshow</span>(<span class="str">"HSV converted back to BGR"</span>, cv2.<span class="fn">cvtColor</span>(hsv, cv2.COLOR_HSV2BGR))
+cv2.<span class="fn">waitKey</span>(<span class="nu">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()</div></div>
+   <p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <polyline points="4 17 10 11 4 5" /> <line x1="12" x2="20" y1="19" y2="19" /> </svg>ผลลัพธ์ที่ต้องได้</p>
+  <div class="win"><div class="tb"><i></i><i></i><i></i><span>ผลลัพธ์ใน Terminal</span></div><div class="tm wrapit"><span class="o">BGR : (817, 1275, 3)
+GRAY: (817, 1275)
+HSV : (817, 1275, 3)
+BGR  ที่ (600, 420) = [ 21   1 155]
+GRAY ที่ (600, 420) = 49
+HSV  ที่ (600, 420) = [176 253 155]</span></div></div>
+  <p class="note tip"><b>สังเกต:</b> ภาพเทาเหลือ <code>(817, 1275)</code> ไม่มีเลข 3 เพราะเหลือ<b>ช่องเดียว</b> ส่วนพิกเซลแอปเปิลแดงจุดเดียวกัน ได้ตัวเลขต่างกันตามปริภูมิสี</p>
+  <p class="note"><b>หน้าต่าง HSV สีดูแปลก:</b> <code>cv2.imshow</code> คิดว่าทุกภาพเป็น BGR จึงนำค่า H S V ไปแสดงเป็นสีน้ำเงิน เขียว แดง ต้องแปลงกลับด้วย <code>COLOR_HSV2BGR</code> ก่อนแสดง</p>
+</div>
+  </div>
+ </div>
+
+ <div class="block" id="t2207" style="--c:#0E9F94">
+  <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z" /> <rect x="3" y="14" width="7" height="7" rx="1" /> <circle cx="17.5" cy="17.5" r="3.5" /> </svg></span>2.3.2 การวาดรูปทรงและข้อความบนภาพ</h3>
+  <p class="prose">งานคอมพิวเตอร์วิทัศน์ต้องแสดงผลให้ผู้ใช้เห็น หรือใช้รูปทรงชี้ตำแหน่งสำคัญ เช่น <mark>กรอบรอบใบหน้าที่ตรวจพบ</mark> หรือ<mark>ป้ายชื่อวัตถุ</mark> OpenCV มีฟังก์ชันวาดที่ใช้ได้ทันที</p>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 3v18h18" /> <path d="M7 3v4" /> <path d="M3 7h4" /> <circle cx="14" cy="10" r="2" /> </svg></span>ระบบพิกัดของภาพ</h3>
+  <div class="dr-coord">
+  <ul class="dr-list dr-pts">
+   <li><span class="pin o">0</span><span>จุดเริ่มต้น <code>(0, 0)</code> อยู่ที่<b>มุมบนซ้าย</b>ของภาพ</span></li>
+   <li><span class="pin x">x</span><span>ค่า <b class="t-x">x</b> เพิ่มขึ้นเมื่อไป<b class="t-x">ทางขวา</b> ค่า <b class="t-y">y</b> เพิ่มขึ้นเมื่อ<b class="t-y">ลงล่าง</b> (ตรงข้ามกับกราฟในคณิตศาสตร์)</span></li>
+   <li><span class="pin w">!</span><span>ฟังก์ชันวาดรับจุดเป็น <code>(<b class="t-x">x</b>, <b class="t-y">y</b>)</code> แต่การเข้าถึงพิกเซลใช้ <code>img[<b class="t-y">y</b>, <b class="t-x">x</b>]</code> (แถวก่อนคอลัมน์) <mark>อย่าสลับกัน</mark></span></li>
+   <li><span class="pin i">int</span><span>พิกัดต้องเป็น<b>จำนวนเต็ม</b> ถ้าคำนวณได้ทศนิยม ให้แปลงด้วย <code>int()</code> ก่อน</span></li>
+  </ul>
+  <svg class="dr-axes" viewBox="0 0 320 240" role="img" aria-label="แผนภาพพิกัดภาพ จุด 0,0 อยู่มุมบนซ้าย แกน x ไปทางขวา แกน y ลงล่าง">
+   <defs><marker id="ahX" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2563EB"/></marker><marker id="ahY" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#DB2777"/></marker></defs>
+   <rect x="40" y="34" width="250" height="180" rx="8" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="2"/>
+   <line x1="40" y1="34" x2="300" y2="34" stroke="#2563EB" stroke-width="3" marker-end="url(#ahX)"/>
+   <line x1="40" y1="34" x2="40" y2="226" stroke="#DB2777" stroke-width="3" marker-end="url(#ahY)"/>
+   <text x="268" y="24" fill="#2563EB" font-weight="700" font-size="16">x →</text>
+   <text x="10" y="210" fill="#DB2777" font-weight="700" font-size="16">y</text><text x="12" y="228" fill="#DB2777" font-weight="700" font-size="16">↓</text>
+   <circle cx="40" cy="34" r="7" fill="#111827"/><text x="50" y="58" font-size="14" font-weight="700" fill="#111827">(0, 0)</text>
+   <line x1="190" y1="34" x2="190" y2="140" stroke="#2563EB" stroke-dasharray="5 4" stroke-width="2"/>
+   <line x1="40" y1="140" x2="190" y2="140" stroke="#DB2777" stroke-dasharray="5 4" stroke-width="2"/>
+   <circle cx="190" cy="140" r="8" fill="#F59E0B" stroke="#fff" stroke-width="2"/>
+   <text x="200" y="136" font-size="15" font-weight="700" fill="#1B1640">(<tspan fill="#2563EB">x</tspan>, <tspan fill="#DB2777">y</tspan>)</text>
+   <text x="200" y="158" font-size="13" fill="#4B2FD0" font-family="monospace">img[<tspan fill="#DB2777">y</tspan>, <tspan fill="#2563EB">x</tspan>]</text>
+  </svg>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span>การกำหนดสีและความหนา</h3>
+  <p class="prose">สีเขียนเป็น <code class="bgr3">(<i class="nb">B</i>, <i class="ng">G</i>, <i class="nr">R</i>)</code> เรียง<b class="t-b">น้ำเงิน</b>ก่อน <mark>ไม่ใช่แดงก่อน</mark></p>
+  <div class="dr-colors-tbl">
+   <div><span class="cs-sw" style="background:#FF0000"></span><b>แดง</b><code class="bgr3">(<i class="nb">0</i>, <i class="ng">0</i>, <i class="nr">255</i>)</code></div>
+   <div><span class="cs-sw" style="background:#00FF00"></span><b>เขียว</b><code class="bgr3">(<i class="nb">0</i>, <i class="ng">255</i>, <i class="nr">0</i>)</code></div>
+   <div><span class="cs-sw" style="background:#0000FF"></span><b>น้ำเงิน</b><code class="bgr3">(<i class="nb">255</i>, <i class="ng">0</i>, <i class="nr">0</i>)</code></div>
+   <div><span class="cs-sw" style="background:#FFFF00"></span><b>เหลือง</b><code class="bgr3">(<i class="nb">0</i>, <i class="ng">255</i>, <i class="nr">255</i>)</code></div>
+   <div><span class="cs-sw" style="background:#FFFFFF"></span><b>ขาว</b><code class="bgr3">(<i class="nb">255</i>, <i class="ng">255</i>, <i class="nr">255</i>)</code></div>
+   <div><span class="cs-sw" style="background:#000000"></span><b>ดำ</b><code class="bgr3">(<i class="nb">0</i>, <i class="ng">0</i>, <i class="nr">0</i>)</code></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12 3v18" /> <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" /> </svg></span>ฟังก์ชันวาดที่ควรรู้</h3>
+  <div class="tw cs-tw"><table class="cs-tbl dr-fn">
+   <thead><tr><th>ฟังก์ชัน</th><th>ใช้ทำอะไร</th><th>พารามิเตอร์เฉพาะ</th></tr></thead>
+   <tbody>
+    <tr class="c-ln"><td><code><b class="fnn">cv2.line</b>(img, <i class="pp">pt1</i>, <i class="pp">pt2</i>, color, thickness)</code></td><td><b class="t-do">วาดเส้นตรง</b></td><td><code class="dfp">pt1 = (x1, y1)</code> คือ<b>จุดเริ่มต้น</b> และ <code class="dfp">pt2 = (x2, y2)</code> คือ<b>จุดสิ้นสุด</b></td></tr>
+    <tr class="c-rc"><td><code><b class="fnn">cv2.rectangle</b>(img, <i class="pp">pt1</i>, <i class="pp">pt2</i>, color, thickness)</code></td><td><b class="t-do">วาดสี่เหลี่ยมผืนผ้า</b></td><td><code class="dfp">pt1 = (x1, y1)</code> คือ<b>มุมซ้ายบน</b> และ <code class="dfp">pt2 = (x2, y2)</code> คือ<b>มุมขวาล่าง</b></td></tr>
+    <tr class="c-ci"><td><code><b class="fnn">cv2.circle</b>(img, <i class="pp">center</i>, <i class="pp">radius</i>, color, thickness)</code></td><td><b class="t-do">วาดวงกลม</b></td><td><code class="dfp">center</code> คือ<b>จุดศูนย์กลาง</b> และ <code class="dfp">radius</code> คือ<b>รัศมี</b> หน่วยพิกเซล</td></tr>
+    <tr class="c-tx"><td><code><b class="fnn">cv2.putText</b>(img, <i class="pp">text</i>, <i class="pp">org</i>, <i class="pp">fontFace</i>, <i class="pp">fontScale</i>, color, thickness)</code></td><td><b class="t-do">วาดข้อความ</b></td><td><code class="dfp">text</code> คือ<b>ข้อความ</b> <code class="dfp">org</code> คือ<b>จุดเริ่มด้านซ้ายบนเส้นฐาน</b>ของข้อความ <code class="dfp">fontFace</code> คือ<b>แบบอักษร</b> และ <code class="dfp">fontScale</code> คือ<b>ตัวคูณขนาดตัวอักษร</b></td></tr>
+   </tbody>
+  </table></div>
+  <p class="cmd-h">พารามิเตอร์ที่ใช้ร่วมกัน</p>
+  <div class="dr-params">
+   <div><code class="pk">img</code><span>ภาพที่<b>ต้องการวาดลงไป</b></span></div>
+   <div><code class="pk">color</code><span>สีที่ใช้วาด เรียงเป็น <code class="bgr3">(<i class="nb">B</i>, <i class="ng">G</i>, <i class="nr">R</i>)</code> เช่น <code class="bgr3">(<i class="nb">0</i>, <i class="ng">0</i>, <i class="nr">255</i>)</code> คือ<b class="t-r">สีแดง</b></span></div>
+   <div><code class="pk">thickness</code><span>ความหนาของเส้นหรือตัวอักษร (พิกเซล) สี่เหลี่ยมและวงกลมใช้ <code class="neg">-1</code> เพื่อ<b>ระบายสีเต็มรูป</b></span></div>
+   <div><code class="pk">fontFace</code><span>ฟอนต์ที่ใช้บ่อย คือ <code>cv2.FONT_HERSHEY_SIMPLEX</code></span></div>
+  </div>
+
+  <div class="game dr" id="drGame">
+   <h4><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m3 7 5 5-5 5V7" /> <path d="m21 7-5 5 5 5V7" /> <path d="M12 20v2" /> <path d="M12 14v2" /> <path d="M12 8v2" /> <path d="M12 2v2" /> </svg>ทดลองวาดรูปทรงและข้อความ</h4>
+   <ol class="dr-how" aria-label="วิธีใช้">
+    <li><b>เลือกพื้นภาพ</b><span>พื้นดำหรือภาพผลไม้</span></li>
+    <li><b>เลือกรูปทรงและสี</b><span>ปรับ<b class="t-do">ความหนา</b> หรือติ๊ก<b class="t-do">ระบายเต็ม</b></span></li>
+    <li><b>คลิกบนภาพ</b><span><code>line</code> <code>rectangle</code> คลิก 2 จุด · <code>circle</code> คลิกจุดศูนย์กลางแล้วคลิกขอบ · <code>putText</code> คลิก 1 จุด</span></li>
+    <li><b>ดูโค้ดที่ได้</b><span>คำสั่ง <code>cv2</code> จะเพิ่มในกล่องโค้ดทุกครั้งที่วาด</span></li>
+   </ol>
+   <div class="try"><span class="try-l">ลองเล่นเลย</span></div>
+   <div class="tool2">
+    <div class="tl-view"><canvas id="drC" width="600" height="450" role="img" aria-label="ผืนผ้าใบสำหรับวาดรูปทรง คลิกเพื่อกำหนดจุด"></canvas><small class="dr-xy" id="drXY">ชี้เมาส์บนภาพเพื่อดูพิกัด (x, y)</small></div>
+    <div class="tl-ctl">
+     <div class="fl-btns" id="drBg" aria-label="พื้นภาพ">
+      <button type="button" data-bg="black" aria-pressed="true">พื้นดำ <code>np.zeros</code></button>
+      <button type="button" data-bg="fruits" aria-pressed="false">ภาพ <code>fruits.png</code></button>
+     </div>
+     <div class="fl-btns dr-shapes" id="drShape" aria-label="รูปทรง">
+      <button type="button" data-s="line" aria-pressed="false"><code>line</code> เส้นตรง</button>
+      <button type="button" data-s="rectangle" aria-pressed="true"><code>rectangle</code> สี่เหลี่ยม</button>
+      <button type="button" data-s="circle" aria-pressed="false"><code>circle</code> วงกลม</button>
+      <button type="button" data-s="putText" aria-pressed="false"><code>putText</code> ข้อความ</button>
+     </div>
+     <div class="dr-colors" id="drColors" aria-label="สี (B, G, R)"></div>
+     <div class="dr-opts">
+      <label>ความหนา <input type="range" id="drTh" min="1" max="12" value="3"> <b id="drThV">3</b></label>
+      <label class="dr-fill"><input type="checkbox" id="drFill"> ระบายเต็ม (<code>-1</code>)</label>
+      <label class="dr-text" hidden>ข้อความ <input type="text" id="drText" value="Hello OpenCV" maxlength="24"></label>
+      <label class="dr-text" hidden>fontScale <input type="range" id="drFs" min="0.5" max="3" step="0.5" value="1"> <b id="drFsV">1</b></label>
+     </div>
+     <p class="dr-step" id="drStep"></p>
+     <pre class="tl-code" id="drCode"></pre>
+     <div class="dr-act">
+      <button type="button" id="drDemo" class="b-demo">วาดตัวอย่างจากใบความรู้</button>
+      <button type="button" id="drUndo" class="b-undo">ย้อนกลับ</button>
+      <button type="button" id="drClear" class="b-clr">ล้างภาพ</button>
+     </div>
+     <p class="fb" id="drFb" aria-live="polite"></p>
+    </div>
+   </div>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M10 12.5 8 15l2 2.5" /> <path d="m14 12.5 2 2.5-2 2.5" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" /> </svg></span>ลงมือเขียนโค้ดจริง: วาดรูปทรงบนผืนผ้าใบสีดำ</h3>
+  <ol class="how">
+   <li><b>สร้างไฟล์</b><span>สร้างไฟล์ใหม่ตั้งชื่อ <code class="fname-h">draw_shapes.py</code></span></li>
+   <li><b>คัดลอกโค้ด</b><span>กดปุ่มด้านล่างแล้ววางในไฟล์ กด <code>Ctrl+S</code></span><button type="button" class="act cpy" data-src="srcDR"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด <b>draw_shapes.py</b></span></button><pre hidden id="srcDR">import cv2
+import numpy as np
+
+# สร้างภาพพื้นดำ สูง 450 กว้าง 600 พิกเซล 3 ช่องสี
+canvas = np.zeros((450, 600, 3), dtype=np.uint8)
+
+cv2.line(canvas, (20, 20), (580, 20), (255, 255, 255), 2)        # เส้นสีขาว
+cv2.rectangle(canvas, (50, 60), (250, 220), (0, 255, 0), 3)      # กรอบสีเขียว
+cv2.rectangle(canvas, (300, 60), (500, 220), (255, 0, 0), -1)    # สี่เหลี่ยมทึบสีน้ำเงิน
+cv2.circle(canvas, (150, 310), 60, (0, 0, 255), 3)               # วงกลมกรอบแดง
+cv2.circle(canvas, (400, 310), 60, (0, 255, 255), -1)            # วงกลมทึบสีเหลือง
+cv2.putText(canvas, "Hello OpenCV", (60, 390),
+            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)     # ข้อความสีขาว
+
+cv2.imshow("Drawing", canvas)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</pre></li>
+   <li><b>รันและตรวจผล</b><span>กด Run จะมีหน้าต่าง Drawing แสดงรูปทรงทั้ง 6 แบบ เทียบกับผลลัพธ์ด้านล่าง</span></li>
+  </ol>
+  <div class="resrow">
+   <div><p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>ตัวอย่างโค้ด</p><div class="win code-ex"><div class="tb"><i></i><i></i><i></i><span>draw_shapes.py</span></div><div class="tm"><span class="kw">import</span> cv2
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># สร้างภาพพื้นดำ สูง 450 กว้าง 600 พิกเซล 3 ช่องสี</span>
+canvas = np.<span class="fn">zeros</span>((<span class="nu">450</span>, <span class="nu">600</span>, <span class="nu">3</span>), dtype=np.uint8)
+
+cv2.<span class="fn">line</span>(canvas, (<span class="nu">20</span>, <span class="nu">20</span>), (<span class="nu">580</span>, <span class="nu">20</span>), (<span class="nu">255</span>, <span class="nu">255</span>, <span class="nu">255</span>), <span class="nu">2</span>)        <span class="cm"># เส้นสีขาว</span>
+cv2.<span class="fn">rectangle</span>(canvas, (<span class="nu">50</span>, <span class="nu">60</span>), (<span class="nu">250</span>, <span class="nu">220</span>), (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">0</span>), <span class="nu">3</span>)      <span class="cm"># กรอบสีเขียว</span>
+cv2.<span class="fn">rectangle</span>(canvas, (<span class="nu">300</span>, <span class="nu">60</span>), (<span class="nu">500</span>, <span class="nu">220</span>), (<span class="nu">255</span>, <span class="nu">0</span>, <span class="nu">0</span>), -<span class="nu">1</span>)    <span class="cm"># สี่เหลี่ยมทึบสีน้ำเงิน</span>
+cv2.<span class="fn">circle</span>(canvas, (<span class="nu">150</span>, <span class="nu">310</span>), <span class="nu">60</span>, (<span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">255</span>), <span class="nu">3</span>)               <span class="cm"># วงกลมกรอบแดง</span>
+cv2.<span class="fn">circle</span>(canvas, (<span class="nu">400</span>, <span class="nu">310</span>), <span class="nu">60</span>, (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">255</span>), -<span class="nu">1</span>)            <span class="cm"># วงกลมทึบสีเหลือง</span>
+cv2.<span class="fn">putText</span>(canvas, <span class="str">"Hello OpenCV"</span>, (<span class="nu">60</span>, <span class="nu">390</span>),
+            cv2.FONT_HERSHEY_SIMPLEX, <span class="nu">1</span>, (<span class="nu">255</span>, <span class="nu">255</span>, <span class="nu">255</span>), <span class="nu">2</span>)     <span class="cm"># ข้อความสีขาว</span>
+
+cv2.<span class="fn">imshow</span>(<span class="str">"Drawing"</span>, canvas)
+cv2.<span class="fn">waitKey</span>(<span class="nu">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()</div></div></div>
+   <figure><p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <polyline points="4 17 10 11 4 5" /> <line x1="12" x2="20" y1="19" y2="19" /> </svg>ผลลัพธ์ที่ต้องได้</p><div class="win"><div class="tb"><i></i><i></i><i></i><span>Drawing</span></div><canvas id="drOut1" width="600" height="450" role="img" aria-label="หน้าต่าง Drawing พื้นดำ มีเส้นขาว กรอบเขียว สี่เหลี่ยมทึบน้ำเงิน วงกลมกรอบแดง วงกลมทึบเหลือง และข้อความ Hello OpenCV" style="display:block;width:100%;height:auto;background:#000"></canvas></div><figcaption>ความหนา <code>-1</code> ระบายสีเต็มรูป ส่วนค่าบวกคือความหนาของเส้นขอบ</figcaption></figure>
+  </div>
+
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /> <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /> </svg></span>ลงมือเขียนโค้ดจริง: ตีกรอบและป้ายชื่อ</h3>
+  <p class="prose">นำความรู้เรื่องพิกัดไปใช้กับภาพจริง ตีกรอบสีเขียวรอบแอปเปิลแดง (ตำแหน่งเดียวกับที่ตัดภาพในหัวข้อ 2.2.3) แล้วเขียนชื่อไว้เหนือกรอบ <mark>แบบเดียวกับที่ระบบตรวจจับวัตถุแสดงผล</mark></p>
+  <ol class="how">
+   <li><b>สร้างไฟล์</b><span>สร้างไฟล์ใหม่ตั้งชื่อ <code class="fname-h">draw_label.py</code></span></li>
+   <li><b>คัดลอกโค้ด</b><span>กดปุ่มด้านล่างแล้ววางในไฟล์ กด <code>Ctrl+S</code></span><button type="button" class="act cpy" data-src="srcLB"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด <b>draw_label.py</b></span></button><pre hidden id="srcLB">import cv2
+
+img = cv2.imread("fruits.png")
+output = img.copy()          # วาดบนสำเนา ภาพต้นฉบับจึงไม่เสีย
+
+x1, y1 = 260, 400            # จุดมุมซ้ายบน
+x2, y2 = 660, 800            # จุดมุมขวาล่าง
+cv2.rectangle(output, (x1, y1), (x2, y2), (0, 255, 0), 4)
+cv2.putText(output, "Apple", (x1, y1 - 15),
+            cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+
+cv2.imshow("Label", output)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+cv2.imwrite("fruits_label.png", output)
+print("บันทึก fruits_label.png แล้ว")</pre></li>
+   <li><b>รันและตรวจผล</b><span>กด Run จะเห็นกรอบและป้ายชื่อบนแอปเปิล และได้ไฟล์ <code>fruits_label.png</code> ในโฟลเดอร์</span></li>
+  </ol>
+  <div class="resrow">
+   <div><p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>ตัวอย่างโค้ด</p><div class="win code-ex"><div class="tb"><i></i><i></i><i></i><span>draw_label.py</span></div><div class="tm"><span class="kw">import</span> cv2
+
+img = cv2.<span class="fn">imread</span>(<span class="str">"fruits.png"</span>)
+output = img.<span class="fn">copy</span>()          <span class="cm"># วาดบนสำเนา ภาพต้นฉบับจึงไม่เสีย</span>
+
+x1, y1 = <span class="nu">260</span>, <span class="nu">400</span>            <span class="cm"># จุดมุมซ้ายบน</span>
+x2, y2 = <span class="nu">660</span>, <span class="nu">800</span>            <span class="cm"># จุดมุมขวาล่าง</span>
+cv2.<span class="fn">rectangle</span>(output, (x1, y1), (x2, y2), (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">0</span>), <span class="nu">4</span>)
+cv2.<span class="fn">putText</span>(output, <span class="str">"Apple"</span>, (x1, y1 - <span class="nu">15</span>),
+            cv2.FONT_HERSHEY_SIMPLEX, <span class="nu">1.5</span>, (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">0</span>), <span class="nu">3</span>)
+
+cv2.<span class="fn">imshow</span>(<span class="str">"Label"</span>, output)
+cv2.<span class="fn">waitKey</span>(<span class="nu">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()
+
+cv2.<span class="fn">imwrite</span>(<span class="str">"fruits_label.png"</span>, output)
+<span class="fn">print</span>(<span class="str">"บันทึก fruits_label.png แล้ว"</span>)</div></div>
+   <p class="prose res-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <polyline points="4 17 10 11 4 5" /> <line x1="12" x2="20" y1="19" y2="19" /> </svg>ผลลัพธ์ที่ต้องได้</p>
+  <div class="win"><div class="tb"><i></i><i></i><i></i><span>ผลลัพธ์ใน Terminal</span></div><div class="tm wrapit"><span class="o">บันทึก fruits_label.png แล้ว</span></div></div>
+</div>
+   <figure><div class="win"><div class="tb"><i></i><i></i><i></i><span>Label</span></div><canvas id="drOut2" width="1275" height="817" role="img" aria-label="หน้าต่าง Label ภาพผลไม้มีกรอบสีเขียวรอบแอปเปิลแดงและคำว่า Apple เหนือกรอบ" style="display:block;width:100%;height:auto;background:#fff"></canvas></div><figcaption>กรอบจาก (260, 400) ถึง (660, 800) และข้อความเริ่มที่ (260, 385)</figcaption></figure>
+  </div>
+  <div class="dr-warns">
+   <p class="dr-warns-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /> </svg>ข้อควรระวังในการวาด</p>
+   <div><span class="dw-n">1</span><b>ฟังก์ชันวาดเขียนทับภาพเดิมทันที</b><p>ถ้าต้องเก็บภาพต้นฉบับไว้ ให้วาดบนสำเนา <code>output = img.copy()</code></p></div>
+   <div><span class="dw-n">2</span><b><code>cv2.putText()</code> แสดงภาษาไทยไม่ได้</b><p><code>"สวัสดี"</code> <span class="arw">→</span> <code class="bad">??????</code> ให้<mark>ใช้ภาษาอังกฤษแทน</mark></p></div>
+  </div>
+ </div>
+
+ <div class="block" style="--c:#0E9F94">
+  <h3 class="sub-h"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>นำไปใช้</h3>
+  <p class="prose">ระบบ AI ที่มองเห็นได้มัก<mark>แปลงปริภูมิสีก่อนประมวลผล</mark> และ<mark>วาดผลลัพธ์ลงบนภาพ</mark>ให้คนเห็นว่า AI พบอะไร ที่ตำแหน่งใด</p>
+  <div class="vc-3">
+    <div style="--c:#2F6FEB"><code>cv2.cvtColor()</code><b>เปลี่ยนปริภูมิสี</b><span>ทำภาพเทาก่อนตรวจจับใบหน้า แปลงเป็น HSV เพื่อหาวัตถุตามสี หรือแปลงเป็น RGB ก่อนส่งให้โมเดล AI</span></div>
+    <div style="--c:#0E9F94"><code>cv2.rectangle() + putText()</code><b>แสดงผลให้คนเห็น</b><span>ตีกรอบใบหน้าหรือวัตถุที่ AI ตรวจพบ แล้วเขียนชื่อและความมั่นใจไว้เหนือกรอบ</span></div>
+  </div>
+ </div>
+
+ <div class="block" style="--c:var(--gold)">
+  <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" /> <path d="M9 3v18" /> <path d="M15 3v18" /> </svg></span>สรุปคำสั่งในหัวข้อนี้</h3>
+  <div class="cmdg ip-sum">
+   <div class="c5"><span class="cn">1</span><span class="ci"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span><code>cv2.cvtColor(img, รหัส)</code><b>แปลงปริภูมิสี</b><span>BGR2GRAY ภาพเทา · BGR2HSV · BGR2RGB</span></div>
+   <div class="c6"><span class="cn">2</span><span class="ci"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z" /> <rect x="3" y="14" width="7" height="7" rx="1" /> <circle cx="17.5" cy="17.5" r="3.5" /> </svg></span><code>cv2.rectangle(img, pt1, pt2, สี, หนา)</code><b>วาดรูปทรงและข้อความ</b><span>line · rectangle · circle · putText พิกัด (x, y) สี (B, G, R)</span></div>
+  </div>
+ </div>
+ <div class="block" id="sum23" style="--c:#7C3AED">
+  <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>สรุปโค้ดคำสั่ง ใบความรู้ 2.3</h3>
+  <p class="prose">รวมคำสั่งทั้งหมดในใบความรู้ 2.3 ไว้ในโปรแกรมเดียว ตั้งแต่แปลงภาพเป็นภาพเทาและ HSV จนถึงตีกรอบ เขียนป้ายชื่อ และวาดวงกลมบนภาพผลไม้</p>
+  <div class="code">
+   <div class="cap"><span>summary_2_3.py</span><button type="button" class="act cpy" data-src="srcSUM23"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /> </svg><span>คัดลอกโค้ด</span></button></div>
+<pre hidden id="srcSUM23">import cv2
+
+# อ่านภาพ
+img = cv2.imread("fruits.png")
+print("BGR :", img.shape)
+
+# 2.3.1 แปลงเป็นภาพเทา และ HSV
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+print("GRAY:", gray.shape, "HSV:", hsv.shape)
+
+# 2.3.2 ตีกรอบ ป้ายชื่อ และวงกลมบนแอปเปิลแดง
+label = img.copy()
+cv2.rectangle(label, (260, 400), (660, 800), (0, 255, 0), 4)
+cv2.putText(label, "Apple", (260, 385), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+cv2.circle(label, (460, 600), 10, (0, 0, 255), -1)
+
+# แสดงภาพ 3 หน้าต่าง
+cv2.imshow("Gray", gray)
+cv2.imshow("HSV converted back to BGR", cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR))
+cv2.imshow("Label", label)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# บันทึกภาพที่ติดป้ายเป็นไฟล์ใหม่
+cv2.imwrite("apple_label.png", label)
+print("บันทึก apple_label.png แล้ว")</pre>
+<div class="sum-steps">
+<div class="sum-step"><p class="sum-h"><span class="n">1</span>นำเข้า OpenCV และอ่านภาพ</p><pre><span class="kw">import</span> cv2
+
+img = cv2.<span class="fn">imread</span>(<span class="str">"fruits.png"</span>)
+<span class="fn">print</span>(<span class="str">"BGR :"</span>, img.shape)</pre></div>
+<div class="sum-step"><p class="sum-h"><span class="n">2</span>แปลงเป็นภาพเทา และ HSV<small>2.3.1</small></p><pre>gray = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2GRAY)
+hsv = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2HSV)
+<span class="fn">print</span>(<span class="str">"GRAY:"</span>, gray.shape, <span class="str">"HSV:"</span>, hsv.shape)</pre></div>
+<div class="sum-step"><p class="sum-h"><span class="n">3</span>ตีกรอบ ป้ายชื่อ และวงกลมบนแอปเปิลแดง<small>2.3.2</small></p><pre>label = img.<span class="fn">copy</span>()
+cv2.<span class="fn">rectangle</span>(label, (<span class="nu">260</span>, <span class="nu">400</span>), (<span class="nu">660</span>, <span class="nu">800</span>), (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">0</span>), <span class="nu">4</span>)
+cv2.<span class="fn">putText</span>(label, <span class="str">"Apple"</span>, (<span class="nu">260</span>, <span class="nu">385</span>), cv2.FONT_HERSHEY_SIMPLEX, <span class="nu">1.5</span>, (<span class="nu">0</span>, <span class="nu">255</span>, <span class="nu">0</span>), <span class="nu">3</span>)
+cv2.<span class="fn">circle</span>(label, (<span class="nu">460</span>, <span class="nu">600</span>), <span class="nu">10</span>, (<span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">255</span>), <span class="nu">-1</span>)</pre></div>
+<div class="sum-step"><p class="sum-h"><span class="n">4</span>แสดงภาพ 3 หน้าต่าง</p><pre>cv2.<span class="fn">imshow</span>(<span class="str">"Gray"</span>, gray)
+cv2.<span class="fn">imshow</span>(<span class="str">"HSV converted back to BGR"</span>, cv2.<span class="fn">cvtColor</span>(hsv, cv2.COLOR_HSV2BGR))
+cv2.<span class="fn">imshow</span>(<span class="str">"Label"</span>, label)
+cv2.<span class="fn">waitKey</span>(<span class="nu">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()</pre></div>
+<div class="sum-step"><p class="sum-h"><span class="n">5</span>บันทึกภาพที่ติดป้ายเป็นไฟล์ใหม่</p><pre>cv2.<span class="fn">imwrite</span>(<span class="str">"apple_label.png"</span>, label)
+<span class="fn">print</span>(<span class="str">"บันทึก apple_label.png แล้ว"</span>)</pre></div>
+</div>
+  </div>
+ </div>
+</div></section>
+
+
 <section id="t24" class="part"><div class="wrap">
- <div class="part-h" style="--c:#2F6FEB"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" /> <rect x="2" y="6" width="14" height="12" rx="2" /> </svg></span><span class="part-n">2.3</span><h2>อ่านภาพจากกล้องและวิดีโอ</h2></div>
+ <div class="part-h" style="--c:#2F6FEB"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" /> <rect x="2" y="6" width="14" height="12" rx="2" /> </svg></span><span class="part-n">2.4</span><h2>อ่านภาพจากกล้องและวิดีโอ</h2></div>
 
  <div class="block first" style="--c:#2F6FEB">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M7 3v18" /> <path d="M3 7.5h4" /> <path d="M3 12h18" /> <path d="M3 16.5h4" /> <path d="M17 3v18" /> <path d="M17 7.5h4" /> <path d="M17 16.5h4" /> </svg></span>วิดีโอคือภาพหลายเฟรม</h3>
@@ -3339,7 +3906,7 @@ print("บันทึก balls_gray.mp4 แล้ว", count, "เฟรม")</
 </div></section>
 
 <section id="t25" class="part"><div class="wrap">
- <div class="part-h" style="--c:#D6338A"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span><span class="part-n">2.4</span><h2>การตรวจจับสีด้วยปริภูมิสี HSV</h2></div>
+ <div class="part-h" style="--c:#D6338A"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span><span class="part-n">2.5</span><h2>การตรวจจับสีด้วยปริภูมิสี HSV</h2></div>
 
  <div class="block first" style="--c:#D6338A">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M22 17a10 10 0 0 0-20 0" /> <path d="M6 17a6 6 0 0 1 12 0" /> <path d="M10 17a2 2 0 0 1 4 0" /> </svg></span>ปริภูมิสี HSV ต่างจาก BGR อย่างไร</h3>
@@ -3654,7 +4221,7 @@ print("พบสีแดงใน", found_frames, "เฟรม")</pre></li>
 </div></section>
 
 <section id="t26" class="part"><div class="wrap">
- <div class="part-h" style="--c:#F0643F"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" /> </svg></span><span class="part-n">2.5</span><h2>การตรวจจับใบหน้าด้วย Haar Cascade</h2></div>
+ <div class="part-h" style="--c:#F0643F"><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" /> </svg></span><span class="part-n">2.6</span><h2>การตรวจจับใบหน้าด้วย Haar Cascade</h2></div>
 
  <div class="block first" style="--c:#F0643F">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" /> </svg></span>แนวคิดการตรวจจับใบหน้าและลักษณะเด่น Haar</h3>
@@ -3863,7 +4430,7 @@ print("บันทึก faces_detected.png แล้ว")</pre></li>
  <div class="block" style="--c:var(--warn)">
   <h3><span class="tile-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /> </svg></span>ตรวจจับใบหน้าจากกล้อง และจริยธรรมการใช้ภาพบุคคล</h3>
   <div class="ipx">
-   <p class="prose">นำ <code>detectMultiScale</code> ไปไว้ในลูปอ่านกล้องแบบหัวข้อ 2.3 จะตรวจจับใบหน้าได้ทุกเฟรม โค้ดนี้มี<mark>ปุ่ม b สำหรับเบลอใบหน้า</mark> เป็นวิธีปกป้องความเป็นส่วนตัวที่ใช้จริงในภาพข่าวและแผนที่ถนน</p>
+   <p class="prose">นำ <code>detectMultiScale</code> ไปไว้ในลูปอ่านกล้องแบบหัวข้อ 2.4 จะตรวจจับใบหน้าได้ทุกเฟรม โค้ดนี้มี<mark>ปุ่ม b สำหรับเบลอใบหน้า</mark> เป็นวิธีปกป้องความเป็นส่วนตัวที่ใช้จริงในภาพข่าวและแผนที่ถนน</p>
   </div>
   <p class="cmd-h0 eth-h"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="M7 21h10" /> <path d="M12 3v18" /> <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /> </svg>จริยธรรมการใช้ภาพบุคคล: ภาพใบหน้าที่ระบุตัวคนได้ถือเป็นข้อมูลส่วนบุคคล</p>
   <div class="hf-eth">
@@ -4123,20 +4690,25 @@ print("บันทึก faces_yunet.png แล้ว")</pre></li>
     <span class="lm-b"><b>พื้นฐานการประมวลผลภาพ</b><ol class="lm-tp"><li><a href="#" data-deck="a22" data-go="#t23 .block:nth-of-type(2)"><span>2.2.1 การประมวลผลภาพ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a22" data-go="#t23 .block:nth-of-type(3)"><span>2.2.2 การเข้าถึงพิกเซล</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a22" data-go="#t23 .block:nth-of-type(4)"><span>2.2.3 การตัดภาพ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a22" data-go="#t23 .block:nth-of-type(5)"><span>2.2.4 การปรับขนาด</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a22" data-go="#t23 .block:nth-of-type(6)"><span>2.2.5 การพลิกภาพ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
     <span class="lm-go"><span class="lm-cnt">5 เรื่อง</span><button type="button" class="lm-btn lm-start" data-deck="a22">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
    </div>
-   <div class="lm-c" data-deck="a23" style="--a:#2F6FEB;--b:#6AA0FF">
-    <span class="lm-top"><span class="lm-n">2.3</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" /> <rect x="2" y="6" width="14" height="12" rx="2" /> </svg></span></span>
-    <span class="lm-b"><b>อ่านภาพจากกล้องและวิดีโอ<small>Video Capture</small></b><ol class="lm-tp"><li><a href="#" data-deck="a23" data-go="#t24 .block:nth-of-type(2)"><span>วิดีโอคือภาพหลายเฟรม (เฟรม และ FPS)</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a23" data-go="#t24 .block:nth-of-type(3)"><span>เปิดกล้องด้วย <code>cv2.VideoCapture</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a23" data-go="#t24 .block:nth-of-type(4)"><span>อ่านเฟรมด้วยลูป และปิดกล้องอย่างถูกต้อง</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a23" data-go="#t24 .block:nth-of-type(5)"><span>อ่านไฟล์วิดีโอ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a23" data-go="#t24 .block:nth-of-type(6)"><span>ประมวลผลทีละเฟรมและบันทึกวิดีโอ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
-    <span class="lm-go"><span class="lm-cnt">5 เรื่อง</span><button type="button" class="lm-btn lm-start" data-deck="a23">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
+   <div class="lm-c" data-deck="a23" style="--a:#7C3AED;--b:#A78BFA">
+    <span class="lm-top"><span class="lm-n">2.3</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" /> <path d="m14 7 3 3" /> <path d="M5 6v4" /> <path d="M19 14v4" /> <path d="M10 2v2" /> <path d="M7 8H3" /> <path d="M21 16h-4" /> <path d="M11 3H9" /> </svg></span></span>
+    <span class="lm-b"><b>ปริภูมิสี และการวาดรูปทรง<small>Color Space &amp; Drawing</small></b><ol class="lm-tp"><li><a href="#" data-deck="a23" data-go="#t2206"><span>2.3.1 การแปลงปริภูมิสี</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a23" data-go="#t2207"><span>2.3.2 การวาดรูปทรงและข้อความ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
+    <span class="lm-go"><span class="lm-cnt">2 เรื่อง</span><button type="button" class="lm-btn lm-start" data-deck="a23">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
    </div>
-   <div class="lm-c" data-deck="a24" style="--a:#D6338A;--b:#F06BB0">
-    <span class="lm-top"><span class="lm-n">2.4</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span></span>
-    <span class="lm-b"><b>การตรวจจับสีด้วยปริภูมิสี HSV<small>Color Detection</small></b><ol class="lm-tp"><li><a href="#" data-deck="a24" data-go="#t25 .block:nth-of-type(2)"><span>ปริภูมิสี HSV ต่างจาก BGR อย่างไร</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t25 .block:nth-of-type(3)"><span>แปลงภาพเป็น HSV ด้วย <code>cv2.cvtColor</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t25 .block:nth-of-type(4)"><span>กำหนดช่วงสีและสร้างหน้ากากด้วย <code>cv2.inRange</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t25 .block:nth-of-type(5)"><span>แยกวัตถุตามสีด้วย <code>cv2.bitwise_and</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t25 .block:nth-of-type(6)"><span>ตรวจจับสีจากกล้องแบบเรียลไทม์</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
+   <div class="lm-c" data-deck="a24" style="--a:#2F6FEB;--b:#6AA0FF">
+    <span class="lm-top"><span class="lm-n">2.4</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" /> <rect x="2" y="6" width="14" height="12" rx="2" /> </svg></span></span>
+    <span class="lm-b"><b>อ่านภาพจากกล้องและวิดีโอ<small>Video Capture</small></b><ol class="lm-tp"><li><a href="#" data-deck="a24" data-go="#t24 .block:nth-of-type(2)"><span>วิดีโอคือภาพหลายเฟรม (เฟรม และ FPS)</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t24 .block:nth-of-type(3)"><span>เปิดกล้องด้วย <code>cv2.VideoCapture</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t24 .block:nth-of-type(4)"><span>อ่านเฟรมด้วยลูป และปิดกล้องอย่างถูกต้อง</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t24 .block:nth-of-type(5)"><span>อ่านไฟล์วิดีโอ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a24" data-go="#t24 .block:nth-of-type(6)"><span>ประมวลผลทีละเฟรมและบันทึกวิดีโอ</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
     <span class="lm-go"><span class="lm-cnt">5 เรื่อง</span><button type="button" class="lm-btn lm-start" data-deck="a24">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
    </div>
-   <div class="lm-c" data-deck="a25" style="--a:#F0643F;--b:#FF9A6B">
-    <span class="lm-top"><span class="lm-n">2.5</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" /> </svg></span></span>
-    <span class="lm-b"><b>การตรวจจับใบหน้าด้วย Haar Cascade<small>Face Detection</small></b><ol class="lm-tp"><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(2)"><span>แนวคิดการตรวจจับใบหน้าและลักษณะเด่น Haar</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(3)"><span>โหลดไฟล์ Haar Cascade</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(4)"><span>ตรวจจับใบหน้าด้วย <code>detectMultiScale</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(5)"><span>วาดกรอบและนับจำนวนใบหน้า</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(6)"><span>ตรวจจับใบหน้าจากกล้อง และจริยธรรมการใช้ภาพบุคคล</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t26 .block:nth-of-type(7)"><span>ต่อยอด: YuNet ตัวตรวจจับยุคใหม่</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
-    <span class="lm-go"><span class="lm-cnt">5 เรื่อง + ต่อยอด</span><button type="button" class="lm-btn lm-start" data-deck="a25">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
+   <div class="lm-c" data-deck="a25" style="--a:#D6338A;--b:#F06BB0">
+    <span class="lm-top"><span class="lm-n">2.5</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /> </svg></span></span>
+    <span class="lm-b"><b>การตรวจจับสีด้วยปริภูมิสี HSV<small>Color Detection</small></b><ol class="lm-tp"><li><a href="#" data-deck="a25" data-go="#t25 .block:nth-of-type(2)"><span>ปริภูมิสี HSV ต่างจาก BGR อย่างไร</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t25 .block:nth-of-type(3)"><span>แปลงภาพเป็น HSV ด้วย <code>cv2.cvtColor</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t25 .block:nth-of-type(4)"><span>กำหนดช่วงสีและสร้างหน้ากากด้วย <code>cv2.inRange</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t25 .block:nth-of-type(5)"><span>แยกวัตถุตามสีด้วย <code>cv2.bitwise_and</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a25" data-go="#t25 .block:nth-of-type(6)"><span>ตรวจจับสีจากกล้องแบบเรียลไทม์</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
+    <span class="lm-go"><span class="lm-cnt">5 เรื่อง</span><button type="button" class="lm-btn lm-start" data-deck="a25">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
+   </div>
+   <div class="lm-c" data-deck="a26" style="--a:#F0643F;--b:#FF9A6B">
+    <span class="lm-top"><span class="lm-n">2.6</span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" /> </svg></span></span>
+    <span class="lm-b"><b>การตรวจจับใบหน้าด้วย Haar Cascade<small>Face Detection</small></b><ol class="lm-tp"><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(2)"><span>แนวคิดการตรวจจับใบหน้าและลักษณะเด่น Haar</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(3)"><span>โหลดไฟล์ Haar Cascade</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(4)"><span>ตรวจจับใบหน้าด้วย <code>detectMultiScale</code></span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(5)"><span>วาดกรอบและนับจำนวนใบหน้า</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(6)"><span>ตรวจจับใบหน้าจากกล้อง และจริยธรรมการใช้ภาพบุคคล</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li><li><a href="#" data-deck="a26" data-go="#t26 .block:nth-of-type(7)"><span>ต่อยอด: YuNet ตัวตรวจจับยุคใหม่</span><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></a></li></ol>
+    <span class="lm-go"><span class="lm-cnt">5 เรื่อง + ต่อยอด</span><button type="button" class="lm-btn lm-start" data-deck="a26">เริ่มเรียน <svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /> </svg></button></span></span>
    </div>
    <div class="lm-c lm-mis" data-deck="mission" style="--a:#B7791F;--b:#F0A020">
     <span class="lm-top"><span class="lm-n lm-nt"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /> </svg></span><span class="lm-i"><svg class="ic" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /> <path d="M20 3v4" /> <path d="M22 5h-4" /> <path d="M4 17v2" /> <path d="M5 18H3" /> </svg></span></span>
@@ -4745,14 +5317,14 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
  main.querySelectorAll('.k-try .quiz[data-star], .k-try .pxq').forEach(q=>{q.classList.add('k-quiz-in');const s=document.createElement('span');s.className='kb kb-abs k-quiz';s.innerHTML=BOT+K.quiz[0];q.prepend(s)})})();
 /* lesson menu + slide mode */
 (function(){const B=document.body,main=document.querySelector('main'),hero=document.querySelector('header.hero'),M=$('#lMenu');if(!main||!M)return;
- const DECKS={a21:['t21','t22'],a22:['t23'],a23:['t24'],a24:['t25'],a25:['t26'],mission:['mission','sum']},NEXT={a21:['a22','ไปเรียน 2.2'],a22:[null,'จบหัวข้อ 2.2'],a23:['a24','ไปเรียน 2.4'],a24:['a25','ไปเรียน 2.5'],a25:['mission','ไปทำภารกิจ'],mission:[null,'กลับเมนู']};
+ const DECKS={a21:['t21','t22'],a22:['t23'],a23:['t2cs'],a24:['t24'],a25:['t25'],a26:['t26'],mission:['mission','sum']},NEXT={a21:['a22','ไปเรียน 2.2'],a22:[null,'จบหัวข้อ 2.2'],a23:[null,'จบหัวข้อ 2.3'],a24:['a25','ไปเรียน 2.5'],a25:['a26','ไปเรียน 2.6'],a26:['mission','ไปทำภารกิจ'],mission:[null,'กลับเมนู']};
  const S0=[];
  [...main.querySelectorAll(':scope>section')].forEach(sec=>{const sid=sec.id;const wrap=sec.querySelector(':scope>.wrap');const kids=[...wrap.children];
   const h=sec.querySelector('.part-h h2,.sec-h h2');const nm=(((sec.querySelector('.part-n')||{}).textContent||'')+' '+(h?h.textContent:'')).trim();
   if(!kids.some(k=>k.classList.contains('block'))){S0.push({nodes:kids,sec:nm,sid,title:kids.length===1&&kids[0].classList.contains('part-h')});return}
   let cur=[];const flush=()=>{if(cur.length){S0.push({nodes:cur,title:cur.every(n=>!n.classList.contains('block')),sec:nm,sid});cur=[]}};
   kids.forEach(k=>{if(!k.classList.contains('block')){cur.push(k);return}flush();let g=[];
-   [...k.children].forEach(c=>{if(c.matches('h3.sub-h,p.cmd-h,.game[data-all],.see,p.think,.thk,.game:has(.tool2),#t23 .game:has(> .quiz[data-star])')&&g.length&&!(g.length===1&&g[0].matches('h3'))||g.length&&g[g.length-1].matches('.game:has(.tool2)')&&!c.matches('.game:has(> .quiz[data-star])')){S0.push({nodes:g,sec:nm,sid});g=[]}g.push(c)});if(g.length)S0.push({nodes:g,sec:nm,sid})});flush()});
+   [...k.children].forEach(c=>{if(c.matches('h3.sub-h,p.cmd-h,.game[data-all],.see,p.think,.thk,.game:has(.tool2),:is(#t23,#t2cs) .game:has(> .quiz[data-star])')&&g.length&&!(g.length===1&&g[0].matches('h3'))||g.length&&g[g.length-1].matches('.game:has(.tool2)')&&!c.matches('.game:has(> .quiz[data-star])')){S0.push({nodes:g,sec:nm,sid});g=[]}g.push(c)});if(g.length)S0.push({nodes:g,sec:nm,sid})});flush()});
  S0.forEach((s,k)=>{const h=s.nodes.map(n=>n.matches('h1,h2,h3,h4')?n:n.querySelector('h1,h2,h3,h4')).find(Boolean);s.name=h?h.textContent.trim():s.sec;s.base=k});
  let S=[],i=0,on=false,deck='t21';const KEY='krunok-unit2-slide-',seg=$('#slSeg'),toc=$('#slTocL');
  function tocT(v){$('#slTocP').hidden=!v;$('#slToc').setAttribute('aria-expanded',v)}
@@ -4819,7 +5391,7 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
  document.addEventListener('fullscreenchange',()=>{$('#slFullT').textContent=document.fullscreenElement?'ออกจากเต็มจอ':'เต็มจอ'});
  document.addEventListener('keydown',e=>{if(!on||e.altKey||e.ctrlKey||e.metaKey)return;const t=e.target;if(t.closest&&t.closest('input,select,textarea,canvas,[contenteditable]'))return;if(!$('#lb').hidden)return;
   if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();if(i<S.length-1)show(i+1)}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1)}else if(e.key==='Home'){show(0)}else if(e.key==='End'){show(S.length-1)}else if(e.key==='Escape'){if(!$('#slTocP').hidden)tocT(false);else if(!document.fullscreenElement){if(!exitToParentOrMenu())close(true)}}});
- const mSec=/^#(a21|a22|a23|a24|a25|mission)-(t\d+)$/.exec(location.hash);const m=/^#(a21|a22|a23|a24|a25|mission)-(\d+)$/.exec(location.hash);if(mSec){open(mSec[1],0);const t=document.getElementById(mSec[2]);const k=S.findIndex(s=>s.sid===mSec[2]||s.nodes.some(nd=>t&&(t===nd||t.contains(nd))));if(k>0)show(k)}else if(m)open(m[1],+m[2]-1);else if(!/^#[a-z]/i.test(location.hash))menu(true);
+ const mSec=/^#(a21|a22|a23|a24|a25|a26|mission)-(t\d+)$/.exec(location.hash);const m=/^#(a21|a22|a23|a24|a25|a26|mission)-(\d+)$/.exec(location.hash);if(mSec){open(mSec[1],0);const t=document.getElementById(mSec[2]);const k=S.findIndex(s=>s.sid===mSec[2]||s.nodes.some(nd=>t&&(t===nd||t.contains(nd))));if(k>0)show(k)}else if(m)open(m[1],+m[2]-1);else if(!/^#[a-z]/i.test(location.hash))menu(true);
  document.documentElement.classList.remove('sl-boot');
  /* ในโหมดสไลด์ กล่องโค้ดยาวจะเลื่อนตามบรรทัดที่กำลังทำงาน */
  document.addEventListener('click',e=>{if(!on||!e.target.closest('#simNext,#cNext,#fNext,.simreset,[id$=Reset],.task,.pxopts button,.opts button,.thk-b'))return;const tg=e.target.closest('.thk-tg');setTimeout(()=>{const st=stage();if(st&&(tg||st.scrollHeight>st.clientHeight+4))fit(st);document.querySelectorAll('main section.sl-p .tout').forEach(t=>{t.scrollTop=t.scrollHeight;});document.querySelectorAll('main section.sl-p .lines').forEach(L=>{const o=L.querySelector('.on');if(o){const r=o.offsetTop-L.clientHeight/2+o.offsetHeight/2;L.scrollTop=Math.max(0,r)}else L.scrollTop=0})},0)});
@@ -4844,5 +5416,267 @@ $$('button.task').forEach(b=>b.addEventListener('click',()=>{$$('button.task').f
 })();
 </script>
 
+<script>
+/* 2.2.6 ทดลองแปลงปริภูมิสี + 2.2.7 ทดลองวาดรูปทรง (คำนวณแบบเดียวกับ OpenCV ภาพ 8 บิต) */
+(function () {
+  const W = 1275, H = 817;
+  // OpenCV: gray = (R*4899 + G*9617 + B*1868 + 8192) >> 14
+  const toGray = (r, g, b) => (r * 4899 + g * 9617 + b * 1868 + 8192) >> 14;
+  // OpenCV 8 บิต: H = องศา / 2 (0–179), S และ V 0–255
+  function toHsv(r, g, b) {
+    const v = Math.max(r, g, b), mn = Math.min(r, g, b), d = v - mn;
+    const s = v ? Math.round((255 * d) / v) : 0;
+    let h = 0;
+    if (d) {
+      if (v === r) h = (60 * (g - b)) / d;
+      else if (v === g) h = 120 + (60 * (b - r)) / d;
+      else h = 240 + (60 * (r - g)) / d;
+      if (h < 0) h += 360;
+    }
+    return [Math.round(h / 2) % 180, s, v];
+  }
+  const hueName = (h, s, v) => {
+    if (v < 40) return 'เกือบดำ (V ต่ำ)';
+    if (s < 40) return 'เกือบเทาหรือขาว (S ต่ำ)';
+    if (h <= 10 || h >= 170) return 'กลุ่มสีแดง';
+    if (h <= 25) return 'กลุ่มสีส้ม';
+    if (h <= 34) return 'กลุ่มสีเหลือง';
+    if (h <= 85) return 'กลุ่มสีเขียว';
+    if (h <= 130) return 'กลุ่มสีฟ้า-น้ำเงิน';
+    if (h <= 160) return 'กลุ่มสีม่วง';
+    return 'กลุ่มสีชมพู';
+  };
+  const css = ([b, g, r]) => `rgb(${r},${g},${b})`;
+  // ฟอนต์ FONT_HERSHEY_SIMPLEX ตัวจริง: ข้อมูลเส้นอักษร ASCII 32–126 จาก OpenCV (modules/imgproc/src/hershey_fonts.cpp, BSD license)
+  const HERSHEY = ["JZ","MWRFRT RYQZR[SZRY","JZNFNM VFVM","G]OFOb UFUb JQZQ JWZW","H\\PBP_ TBT_ YIWGTFPFMGKIKKLMMNOOUQWRXSYUYXWZT[P[MZKX","F^[FYGVHSHPGNFLFJGIIIKKMMMOLPJPHNF [FI[ YTWTUUTWTYV[X[ZZ[X[VYT","E_\\O\\N[MZMYNXPVUTXRZP[L[JZIYHWHUISJRQNRMSKSIRGPFNGMIMKNNPQUXWZY[[[\\Z\\Y","NVRFRM","KYVBTDRGPKOPOTPYR]T`Vb","KYNBPDRGTKUPUTTYR]P`Nb","JZRLRX MOWU WOMU","E_RIR[ IR[R","MWSZR[QZRYSZS\\R^Q_","E_IR[R","MWRYQZR[SZRY","G][BIb","H\\QFNGLJKOKRLWNZQ[S[VZXWYRYOXJVGSFQF","H\\NJPISFS[","H\\LKLJMHNGPFTFVGWHXJXLWNUQK[Y[","H\\MFXFRNUNWOXPYSYUXXVZS[P[MZLYKW","H\\UFKTZT UFU[","H\\WFMFLOMNPMSMVNXPYSYUXXVZS[P[MZLYKW","H\\XIWGTFRFOGMJLOLTMXOZR[S[VZXXYUYTXQVOSNRNOOMQLT","H\\YFO[ KFYF","H\\PFMGLILKMMONSOVPXRYTYWXYWZT[P[MZLYKWKTLRNPQOUNWMXKXIWGTFPF","H\\XMWPURRSQSNRLPKMKLLINGQFRFUGWIXMXRWWUZR[P[MZLX","MWRMQNROSNRM RYQZR[SZRY","MWRMQNROSNRM SZR[QZRYSZS\\R^Q_","F^ZIJRZ[","E_IO[O IU[U","F^JIZRJ[","I[LKLJMHNGPFTFVGWHXJXLWNVORQRT RYQZR[SZRY","DaWNVLTKQKOLNMMOMRNTOUQVTVVUWS WKWSXUYV[V\\U]S]O\\L[JYHWGTFQFNGLHJJILHOHRIUJWLYNZQ[T[WZYY","I[RFJ[ RFZ[ MTWT","G\\KFK[ KFTFWGXHYJYLXNWOTP KPTPWQXRYTYWXYWZT[K[","H]ZKYIWGUFQFOGMILKKNKSLVMXOZQ[U[WZYXZV","G\\KFK[ KFRFUGWIXKYNYSXVWXUZR[K[","H[LFL[ LFYF LPTP L[Y[","HZLFL[ LFYF LPTP","H]ZKYIWGUFQFOGMILKKNKSLVMXOZQ[U[WZYXZVZS USZS","G]KFK[ YFY[ KPYP","NVRFR[","JZVFVVUYTZR[P[NZMYLVLT","G\\KFK[ YFKT POY[","HYLFL[ L[X[","F^JFJ[ JFR[ ZFR[ ZFZ[","G]KFK[ KFY[ YFY[","G]PFNGLIKKJNJSKVLXNZP[T[VZXXYVZSZNYKXIVGTFPF","G\\KFK[ KFTFWGXHYJYMXOWPTQKQ","G]PFNGLIKKJNJSKVLXNZP[T[VZXXYVZSZNYKXIVGTFPF SWY]","G\\KFK[ KFTFWGXHYJYLXNWOTPKP RPY[","H\\YIWGTFPFMGKIKKLMMNOOUQWRXSYUYXWZT[P[MZKX","JZRFR[ KFYF","G]KFKULXNZQ[S[VZXXYUYF","I[JFR[ ZFR[","F^HFM[ RFM[ RFW[ \\FW[","H\\KFY[ YFK[","I[JFRPR[ ZFRP","H\\YFK[ KFYF K[Y[","KYOBOb OBVB ObVb","G]IL[b","KYUBUb NBUB NbUb","G]JTROZT JTRPZT","I[J[Z[","LXPFUL PFOGUL","I\\XMX[ XPVNTMQMONMPLSLUMXOZQ[T[VZXX","H[LFL[ LPNNPMSMUNWPXSXUWXUZS[P[NZLX","I[XPVNTMQMONMPLSLUMXOZQ[T[VZXX","I\\XFX[ XPVNTMQMONMPLSLUMXOZQ[T[VZXX","I[LSXSXQWOVNTMQMONMPLSLUMXOZQ[T[VZXX","MYWFUFSGRJR[ OMVM","I\\XMX]W`VaTbQbOa XPVNTMQMONMPLSLUMXOZQ[T[VZXX","I\\MFM[ MQPNRMUMWNXQX[","NVQFRGSFREQF RMR[","MWRFSGTFSERF SMS^RaPbNb","IZMFM[ WMMW QSX[","NVRFR[","CaGMG[ GQJNLMOMQNRQR[ RQUNWMZM\\N]Q][","I\\MMM[ MQPNRMUMWNXQX[","I\\QMONMPLSLUMXOZQ[T[VZXXYUYSXPVNTMQM","H[LMLb LPNNPMSMUNWPXSXUWXUZS[P[NZLX","I\\XMXb XPVNTMQMONMPLSLUMXOZQ[T[VZXX","KXOMO[ OSPPRNTMWM","J[XPWNTMQMNNMPNRPSUTWUXWXXWZT[Q[NZMX","MYRFRWSZU[W[ OMVM","I\\MMMWNZP[S[UZXW XMX[","JZLMR[ XMR[","G]JMN[ RMN[ RMV[ ZMV[","J[MMX[ XMM[","JZLMR[ XMR[P_NaLbKb","J[XMM[ MMXM M[X[","KYTBQEPHPJQMSOSPORSTSUQWPZP\\Q_Tb","NVRBRb","KYPBSETHTJSMQOQPURQTQUSWTZT\\S_Pb","F^IUISJPLONOPPTSVTXTZS[Q ISJQLPNPPQTTVUXUZT[Q[O"];
+  // putText ของ OpenCV อ่านทีละไบต์ UTF-8: อักษรไทย 1 ตัว (3 ไบต์) จึงกลายเป็น ???
+  const ascii = t => t.replace(/[^\x20-\x7E]/gu, ch => '?'.repeat(new TextEncoder().encode(ch).length));
+
+  // ---------- วาดแบบ OpenCV ลงบน canvas (สีเป็น B, G, R) ----------
+  function cvDraw(x, sh) {
+    x.save();
+    x.strokeStyle = x.fillStyle = css(sh.color);
+    x.lineWidth = Math.max(1, sh.th);
+    x.lineCap = 'round'; x.lineJoin = sh.type === 'rectangle' ? 'miter' : 'round';
+    if (sh.type === 'line') { x.beginPath(); x.moveTo(sh.p1[0], sh.p1[1]); x.lineTo(sh.p2[0], sh.p2[1]); x.stroke(); }
+    else if (sh.type === 'rectangle') {
+      const l = Math.min(sh.p1[0], sh.p2[0]), t = Math.min(sh.p1[1], sh.p2[1]), w = Math.abs(sh.p2[0] - sh.p1[0]), h = Math.abs(sh.p2[1] - sh.p1[1]);
+      sh.th < 0 ? x.fillRect(l, t, w + 1, h + 1) : x.strokeRect(l, t, w, h);
+    } else if (sh.type === 'circle') {
+      x.beginPath();
+      // รัศมี 0: OpenCV ยังวาดเป็นจุดขนาดเท่าความหนา
+      if (sh.r) { x.arc(sh.p1[0], sh.p1[1], sh.r, 0, Math.PI * 2); sh.th < 0 ? x.fill() : x.stroke(); }
+      else { x.arc(sh.p1[0], sh.p1[1], Math.max(1, Math.abs(sh.th)) / 2, 0, Math.PI * 2); x.fill(); }
+    } else if (sh.type === 'putText') {
+      // เลียนแบบ cv::putText: org คือซ้ายล่างบนเส้นฐาน, เส้นฐานของฟอนต์อยู่ที่ 9 หน่วย, 1 หน่วย = fontScale พิกเซล
+      const s = sh.fs, vy = sh.p1[1] - 9 * s;
+      let vx = sh.p1[0];
+      x.lineCap = x.lineJoin = 'round';
+      for (const ch of ascii(sh.text)) {
+        const gl = HERSHEY[ch.charCodeAt(0) - 32], v = k => gl.charCodeAt(k) - 82;
+        vx -= v(0) * s;
+        x.beginPath();
+        for (let k = 2, pen = false; k < gl.length;) {
+          if (gl[k] === ' ') { pen = false; k++; continue; }
+          const px = vx + v(k) * s, py = vy + v(k + 1) * s;
+          pen ? x.lineTo(px, py) : x.moveTo(px, py); pen = true; k += 2;
+        }
+        x.stroke();
+        vx += v(1) * s;
+      }
+    }
+    x.restore();
+  }
+  const pyColor = c => `(${c.join(', ')})`;
+  const pyLine = (v, sh) => sh.type === 'line' ? `cv2.line(${v}, (${sh.p1[0]}, ${sh.p1[1]}), (${sh.p2[0]}, ${sh.p2[1]}), ${pyColor(sh.color)}, ${sh.th})`
+    : sh.type === 'rectangle' ? `cv2.rectangle(${v}, (${sh.p1[0]}, ${sh.p1[1]}), (${sh.p2[0]}, ${sh.p2[1]}), ${pyColor(sh.color)}, ${sh.th})`
+    : sh.type === 'circle' ? `cv2.circle(${v}, (${sh.p1[0]}, ${sh.p1[1]}), ${sh.r}, ${pyColor(sh.color)}, ${sh.th})`
+    : `cv2.putText(${v}, ${JSON.stringify(sh.text)}, (${sh.p1[0]}, ${sh.p1[1]}), cv2.FONT_HERSHEY_SIMPLEX, ${sh.fs}, ${pyColor(sh.color)}, ${sh.th})`;
+
+  const DEMO = [
+    { type: 'line', p1: [20, 20], p2: [580, 20], color: [255, 255, 255], th: 2 },
+    { type: 'rectangle', p1: [50, 60], p2: [250, 220], color: [0, 255, 0], th: 3 },
+    { type: 'rectangle', p1: [300, 60], p2: [500, 220], color: [255, 0, 0], th: -1 },
+    { type: 'circle', p1: [150, 310], r: 60, color: [0, 0, 255], th: 3 },
+    { type: 'circle', p1: [400, 310], r: 60, color: [0, 255, 255], th: -1 },
+    { type: 'putText', p1: [60, 390], text: 'Hello OpenCV', fs: 1, color: [255, 255, 255], th: 2 }
+  ];
+  const LABEL = [
+    { type: 'rectangle', p1: [260, 400], p2: [660, 800], color: [0, 255, 0], th: 4 },
+    { type: 'putText', p1: [260, 385], text: 'Apple', fs: 1.5, color: [0, 255, 0], th: 3 }
+  ];
+
+  const img = new Image();
+  img.onload = () => { initCs(); initDraw(); outputs(); };
+  img.src = 'fruits.png';
+
+  // ---------- ภาพผลลัพธ์ที่ต้องได้ ----------
+  function outputs() {
+    const o1 = document.getElementById('drOut1');
+    if (o1) { const x = o1.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, 600, 450); DEMO.forEach(sh => cvDraw(x, sh)); }
+    const o2 = document.getElementById('drOut2');
+    if (o2) { const x = o2.getContext('2d'); x.drawImage(img, 0, 0, W, H); LABEL.forEach(sh => cvDraw(x, sh)); }
+  }
+
+  // ---------- 2.2.6 ----------
+  function initCs() {
+    const c = document.getElementById('csC'); if (!c) return;
+    const x = c.getContext('2d', { willReadFrequently: true });
+    const full = document.createElement('canvas'); full.width = W; full.height = H;
+    const fx = full.getContext('2d', { willReadFrequently: true }); fx.drawImage(img, 0, 0);
+    const fd = fx.getImageData(0, 0, W, H).data;
+    x.drawImage(img, 0, 0, c.width, c.height);
+    const base = x.getImageData(0, 0, c.width, c.height);
+    const views = {};
+    const build = m => {
+      if (views[m]) return views[m];
+      const out = new ImageData(c.width, c.height), s = base.data, d = out.data;
+      for (let i = 0; i < s.length; i += 4) {
+        const r = s[i], g = s[i + 1], b = s[i + 2];
+        if (m === 'gray') { const y = toGray(r, g, b); d[i] = d[i + 1] = d[i + 2] = y; }
+        else if (m === 'hsv') { const [h, sa, v] = toHsv(r, g, b); d[i] = v; d[i + 1] = sa; d[i + 2] = h; } // imshow อ่าน H,S,V เป็น B,G,R
+        else { d[i] = r; d[i + 1] = g; d[i + 2] = b; }
+        d[i + 3] = 255;
+      }
+      return (views[m] = out);
+    };
+    const CODE = {
+      bgr: 'img = cv2.imread("fruits.png")\nprint(img.shape)   # (817, 1275, 3)',
+      gray: 'gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\nprint(gray.shape)  # (817, 1275)',
+      hsv: 'hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\ncv2.imshow("HSV", hsv)   # สีดูแปลก',
+      back: 'back = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)\ncv2.imshow("Back", back)'
+    };
+    const FB = {
+      bgr: 'ภาพเดิมที่ cv2.imread อ่านได้ 3 ช่อง เรียง B G R',
+      gray: 'ภาพเทาเหลือช่องเดียว แต่ละพิกเซลเก็บความเข้มค่าเดียว 0 ถึง 255 ข้อมูลน้อยลง 3 เท่า',
+      hsv: 'imshow คิดว่าเป็น BGR จึงนำ H ไปแสดงเป็นสีน้ำเงิน S เป็นสีเขียว V เป็นสีแดง สีจึงดูแปลก แต่ตัวเลขถูกต้อง',
+      back: 'แปลง HSV กลับเป็น BGR ก่อนแสดง สีจึงกลับมาเหมือนเดิม'
+    };
+    let mode = 'bgr', px = [420, 600];
+    const draw = () => {
+      x.putImageData(build(mode === 'back' ? 'bgr' : mode), 0, 0);
+      const sx = c.width / W, sy = c.height / H, cx = px[0] * sx, cy = px[1] * sy;
+      x.save(); x.lineWidth = 2; x.strokeStyle = '#fff'; x.beginPath(); x.arc(cx, cy, 9, 0, 7); x.stroke();
+      x.strokeStyle = '#111'; x.beginPath(); x.arc(cx, cy, 11, 0, 7); x.stroke(); x.restore();
+      const i = (px[1] * W + px[0]) * 4, r = fd[i], g = fd[i + 1], b = fd[i + 2];
+      const y = toGray(r, g, b), [h, sa, v] = toHsv(r, g, b);
+      document.getElementById('csPx').innerHTML =
+        `<p class="dr-step">พิกเซล img[${px[1]}, ${px[0]}] คือ x = ${px[0]}, y = ${px[1]}</p>` +
+        `<div><span class="cs-sw" style="background:rgb(${r},${g},${b})"></span><b>BGR</b><span class="chs"><span class="ch b">B <b>${b}</b></span><span class="ch g">G <b>${g}</b></span><span class="ch r">R <b>${r}</b></span></span></div>` +
+        `<div><span class="cs-sw" style="background:rgb(${y},${y},${y})"></span><b>GRAY</b><span class="chs"><span class="ch k">ความเข้ม <b>${y}</b></span></span></div>` +
+        `<div><span class="cs-sw" style="background:hsl(${h * 2} ${Math.round((sa / 255) * 100)}% ${Math.round((v / 255) * 50)}%)"></span><b>HSV</b><span class="chs"><span class="ch h">H <b>${h}</b></span><span class="ch s">S <b>${sa}</b></span><span class="ch v">V <b>${v}</b></span></span><small>${hueName(h, sa, v)}</small></div>`;
+      document.getElementById('csCode').textContent = CODE[mode];
+      document.getElementById('csFb').textContent = FB[mode];
+    };
+    document.querySelectorAll('#csBtns button').forEach(bt => bt.addEventListener('click', () => {
+      mode = bt.dataset.m;
+      document.querySelectorAll('#csBtns button').forEach(o => o.setAttribute('aria-pressed', o === bt ? 'true' : 'false'));
+      draw();
+    }));
+    const pick = e => {
+      const r = c.getBoundingClientRect();
+      px = [Math.min(W - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * W))), Math.min(H - 1, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * H)))];
+      draw();
+    };
+    c.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.buttons) pick(e); });
+    c.addEventListener('pointerdown', pick);
+    draw();
+  }
+
+  // ---------- 2.2.7 ----------
+  function initDraw() {
+    const c = document.getElementById('drC'); if (!c) return;
+    const x = c.getContext('2d');
+    const COLORS = [['แดง', [0, 0, 255]], ['เขียว', [0, 255, 0]], ['น้ำเงิน', [255, 0, 0]], ['เหลือง', [0, 255, 255]], ['ขาว', [255, 255, 255]], ['ดำ', [0, 0, 0]]];
+    const st = { bg: 'black', type: 'rectangle', color: [0, 255, 0], th: 3, fill: false, text: 'Hello OpenCV', fs: 1, shapes: [], first: null, hover: null };
+    const box = document.getElementById('drColors');
+    box.innerHTML = COLORS.map(([n, col], i) => `<button type="button" aria-pressed="${i === 1}" aria-label="${n} (${col.join(', ')})" title="${n} (${col.join(', ')})" style="background:${css(col)}" data-i="${i}"></button>`).join('');
+    const $ = id => document.getElementById(id);
+    const thick = () => (st.fill && (st.type === 'rectangle' || st.type === 'circle') ? -1 : st.th);
+    const v = () => (st.bg === 'black' ? 'canvas' : 'img');
+    const pending = () => {
+      if (!st.first || !st.hover) return null;
+      const sh = { type: st.type, p1: st.first, color: st.color, th: thick() };
+      if (st.type === 'circle') sh.r = Math.round(Math.hypot(st.hover[0] - st.first[0], st.hover[1] - st.first[1]));
+      else sh.p2 = st.hover;
+      return sh;
+    };
+    const render = () => {
+      if (st.bg === 'black') { c.width = 600; c.height = 450; x.fillStyle = '#000'; x.fillRect(0, 0, 600, 450); }
+      else { c.width = W; c.height = H; x.drawImage(img, 0, 0, W, H); }
+      st.shapes.forEach(sh => cvDraw(x, sh));
+      const p = pending();
+      if (p) { x.globalAlpha = 0.7; cvDraw(x, p); x.globalAlpha = 1; }
+      if (st.first) { x.fillStyle = '#FF3DA8'; x.beginPath(); x.arc(st.first[0], st.first[1], c.width / 120, 0, 7); x.fill(); }
+      const head = st.bg === 'black'
+        ? 'import cv2\nimport numpy as np\n\ncanvas = np.zeros((450, 600, 3), dtype=np.uint8)'
+        : 'import cv2\n\nimg = cv2.imread("fruits.png")';
+      const lines = st.shapes.map(sh => pyLine(v(), sh));
+      $('drCode').textContent = head + '\n\n' + (lines.length ? lines.join('\n') : '# คลิกบนภาพเพื่อเริ่มวาด') + `\n\ncv2.imshow("Drawing", ${v()})`;
+      $('drStep').textContent = st.type === 'putText' ? 'คลิกบนภาพ 1 ครั้ง เพื่อกำหนดจุด org (ซ้ายล่างของข้อความ)'
+        : st.first ? (st.type === 'circle' ? 'คลิกอีกครั้งเพื่อกำหนดรัศมี' : st.type === 'line' ? 'คลิกจุดสิ้นสุด pt2' : 'คลิกมุมขวาล่าง pt2')
+        : (st.type === 'circle' ? 'คลิกจุดศูนย์กลาง center' : st.type === 'line' ? 'คลิกจุดเริ่มต้น pt1' : 'คลิกมุมซ้ายบน pt1');
+      document.querySelectorAll('.dr-text').forEach(el => { el.hidden = st.type !== 'putText'; });
+      $('drFill').disabled = !(st.type === 'rectangle' || st.type === 'circle');
+    };
+    // พิกัดพิกเซลจริง 0..width-1 (แบบเดียวกับ csC)
+    const pt = e => { const r = c.getBoundingClientRect(); return [Math.min(c.width - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * c.width))), Math.min(c.height - 1, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * c.height)))]; };
+    const say = t => { $('drFb').textContent = t; };
+    c.addEventListener('pointermove', e => { const p = pt(e); st.hover = p; $('drXY').textContent = `x = ${p[0]}, y = ${p[1]}   (img[${p[1]}, ${p[0]}])`; if (st.first) render(); });
+    c.addEventListener('pointerleave', () => { st.hover = null; if (st.first) render(); });
+    c.addEventListener('click', e => {
+      const p = pt(e);
+      if (st.type === 'putText') {
+        const t = st.text || 'Text';
+        st.shapes.push({ type: 'putText', p1: p, text: t, fs: st.fs, color: st.color, th: st.th });
+        say(ascii(t) !== t ? 'putText แสดงภาษาไทยไม่ได้ ตัวอักษรไทยจึงกลายเป็น ??? ให้ใช้ภาษาอังกฤษแทน' : `ข้อความเริ่มที่ org = (${p[0]}, ${p[1]}) คือมุมซ้ายล่างของตัวอักษร`);
+      } else if (!st.first) { st.first = p; st.hover = p; say(''); }
+      else {
+        st.hover = p; const sh = pending(); st.first = null; st.shapes.push(sh);
+        let swapped = false;
+        if (sh.type === 'rectangle') {
+          const a = sh.p1, b = sh.p2;
+          swapped = a[0] > b[0] || a[1] > b[1];
+          sh.p1 = [Math.min(a[0], b[0]), Math.min(a[1], b[1])]; sh.p2 = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        }
+        say(sh.type === 'rectangle' ? (swapped ? 'สลับจุดให้ pt1 เป็นมุมซ้ายบน pt2 เป็นมุมขวาล่าง (OpenCV วาดได้ทั้งสองแบบ แต่ควรเขียนแบบนี้)'
+            : sh.th < 0 ? 'thickness = -1 ระบายสีเต็มรูป' : 'pt1 คือมุมซ้ายบน pt2 คือมุมขวาล่าง')
+          : sh.type === 'circle' ? `รัศมี ${sh.r} พิกเซล วัดจากจุดศูนย์กลาง` : 'เส้นตรงจาก pt1 ไป pt2');
+      }
+      render();
+    });
+    document.querySelectorAll('#drShape button').forEach(bt => bt.addEventListener('click', () => {
+      st.type = bt.dataset.s; st.first = null;
+      document.querySelectorAll('#drShape button').forEach(o => o.setAttribute('aria-pressed', o === bt ? 'true' : 'false'));
+      render();
+    }));
+    document.querySelectorAll('#drBg button').forEach(bt => bt.addEventListener('click', () => {
+      st.bg = bt.dataset.bg; st.shapes = []; st.first = null;
+      document.querySelectorAll('#drBg button').forEach(o => o.setAttribute('aria-pressed', o === bt ? 'true' : 'false'));
+      say(st.bg === 'black' ? 'np.zeros สร้างภาพที่ทุกพิกเซลเป็น 0 จึงเป็นสีดำ ขนาด 600 × 450' : 'ภาพ fruits.png ขนาด 1275 × 817 ลองตีกรอบรอบผลไม้ที่ชอบ');
+      render();
+    }));
+    box.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      st.color = COLORS[+b.dataset.i][1];
+      box.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+      render();
+    });
+    $('drTh').addEventListener('input', e => { st.th = +e.target.value; $('drThV').textContent = st.th; render(); });
+    $('drFill').addEventListener('change', e => { st.fill = e.target.checked; render(); });
+    $('drText').addEventListener('input', e => { st.text = e.target.value; });
+    $('drFs').addEventListener('input', e => { st.fs = +e.target.value; $('drFsV').textContent = st.fs; });
+    $('drUndo').addEventListener('click', () => { st.first ? (st.first = null) : st.shapes.pop(); render(); });
+    $('drClear').addEventListener('click', () => { st.shapes = []; st.first = null; say(''); render(); });
+    $('drDemo').addEventListener('click', () => {
+      st.bg = 'black'; st.first = null; st.shapes = DEMO.map(sh => ({ ...sh }));
+      document.querySelectorAll('#drBg button').forEach(o => o.setAttribute('aria-pressed', o.dataset.bg === 'black' ? 'true' : 'false'));
+      say('ตัวอย่างจากใบความรู้: เส้น กรอบ สี่เหลี่ยมทึบ วงกลม 2 แบบ และข้อความ');
+      render();
+    });
+    render();
+  }
+})();
+</script>
 </body>
 </html>
