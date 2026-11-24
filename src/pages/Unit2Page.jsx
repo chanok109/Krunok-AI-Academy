@@ -13,7 +13,7 @@ import { U2_QUIZ, U2_REFS } from '../data/unit2Data.js';
 import { isStaff } from '../data/courseData.js';
 
 // หัวข้อหลัง PIXEL QUEST ยังไม่พร้อม: นักเรียนเข้าไม่ได้ ครูยังเปิดดูได้
-const U2_LOCKED_STEPS = new Set(['u2-step-sheet23', 'u2-step-act23', 'u2-step-5', 'u2-step-6', 'u2-step-7', 'u2-step-8', 'u2-step-9', 'u2-step-10']);
+const U2_LOCKED_STEPS = new Set(['u2-step-5', 'u2-step-6', 'u2-step-7', 'u2-step-8', 'u2-step-9', 'u2-step-10']);
 
 const U2_OBJECTIVES = [
   "อธิบายหลักการมองเห็นของคอมพิวเตอร์และโครงสร้างข้อมูลภาพดิจิทัล (พิกเซล, BGR, Grayscale) ได้",
